@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>看得見的示範｜OODAV LAB</title>
+<meta name="description" content="用滑鼠就能玩的圖形示範：一張圖怎麼畫出來、圖怎麼移動翻轉、畫面每個點的顏色怎麼算。" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="index.html">首頁</a>
+      <a href="about.html">關於我們</a>
+      <a href="services.html">服務項目</a>
+      <a href="pricing.html">報價</a>
+      <a href="demo.html" class="active">看得見的示範</a>
+      <a href="contact.html">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">看得見的示範</span>
+    <h1>技術，我們<span class="grad">攤開給您看</span></h1>
+    <p class="lede">下面三個小示範，全部用您的瀏覽器即時運算。您動滑鼠、拖拉桿，結果當場變——這正是我們「看得見、驗得過」的做事方式。</p>
+    <div class="toc" style="display:flex;gap:12px;flex-wrap:wrap;margin-top:18px">
+      <a href="#pipeline" class="btn btn-ghost" style="border:1px solid var(--line)">① 一張圖怎麼畫出來</a>
+      <a href="#transform" class="btn btn-ghost" style="border:1px solid var(--line)">② 圖怎麼移動翻轉</a>
+      <a href="#shader" class="btn btn-ghost" style="border:1px solid var(--line)">③ 顏色怎麼算出來</a>
+    </div>
+  </div>
+</header>
+
+<!-- ① 圖形管線 -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">示範 ①</div>
+      <h2>一張圖，是怎麼畫出來的</h2>
+      <p>電腦畫任何東西，都要經過一連串步驟：先把點的位置算好、再決定形狀、最後填顏色。左邊是即時畫出的三角形，右邊是這串步驟的燈號。</p>
+    </div>
+    <div class="demo-grid">
+      <div class="stage">
+        <div class="cap">即時畫面</div>
+        <canvas id="pipeCanvas" width="520" height="360"></canvas>
+        <div id="pipeWarn" class="note"></div>
+      </div>
+      <div class="panel">
+        <h3>畫一張圖的步驟</h3>
+        <div class="pipeline" id="pipeStages">
+          <div class="stage-node" data-i="0"><b>點的位置</b>輸入</div>
+          <div class="stage-node" data-i="1"><b>算位置</b>上色前</div>
+          <div class="stage-node" data-i="2"><b>組形狀</b>拼起來</div>
+          <div class="stage-node" data-i="3"><b>填格子</b>轉像素</div>
+          <div class="stage-node" data-i="4"><b>上顏色</b>每點</div>
+          <div class="stage-node" data-i="5"><b>送到螢幕</b>完成</div>
+        </div>
+        <div class="note">右邊燈號每秒依序亮一次，對應畫一張圖的流動；左邊則是這串步驟每幀持續轉動的實際結果。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ② 幾何變換 -->
+<section id="transform">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">示範 ②</div>
+      <h2>圖，怎麼移動、翻轉、放大</h2>
+      <p>移動、轉角度、放大縮小，背後都是同一張「數學表」。拖下面的拉桿，左邊三角形立刻跟著動，右邊顯示當下的數學表——您看到的每個位移，都有數字可以解釋。</p>
+    </div>
+    <div class="demo-grid">
+      <div class="stage">
+        <div class="cap">拖拉桿看變化</div>
+        <canvas id="tfCanvas" width="520" height="360"></canvas>
+      </div>
+      <div class="panel">
+        <h3>調整參數</h3>
+        <div class="ctrl"><label>左右移 <b id="vTx">0</b></label><input id="tx" type="range" min="-160" max="160" value="0"></div>
+        <div class="ctrl"><label>上下移 <b id="vTy">0</b></label><input id="ty" type="range" min="-160" max="160" value="0"></div>
+        <div class="ctrl"><label>轉角度 <b id="vRot">0°</b></label><input id="rot" type="range" min="0" max="360" value="0"></div>
+        <div class="ctrl"><label>放大縮小 <b id="vS">1.00</b></label><input id="sc" type="range" min="20" max="250" value="100"></div>
+        <div class="matrix" id="tfMatrix">[ 1.00  0.00  0.00 ]
+[ 0.00  1.00  0.00 ]
+[ 0.00  0.00  1.00 ]</div>
+        <div class="note">這張「數學表」就是電腦用來決定圖要畫在哪裡的依據。調任何拉桿，表都會跟著變。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ 著色器 -->
+<section id="shader">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">示範 ③</div>
+      <h2>畫面每個小點的顏色，怎麼算</h2>
+      <p>您螢幕上的圖，是由千百萬個小點組成。左邊這片流動的顏色，是電腦對「每一個小點」依公式即時算出來的；右邊則是一顆會轉的立體方塊，展示畫面怎麼呈現立體感。</p>
+    </div>
+    <div class="demo-grid">
+      <div class="stage">
+        <div class="cap">每個點的顏色</div>
+        <canvas id="shCanvas" width="520" height="360"></canvas>
+        <div id="shWarn" class="note"></div>
+      </div>
+      <div class="panel">
+        <h3>立體方塊（會轉）</h3>
+        <div class="stage3d">
+          <div class="cube">
+            <div class="face f1">前</div><div class="face f2">後</div>
+            <div class="face f3">右</div><div class="face f4">左</div>
+            <div class="face f5">上</div><div class="face f6">下</div>
+          </div>
+        </div>
+        <div class="note">方塊用瀏覽器的立體功能畫出，轉動就是「觀看角度」隨時間改變——和看真實物體轉動是一樣的道理。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="index.html">首頁</a>
+      <a href="about.html">關於我們</a>
+      <a href="services.html">服務項目</a>
+      <a href="pricing.html">報價</a>
+      <a href="demo.html">看得見的示範</a>
+      <a href="contact.html">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
+    <div class="backtop"><a href="#">↑ 回到頂端</a></div>
+  </div>
+</footer>
+
+<script>
+/* ① 一張圖怎麼畫出來（WebGL 旋轉三角形，含錯誤檢查與降級） */
+(function(){
+  const cv=document.getElementById('pipeCanvas');const warn=document.getElementById('pipeWarn');
+  const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+  if(gl){
+    const vs=`attribute vec2 p;uniform float t;varying float v;void main(){float a=t;mat2 r=mat2(cos(a),-sin(a),sin(a),cos(a));vec2 q=r*p;v=p.x*0.5+0.5;gl_Position=vec4(q,0.0,1.0);}`;
+    const fs=`precision mediump float;varying float v;void main(){gl_FragColor=vec4(0.15+0.7*v,0.85,0.78,1.0);}`;
+    function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
+      if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)){warn.textContent='繪圖出錯：'+gl.getShaderInfoLog(o);}return o;}
+    const prog=gl.createProgram();
+    gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+    gl.linkProgram(prog);
+    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){warn.textContent='繪圖出錯：'+gl.getProgramInfoLog(prog);return;}
+    gl.useProgram(prog);
+    const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0.8, -0.7,-0.5, 0.7,-0.5]),gl.STATIC_DRAW);
+    const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+    const tloc=gl.getUniformLocation(prog,'t');
+    function draw(t){gl.clearColor(0.015,0.027,0.055,1);gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.uniform1f(tloc,t*0.6);gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(draw);}
+    requestAnimationFrame(draw);
+  } else {
+    warn.textContent='此裝置不支援進階繪圖，已改用基本方式顯示。';
+    const ctx=cv.getContext('2d');
+    function draw2(t){const a=t*0.6,c=Math.cos(a),s=Math.sin(a);
+      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
+      const cx=cv.width/2,cy=cv.height/2;
+      const pts=[[0,-150],[-130,110],[130,110]].map(([x,y])=>[cx+x*c-y*s,cy+x*s+y*c]);
+      const g=ctx.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#36e0d4');g.addColorStop(1,'#8b6cff');
+      ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(pts[1][0],pts[1][1]);ctx.lineTo(pts[2][0],pts[2][1]);ctx.closePath();ctx.fill();
+      ctx.strokeStyle='#dfe9f5';ctx.lineWidth=2;ctx.stroke();requestAnimationFrame(draw2);}
+    requestAnimationFrame(draw2);
+  }
+})();
+/* ② 圖怎麼移動翻轉（Canvas 2D） */
+(function(){
+  const cv=document.getElementById('tfCanvas');const ctx=cv.getContext('2d');
+  const tx=document.getElementById('tx'),ty=document.getElementById('ty'),rot=document.getElementById('rot'),sc=document.getElementById('sc');
+  const vTx=document.getElementById('vTx'),vTy=document.getElementById('vTy'),vRot=document.getElementById('vRot'),vS=document.getElementById('vS'),mat=document.getElementById('tfMatrix');
+  function fmt(n){return (n>=0?' ':'')+n.toFixed(2);}
+  function draw(){
+    const T=+tx.value,Y=+ty.value,R=+rot.value*Math.PI/180,S=+sc.value/100;
+    const c=Math.cos(R),s=Math.sin(R);const a=S*c,b=S*s,c2=-S*s,d=S*c,e=T,f=Y;
+    ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.strokeStyle='rgba(29,44,69,.7)';ctx.lineWidth=1;
+    for(let i=0;i<=cv.width;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,cv.height);ctx.stroke();}
+    for(let j=0;j<=cv.height;j+=40){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(cv.width,j);ctx.stroke();}
+    ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#ff5d6c';ctx.beginPath();ctx.arc(cv.width/2,cv.height/2,4,0,7);ctx.fill();
+    ctx.setTransform(a,b,c2,d,e+cv.width/2,f+cv.height/2);
+    ctx.strokeStyle='#36e0d4';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-60,-50);ctx.lineTo(60,-50);ctx.lineTo(0,70);ctx.closePath();ctx.stroke();
+    ctx.fillStyle='rgba(54,224,212,.15)';ctx.fill();
+    vTx.textContent=T;vTy.textContent=Y;vRot.textContent=rot.value+'°';vS.textContent=S.toFixed(2);
+    mat.textContent=`[ ${fmt(a)}  ${fmt(c2)}  ${fmt(e)} ]\n[ ${fmt(b)}  ${fmt(d)}  ${fmt(f)} ]\n[ 0.00  0.00  1.00 ]`;
+  }
+  [tx,ty,rot,sc].forEach(el=>el.addEventListener('input',draw));draw();
+})();
+/* ③ 每個點的顏色（WebGL 全螢幕） */
+(function(){
+  const cv=document.getElementById('shCanvas');const warn=document.getElementById('shWarn');
+  const gl=cv.getContext('webgl');
+  if(gl){
+    const vs=`attribute vec2 p;varying vec2 uv;void main(){uv=p*0.5+0.5;gl_Position=vec4(p,0.0,1.0);}`;
+    const fs=`precision mediump float;varying vec2 uv;uniform float t;void main(){vec2 p=uv*2.0-1.0;float v=sin(p.x*4.0+t)+cos(p.y*4.0-t*0.7)+sin((p.x+p.y)*3.0+t*1.3);float k=(v+3.0)/6.0;vec3 col=mix(vec3(0.03,0.10,0.20),vec3(0.21,0.88,0.83),k);col=mix(col,vec3(0.55,0.42,1.0),smoothstep(0.6,1.0,k));gl_FragColor=vec4(col,1.0);}`;
+    function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+    const prog=gl.createProgram();gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));gl.linkProgram(prog);gl.useProgram(prog);
+    const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+    const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+    const tloc=gl.getUniformLocation(prog,'t');
+    function draw(t){gl.uniform1f(tloc,t*0.05);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(draw);}
+    requestAnimationFrame(draw);
+  } else { warn.textContent='此裝置不支援進階繪圖，顏色示範略過。'; }
+})();
+/* 步驟燈號 */
+(function(){
+  const nodes=[...document.querySelectorAll('#pipeStages .stage-node')];let i=0;
+  setInterval(()=>{nodes.forEach(n=>n.classList.remove('on'));nodes[i%nodes.length].classList.add('on');i++;},1000);
+})();
+</script>
+</body>
+</html>
