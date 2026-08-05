@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OODAV LAB｜主動資運工程工作室</title>
+<meta name="description" content="主動資運工程師提供可證偽、自動化防禦、具備 Merkle 對帳能力的軟體開發、決策儀表板與高階企劃案服務。" />
+<style>
+  :root{
+    --bg:#070b14; --panel:#0d1422; --panel2:#111c30;
+    --line:#1d2c45; --cyan:#36e0d4; --violet:#8b6cff;
+    --amber:#ffb347; --red:#ff5d6c; --txt:#dfe9f5; --muted:#8aa0bd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    background:radial-gradient(1200px 700px at 80% -10%,#13233f 0%,var(--bg) 55%);
+    color:var(--txt);line-height:1.7;overflow-x:hidden}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  /* NAV */
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+    background:rgba(7,11,20,.72);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+  .logo{width:30px;height:30px;border-radius:7px;
+    background:conic-gradient(from 200deg,var(--cyan),var(--violet),var(--cyan));
+    box-shadow:0 0 18px rgba(54,224,212,.5)}
+  .nav-links{display:flex;gap:22px;font-size:14px}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--cyan)}
+  @media(max-width:720px){.nav-links{display:none}}
+  /* HERO */
+  .hero{position:relative;padding:74px 0 56px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:34px;align-items:center}
+  @media(max-width:880px){.hero-grid{grid-template-columns:1fr}}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--cyan);
+    border:1px solid var(--cyan);border-radius:999px;padding:5px 14px;margin-bottom:18px}
+  h1{font-size:clamp(30px,4.6vw,52px);line-height:1.12;font-weight:800;margin-bottom:16px}
+  h1 .grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--muted);font-size:17px;max-width:520px;margin-bottom:24px}
+  .cta{display:flex;gap:14px;flex-wrap:wrap}
+  .btn{padding:12px 22px;border-radius:10px;font-weight:700;font-size:15px;cursor:pointer;border:1px solid transparent;transition:.2s}
+  .btn-pri{background:linear-gradient(90deg,var(--cyan),var(--violet));color:#04121a;box-shadow:0 8px 26px rgba(54,224,212,.25)}
+  .btn-pri:hover{transform:translateY(-2px)}
+  .btn-ghost{border-color:var(--line);color:var(--txt);background:var(--panel)}
+  .btn-ghost:hover{border-color:var(--cyan)}
+  .hero-img{position:relative;border:1px solid var(--line);border-radius:16px;overflow:hidden;
+    box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .hero-img img{width:100%;display:block}
+  .hero-img::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(7,11,20,.85))}
+  .hero-badge{position:absolute;left:14px;bottom:14px;z-index:2;font-size:12px;color:var(--muted);
+    background:rgba(7,11,20,.6);border:1px solid var(--line);padding:6px 12px;border-radius:8px}
+  /* STAT STRIP */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:42px 0 10px}
+  @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px}
+  .stat b{display:block;font-size:26px;color:var(--cyan)}
+  .stat span{font-size:13px;color:var(--muted)}
+  /* SECTION */
+  section{padding:60px 0}
+  .sec-head{margin-bottom:34px}
+  .sec-head .k{font-size:13px;letter-spacing:2px;color:var(--violet);font-weight:700}
+  .sec-head h2{font-size:clamp(24px,3.4vw,36px);margin:8px 0 10px;font-weight:800}
+  .sec-head p{color:var(--muted);max-width:640px}
+  /* CARDS */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:880px){.cards{grid-template-columns:1fr}}
+  .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    border-radius:16px;padding:26px;transition:.25s}
+  .card:hover{border-color:var(--cyan);transform:translateY(-4px);box-shadow:0 16px 40px rgba(0,0,0,.45)}
+  .card .ic{width:46px;height:46px;border-radius:11px;display:grid;place-items:center;font-size:22px;
+    background:rgba(54,224,212,.12);border:1px solid var(--cyan);margin-bottom:16px}
+  .card h3{font-size:19px;margin-bottom:10px}
+  .card p{color:var(--muted);font-size:14.5px}
+  .card ul{margin-top:12px;color:var(--muted);font-size:14px;list-style:none}
+  .card ul li{padding:4px 0 4px 20px;position:relative}
+  .card ul li::before{content:"▸";position:absolute;left:0;color:var(--cyan)}
+  /* MERKLE */
+  .merkle{display:grid;grid-template-columns:.9fr 1.1fr;gap:34px;align-items:center;
+    background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:30px}
+  @media(max-width:880px){.merkle{grid-template-columns:1fr}}
+  .merkle img{border-radius:14px;border:1px solid var(--line);width:100%}
+  .merkle h2{font-size:26px;margin-bottom:12px;font-weight:800}
+  .merkle p{color:var(--muted);margin-bottom:14px}
+  .pills{display:flex;gap:10px;flex-wrap:wrap}
+  .pill{font-size:13px;color:var(--cyan);border:1px solid var(--line);background:var(--panel2);padding:6px 12px;border-radius:999px}
+  /* PRICING */
+  .price{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:880px){.price{grid-template-columns:1fr}}
+  .tier{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:26px;position:relative}
+  .tier.featured{border-color:var(--violet);box-shadow:0 0 0 1px var(--violet) inset}
+  .tier .tname{font-weight:800;font-size:18px}
+  .tier .trange{font-size:22px;color:var(--cyan);font-weight:800;margin:6px 0 2px}
+  .tier .tsub{color:var(--muted);font-size:13px;margin-bottom:16px}
+  .tier ul{list-style:none;color:var(--muted);font-size:14px}
+  .tier ul li{padding:5px 0 5px 20px;position:relative}
+  .tier ul li::before{content:"✓";position:absolute;left:0;color:var(--cyan)}
+  .ribbon{position:absolute;top:-11px;right:18px;background:var(--violet);color:#04121a;
+    font-size:11px;font-weight:800;padding:4px 12px;border-radius:999px}
+  /* CONTACT */
+  .contact{background:linear-gradient(135deg,var(--panel2),var(--panel));border:1px solid var(--line);
+    border-radius:18px;padding:34px;text-align:center}
+  .contact h2{font-size:28px;margin-bottom:10px}
+  .contact p{color:var(--muted);margin-bottom:20px}
+  .contact .mail{font-size:18px;color:var(--cyan);font-weight:700}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px;text-align:center}
+  .sitemap{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+  .sitemap a{color:var(--muted)}
+  .sitemap a:hover{color:var(--cyan)}
+  .backtop{margin-top:10px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="#about">理念</a>
+      <a href="#services">服務</a>
+      <a href="#verify">驗證</a>
+      <a href="#pricing">報價</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="#contact">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <span class="tag">ACTIVE ASSET OPERATIONS</span>
+      <h1>把混亂變成<span class="grad">可證偽的秩序</span><br/>主動資運工程工作室</h1>
+      <p class="lede">我們不交付黑箱。以 OODAV_EGMS 工程設計、貝葉斯過濾與 Merkle 對帳，為您的數位資產建立自動化防禦與閉環運維。</p>
+      <div class="cta">
+        <a class="btn btn-pri" href="#contact">預約資產體檢</a>
+        <a class="btn btn-ghost" href="#services">查看交付項目</a>
+      </div>
+    </div>
+    <div class="hero-img">
+      <img src="assets/hero.png" alt="主動資運控制室儀表板視覺" />
+      <div class="hero-badge">● LIVE OPS TERMINAL · 24/7 自動巡檢</div>
+    </div>
+  </div>
+
+  <div class="wrap stats">
+    <div class="stat"><b>100%</b><span>狀態可驗證對帳</span></div>
+    <div class="stat"><b>20 域</b><span>資產維運覆蓋</span></div>
+    <div class="stat"><b>0</b><span>隱性技術負債承諾</span></div>
+    <div class="stat"><b>24/7</b><span>異常自動標紅</span></div>
+  </div>
+</header>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">PHILOSOPHY</div>
+      <h2>拒絕不可證偽的承諾</h2>
+      <p>主理人為 INTJ 主動資運工程師，信仰第一原理、決定論與否證主義。每一份交付物都必須具備明確的驗證邊界——能夠被反覆檢驗、被數據否證，才是真正的工程。</p>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">DELIVERABLES</div>
+      <h2>三大核心交付領域</h2>
+      <p>從自動化後端到決策儀表板，再到高階企劃白皮書，一次搞定具備抗風險能力的數位資產。</p>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <div class="ic">⚙️</div>
+        <h3>軟體與後端架構</h3>
+        <p>Python / FastAPI 自動化引擎，串接第三方 API，構建零信任防禦中介層。</p>
+        <ul>
+          <li>自動化資料對帳與異常標紅</li>
+          <li>電商 / 金流 / 物流 API 穩定串接</li>
+          <li>守護程式（Daemon）背景巡檢</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ic">📊</div>
+        <h3>決策儀表板</h3>
+        <p>React / Streamlit 響應式終端，將 20 域指標轉化為即時可視的運維大腦。</p>
+        <ul>
+          <li>P0 斷鏈紅燈即時警示</li>
+          <li>OODA 流程流向視覺化</li>
+          <li>操作審計日誌對帳表</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="ic">📐</div>
+        <h3>高階企劃與白皮書</h3>
+        <p>軟體需求規格書（SRS）、架構藍圖與資產維運 SOP，把邏輯寫成標準。</p>
+        <ul>
+          <li>數位轉型工程藍圖</li>
+          <li>來源申論與否證檢驗標準</li>
+          <li>異常熔斷與追溯機制</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TECH LAB CTA -->
+<section id="techlab">
+  <div class="wrap">
+    <div class="merkle">
+      <img src="assets/merkle.png" alt="技術實驗場入口視覺" />
+      <div>
+        <div class="k" style="color:var(--cyan);font-weight:700;letter-spacing:2px;font-size:13px">TECH LAB</div>
+        <h2>不說空話，把渲染與變換秀給你看</h2>
+        <p>我們把「可證偽」做成可互動的技術實驗場：圖形管線流動、即時幾何變換矩陣、GLSL 片元著色器與 3D 視圖。每一個參數您都能當場調整、當場驗證。</p>
+        <div class="cta" style="margin-top:16px"><a class="btn btn-pri" href="lab.html">進入技術實驗場 →</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MERKLE / VERIFY -->
+<section id="verify">
+  <div class="wrap">
+    <div class="merkle">
+      <img src="assets/merkle.png" alt="Merkle 樹密碼學驗證結構視覺" />
+      <div>
+        <div class="k" style="color:var(--violet);font-weight:700;letter-spacing:2px;font-size:13px">RECONCILIATION</div>
+        <h2>雙向 Merkle 對帳，零信任底層</h2>
+        <p>每一次資料寫入都強制實施雙向雜湊對帳。遭遇極端斷網或外部數據汙染時，系統仍能維持 100% 可證偽性與完整追溯，杜絕黑箱與數據漂變。</p>
+        <div class="pills">
+          <span class="pill">Merkle 樹校驗</span>
+          <span class="pill">貝葉斯過濾</span>
+          <span class="pill">熵值監控</span>
+          <span class="pill">零信任</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">PRICING</div>
+      <h2>依專案規模的一次搞定報價</h2>
+      <p>台灣市場包案制實務級距，報價已含基礎對帳與防禦邏輯，不含無償長期維運。</p>
+    </div>
+    <div class="price">
+      <div class="tier">
+        <div class="tname">小型專案</div>
+        <div class="trange">NT$ 5–20 萬</div>
+        <div class="tsub">工期 2–6 週</div>
+        <ul>
+          <li>形象官網 / Landing Page</li>
+          <li>單功能輕量 App</li>
+          <li>自動化腳本 / API 串接</li>
+          <li>現成模組拼裝</li>
+        </ul>
+      </div>
+      <div class="tier featured">
+        <div class="ribbon">熱門</div>
+        <div class="tname">中型專案</div>
+        <div class="trange">NT$ 20–100 萬</div>
+        <div class="tsub">工期 2–6 個月</div>
+        <ul>
+          <li>完整電商 / 會員系統</li>
+          <li>進銷存 / CRM 模組</li>
+          <li>多角色權限與資料庫正規化</li>
+          <li>基礎資安防護與效能調校</li>
+        </ul>
+      </div>
+      <div class="tier">
+        <div class="tname">大型 / 企業級</div>
+        <div class="trange">NT$ 100 萬+</div>
+        <div class="tsub">工期 6 月以上</div>
+        <ul>
+          <li>ERP 整合 / 多租戶雲端</li>
+          <li>FinTech / 醫療資訊系統</li>
+          <li>微服務 / 嚴格 SLA</li>
+          <li>長期維運合約</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="wrap">
+    <div class="contact">
+      <h2>讓我們為您的資產建立防禦</h2>
+      <p>提供專案需求描述，我們將回傳一份可驗證的工程可行性評估與報價邊界。</p>
+      <div class="mail">📡 studio@oodav-lab.tw</div>
+      <div style="margin-top:18px"><a class="btn btn-pri" href="mailto:studio@oodav-lab.tw">發送需求簡述</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="#about">理念</a>
+      <a href="#services">服務</a>
+      <a href="#techlab">技術實驗場導引</a>
+      <a href="#verify">驗證機制</a>
+      <a href="#pricing">報價</a>
+      <a href="lab.html">技術實驗場（獨立頁）</a>
+      <a href="#contact">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工程工作室 · 可證偽 · 自動化防禦 · 閉環運維</div>
+    <div class="backtop"><a href="#">↑ 回到頂端</a></div>
+  </div>
+</footer>
+
+</body>
+</html>

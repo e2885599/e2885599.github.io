@@ -223,43 +223,22 @@
   const cv=document.getElementById('pipeCanvas');
   const warn=document.getElementById('pipeWarn');
   const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
-  if(gl){
-    // vertex shader now writes the varying v (previously declared but never assigned -> blank canvas)
-    const vs=`attribute vec2 p;uniform float t;varying float v;void main(){float a=t;mat2 r=mat2(cos(a),-sin(a),sin(a),cos(a));vec2 q=r*p;v=p.x*0.5+0.5;gl_Position=vec4(q,0.0,1.0);}`;
-    const fs=`precision mediump float;varying float v;void main(){gl_FragColor=vec4(0.15+0.7*v,0.85,0.78,1.0);}`;
-    function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);
-      if(!gl.getShaderParameter(o,gl.COMPILE_STATUS)){warn.textContent='Shader 編譯失敗: '+gl.getShaderInfoLog(o);}
-      return o;}
-    const prog=gl.createProgram();
-    gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
-    gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
-    gl.linkProgram(prog);
-    if(!gl.getProgramParameter(prog,gl.LINK_STATUS)){warn.textContent='Program link 失敗: '+gl.getProgramInfoLog(prog);return;}
-    gl.useProgram(prog);
-    const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
-    gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0.8, -0.7,-0.5, 0.7,-0.5]),gl.STATIC_DRAW);
-    const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);
-    gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
-    const tloc=gl.getUniformLocation(prog,'t');
-    function draw(t){gl.clearColor(0.015,0.027,0.055,1);gl.clear(gl.COLOR_BUFFER_BIT);
-      gl.uniform1f(tloc,t*0.6);gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(draw);}
-    requestAnimationFrame(draw);
-  } else {
-    // fallback: always-rendering Canvas 2D rotating triangle
-    warn.textContent='WebGL 不可用，已切換至 Canvas 2D 管線輸出。';
-    const ctx=cv.getContext('2d');
-    function draw2(t){const a=t*0.6,c=Math.cos(a),s=Math.sin(a);
-      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
-      const cx=cv.width/2,cy=cv.height/2;
-      const pts=[[0,-150],[-130,110],[130,110]].map(([x,y])=>[cx+x*c-y*s,cy+x*s+y*c]);
-      const g=ctx.createLinearGradient(0,0,cv.width,cv.height);
-      g.addColorStop(0,'#36e0d4');g.addColorStop(1,'#8b6cff');
-      ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
-      ctx.lineTo(pts[1][0],pts[1][1]);ctx.lineTo(pts[2][0],pts[2][1]);ctx.closePath();ctx.fill();
-      ctx.strokeStyle='#dfe9f5';ctx.lineWidth=2;ctx.stroke();
-      requestAnimationFrame(draw2);}
-    requestAnimationFrame(draw2);
-  }
+  if(!gl){warn.textContent='此瀏覽器不支援 WebGL，管線輸出以靜態提示取代。';return;}
+  const vs=`attribute vec2 p;uniform float t;void main(){float a=t;mat2 r=mat2(cos(a),-sin(a),sin(a),cos(a));vec2 q=r*p;gl_Position=vec4(q,0.0,1.0);}`;
+  const fs=`precision mediump float;varying float v;void main(){gl_FragColor=vec4(0.21+0.5*v,0.88,0.83,1.0);}`;
+  function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0.8, -0.7,-0.5, 0.7,-0.5]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const tloc=gl.getUniformLocation(prog,'t');
+  function draw(t){gl.clearColor(0.015,0.027,0.055,1);gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(tloc,t*0.6);gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(draw);}
+  requestAnimationFrame(draw);
 })();
 
 /* ---------- ② Geometric transform (Canvas 2D) ---------- */
