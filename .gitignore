@@ -1,3 +1,13 @@
 node_modules/
 .DS_Store
 *.log
+*.json
+home.html
+contents.json
+pages.json
+repo.json
+user.json
+scope.txt
+index_pub.html
+lab_pub.html
+branches.json
