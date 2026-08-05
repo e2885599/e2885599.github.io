@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OODAV LAB｜技術實驗場 · 圖形管線 / 幾何變換 / 著色器</title>
+<meta name="description" content="主動資運工程工作室技術實驗場：圖形渲染管線、2D/3D 幾何變換、片元著色器與視圖演示。" />
+<style>
+  :root{
+    --bg:#070b14; --panel:#0d1422; --panel2:#111c30;
+    --line:#1d2c45; --cyan:#36e0d4; --violet:#8b6cff;
+    --amber:#ffb347; --red:#ff5d6c; --txt:#dfe9f5; --muted:#8aa0bd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+    background:radial-gradient(1200px 700px at 80% -10%,#13233f 0%,var(--bg) 55%);
+    color:var(--txt);line-height:1.7;overflow-x:hidden}
+  a{color:var(--cyan);text-decoration:none}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(10px);
+    background:rgba(7,11,20,.72);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.5px}
+  .logo{width:30px;height:30px;border-radius:7px;
+    background:conic-gradient(from 200deg,var(--cyan),var(--violet),var(--cyan));
+    box-shadow:0 0 18px rgba(54,224,212,.5)}
+  .nav-links{display:flex;gap:22px;font-size:14px}
+  .nav-links a{color:var(--muted);transition:.2s}
+  .nav-links a:hover{color:var(--cyan)}
+  .nav-links a.active{color:var(--cyan)}
+  @media(max-width:720px){.nav-links{display:none}}
+
+  .hero{padding:60px 0 30px}
+  .tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--cyan);
+    border:1px solid var(--cyan);border-radius:999px;padding:5px 14px;margin-bottom:18px}
+  h1{font-size:clamp(28px,4vw,44px);line-height:1.12;font-weight:800;margin-bottom:14px}
+  h1 .grad{background:linear-gradient(90deg,var(--cyan),var(--violet));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--muted);font-size:17px;max-width:680px}
+
+  .toc{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0 10px}
+  .toc a{font-size:14px;border:1px solid var(--line);background:var(--panel);
+    padding:8px 16px;border-radius:10px;color:var(--muted)}
+  .toc a:hover{border-color:var(--cyan);color:var(--cyan)}
+
+  section{padding:48px 0;border-top:1px solid var(--line)}
+  .sec-head{margin-bottom:24px}
+  .sec-head .k{font-size:13px;letter-spacing:2px;color:var(--violet);font-weight:700}
+  .sec-head h2{font-size:clamp(22px,3vw,32px);margin:8px 0 8px;font-weight:800}
+  .sec-head p{color:var(--muted);max-width:720px}
+
+  .lab{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;align-items:start}
+  @media(max-width:880px){.lab{grid-template-columns:1fr}}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;position:relative}
+  .stage canvas{width:100%;display:block;border-radius:10px;background:#04070e;border:1px solid var(--line)}
+  .stage .cap{position:absolute;top:22px;left:22px;font-size:11px;color:var(--muted);
+    background:rgba(7,11,20,.6);border:1px solid var(--line);padding:4px 10px;border-radius:7px}
+  .panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .panel h3{font-size:16px;margin-bottom:12px;color:var(--cyan)}
+  .ctrl{margin:12px 0}
+  .ctrl label{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px}
+  .ctrl label b{color:var(--txt);font-variant-numeric:tabular-nums}
+  input[type=range]{width:100%;accent-color:var(--cyan)}
+  .matrix{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;color:var(--cyan);
+    background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;white-space:pre;margin-top:8px}
+  .stage3d{height:320px;display:grid;place-items:center;perspective:800px;background:#04070e;border-radius:10px;border:1px solid var(--line)}
+  .cube{width:140px;height:140px;position:relative;transform-style:preserve-3d;animation:spin 14s linear infinite}
+  .face{position:absolute;width:140px;height:140px;border:1px solid var(--cyan);
+    background:rgba(54,224,212,.08);display:grid;place-items:center;color:var(--muted);font-size:12px}
+  .f1{transform:translateZ(70px)} .f2{transform:rotateY(180deg) translateZ(70px)}
+  .f3{transform:rotateY(90deg) translateZ(70px)} .f4{transform:rotateY(-90deg) translateZ(70px)}
+  .f5{transform:rotateX(90deg) translateZ(70px)} .f6{transform:rotateX(-90deg) translateZ(70px)}
+  @keyframes spin{from{transform:rotateX(-20deg) rotateY(0)}to{transform:rotateX(-20deg) rotateY(360deg)}}
+  .pipeline{display:flex;align-items:stretch;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .stage-node{flex:1;min-width:90px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:10px 8px;text-align:center;font-size:12px;color:var(--muted);transition:.2s}
+  .stage-node b{display:block;color:var(--txt);font-size:13px;margin-bottom:2px}
+  .stage-node.on{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(54,224,212,.25)}
+  .arrow{align-self:center;color:var(--muted);font-size:12px}
+  .note{font-size:12.5px;color:var(--muted);margin-top:10px;border-left:2px solid var(--violet);padding-left:10px}
+  footer{border-top:1px solid var(--line);padding:30px 0;color:var(--muted);font-size:13px}
+  .sitemap{display:flex;gap:18px;flex-wrap:wrap;margin-bottom:14px}
+  .sitemap a{color:var(--muted)}
+  .sitemap a:hover{color:var(--cyan)}
+  .backtop{margin-top:10px}
+  .warn{color:var(--amber);font-size:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="index.html">首頁</a>
+      <a href="index.html#services">服務</a>
+      <a href="index.html#pricing">報價</a>
+      <a href="lab.html" class="active">技術實驗場</a>
+      <a href="index.html#contact">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">TECH LAB · 可互動驗證</span>
+    <h1>技術實驗場：<span class="grad">看得見的渲染與變換</span></h1>
+    <p class="lede">以下三大演示皆為純前端即時運算，無外部依賴。每一個參數都可被您當場調整、結果當場可證偽——這正是我們對「可驗證工程」的實作態度。</p>
+    <div class="toc">
+      <a href="#pipeline">① 圖形管線</a>
+      <a href="#transform">② 幾何變換</a>
+      <a href="#shader">③ 2D/3D 視圖與著色器</a>
+    </div>
+  </div>
+</header>
+
+<!-- ① GRAPHICS PIPELINE -->
+<section id="pipeline">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">01 · GRAPHICS PIPELINE</div>
+      <h2>圖形管線：從頂點到幀緩衝</h2>
+      <p>一顆三角形如何從數學座標，經歷頂點著色、圖元組裝、光柵化、片元著色，最終落進螢幕的幀緩衝。下方左為即時 WebGL 輸出，右為管線階段燈號。</p>
+    </div>
+    <div class="lab">
+      <div class="stage">
+        <div class="cap">LIVE OUTPUT · WebGL</div>
+        <canvas id="pipeCanvas" width="520" height="360"></canvas>
+        <div id="pipeWarn" class="warn"></div>
+      </div>
+      <div class="panel">
+        <h3>管線階段</h3>
+        <div class="pipeline" id="pipeStages">
+          <div class="stage-node" data-i="0"><b>頂點輸入</b>Vertices</div>
+          <div class="stage-node" data-i="1"><b>頂點著色</b>Vertex</div>
+          <div class="stage-node" data-i="2"><b>組裝</b>Assembly</div>
+          <div class="stage-node" data-i="3"><b>光柵化</b>Raster</div>
+          <div class="stage-node" data-i="4"><b>片元著色</b>Fragment</div>
+          <div class="stage-node" data-i="5"><b>幀緩衝</b>Framebuffer</div>
+        </div>
+        <div class="note">右側燈號以 1Hz 依序點亮，對應一幀畫面的管線流動；左側畫布則是該管線每幀持續旋轉的實際輸出。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ② GEOMETRIC TRANSFORM -->
+<section id="transform">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">02 · GEOMETRIC TRANSFORM</div>
+      <h2>幾何變換：矩陣即真理</h2>
+      <p>平移、旋轉、縮放皆由 2D 仿射矩陣描述。拖動滑桿，畫布即時重算變換矩陣並套用——您看到的每一個像素位移，都能被下方矩陣完整解釋。</p>
+    </div>
+    <div class="lab">
+      <div class="stage">
+        <div class="cap">CANVAS 2D · setTransform</div>
+        <canvas id="tfCanvas" width="520" height="360"></canvas>
+      </div>
+      <div class="panel">
+        <h3>變換參數</h3>
+        <div class="ctrl"><label>平移 X <b id="vTx">0</b></label><input id="tx" type="range" min="-160" max="160" value="0"></div>
+        <div class="ctrl"><label>平移 Y <b id="vTy">0</b></label><input id="ty" type="range" min="-160" max="160" value="0"></div>
+        <div class="ctrl"><label>旋轉 θ <b id="vRot">0°</b></label><input id="rot" type="range" min="0" max="360" value="0"></div>
+        <div class="ctrl"><label>縮放 S <b id="vS">1.00</b></label><input id="sc" type="range" min="20" max="250" value="100"></div>
+        <div class="matrix" id="tfMatrix">[ 1.00  0.00  0.00 ]
+[ 0.00  1.00  0.00 ]
+[ 0.00  0.00  1.00 ]</div>
+        <div class="note">變換矩陣 = T · R · S。下方顯示為畫布座標系下的實際 3×3 齊次矩陣（a,b,c,d,e,f 對應 ctx.setTransform）。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ 2D/3D VIEWS & SHADERS -->
+<section id="shader">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="k">03 · 2D/3D VIEWS & SHADERS</div>
+      <h2>2D/3D 視圖與著色器</h2>
+      <p>左：即時片元著色器（GLSL）生成的程序化場景——每一像素的顏色由 fragment shader 依 uv 與時間計算。右：CSS 3D 透視視圖中的線框立方體，展示視圖變換與投影。</p>
+    </div>
+    <div class="lab">
+      <div class="stage">
+        <div class="cap">FRAGMENT SHADER · GLSL</div>
+        <canvas id="shCanvas" width="520" height="360"></canvas>
+        <div id="shWarn" class="warn"></div>
+      </div>
+      <div class="panel">
+        <h3>3D 視圖 · 透視立方體</h3>
+        <div class="stage3d">
+          <div class="cube">
+            <div class="face f1">FRONT</div><div class="face f2">BACK</div>
+            <div class="face f3">RIGHT</div><div class="face f4">LEFT</div>
+            <div class="face f5">TOP</div><div class="face f6">BOTTOM</div>
+          </div>
+        </div>
+        <div class="note">立方體以 CSS <code>transform-style:preserve-3d</code> + <code>perspective</code> 實作視圖變換；旋轉動畫即視圖矩陣隨時間變化。左側 GLSL 則是真正的著色器管線末端。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="index.html">首頁</a>
+      <a href="index.html#about">理念</a>
+      <a href="index.html#services">服務</a>
+      <a href="index.html#verify">驗證</a>
+      <a href="index.html#pricing">報價</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="index.html#contact">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工程工作室 · 可證偽 · 自動化防禦 · 閉環運維</div>
+    <div class="backtop"><a href="#">↑ 回到頂端</a></div>
+  </div>
+</footer>
+
+<script>
+/* ---------- ① Graphics pipeline (WebGL rotating triangle) ---------- */
+(function(){
+  const cv=document.getElementById('pipeCanvas');
+  const warn=document.getElementById('pipeWarn');
+  const gl=cv.getContext('webgl')||cv.getContext('experimental-webgl');
+  if(!gl){warn.textContent='此瀏覽器不支援 WebGL，管線輸出以靜態提示取代。';return;}
+  const vs=`attribute vec2 p;uniform float t;void main(){float a=t;mat2 r=mat2(cos(a),-sin(a),sin(a),cos(a));vec2 q=r*p;gl_Position=vec4(q,0.0,1.0);}`;
+  const fs=`precision mediump float;varying float v;void main(){gl_FragColor=vec4(0.21+0.5*v,0.88,0.83,1.0);}`;
+  function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([0,0.8, -0.7,-0.5, 0.7,-0.5]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const tloc=gl.getUniformLocation(prog,'t');
+  function draw(t){gl.clearColor(0.015,0.027,0.055,1);gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(tloc,t*0.6);gl.drawArrays(gl.TRIANGLES,0,3);requestAnimationFrame(draw);}
+  requestAnimationFrame(draw);
+})();
+
+/* ---------- ② Geometric transform (Canvas 2D) ---------- */
+(function(){
+  const cv=document.getElementById('tfCanvas');const ctx=cv.getContext('2d');
+  const tx=document.getElementById('tx'),ty=document.getElementById('ty'),
+        rot=document.getElementById('rot'),sc=document.getElementById('sc');
+  const vTx=document.getElementById('vTx'),vTy=document.getElementById('vTy'),
+        vRot=document.getElementById('vRot'),vS=document.getElementById('vS'),
+        mat=document.getElementById('tfMatrix');
+  function fmt(n){return (n>=0?' ':'')+n.toFixed(2);}
+  function draw(){
+    const T=+tx.value,Y=+ty.value,R=+rot.value*Math.PI/180,S=+sc.value/100;
+    const c=Math.cos(R),s=Math.sin(R);
+    const a=S*c,b=S*s,c2=-S*s,d=S*c,e=T,f=Y;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
+    // grid
+    ctx.strokeStyle='rgba(29,44,69,.7)';ctx.lineWidth=1;
+    for(let i=0;i<=cv.width;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,cv.height);ctx.stroke();}
+    for(let j=0;j<=cv.height;j+=40){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(cv.width,j);ctx.stroke();}
+    // origin marker
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.fillStyle='#ff5d6c';ctx.beginPath();ctx.arc(cv.width/2,cv.height/2,4,0,7);ctx.fill();
+    // transformed shape
+    ctx.setTransform(a,b,c2,d,e+cv.width/2,f+cv.height/2);
+    ctx.strokeStyle='#36e0d4';ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(-60,-50);ctx.lineTo(60,-50);ctx.lineTo(0,70);ctx.closePath();ctx.stroke();
+    ctx.fillStyle='rgba(54,224,212,.15)';ctx.fill();
+    // readouts
+    vTx.textContent=T;vTy.textContent=Y;vRot.textContent=rot.value+'°';vS.textContent=S.toFixed(2);
+    mat.textContent=`[ ${fmt(a)}  ${fmt(c2)}  ${fmt(e)} ]\n[ ${fmt(b)}  ${fmt(d)}  ${fmt(f)} ]\n[ 0.00  0.00  1.00 ]`;
+  }
+  [tx,ty,rot,sc].forEach(el=>el.addEventListener('input',draw));
+  draw();
+})();
+
+/* ---------- ③ Fragment shader (WebGL fullscreen quad) ---------- */
+(function(){
+  const cv=document.getElementById('shCanvas');const warn=document.getElementById('shWarn');
+  const gl=cv.getContext('webgl');
+  if(!gl){warn.textContent='此瀏覽器不支援 WebGL，著色器場景無法渲染。';return;}
+  const vs=`attribute vec2 p;varying vec2 uv;void main(){uv=p*0.5+0.5;gl_Position=vec4(p,0.0,1.0);}`;
+  const fs=`precision mediump float;varying vec2 uv;uniform float t;
+    void main(){vec2 p=uv*2.0-1.0;float v=sin(p.x*4.0+t)+cos(p.y*4.0-t*0.7)+sin((p.x+p.y)*3.0+t*1.3);
+    float k=(v+3.0)/6.0;vec3 col=mix(vec3(0.03,0.10,0.20),vec3(0.21,0.88,0.83),k);
+    col=mix(col,vec3(0.55,0.42,1.0),smoothstep(0.6,1.0,k));gl_FragColor=vec4(col,1.0);}`;
+  function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));
+  gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+  gl.linkProgram(prog);gl.useProgram(prog);
+  const buf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+  const tloc=gl.getUniformLocation(prog,'t');
+  function draw(t){gl.uniform1f(tloc,t*0.05);gl.drawArrays(gl.TRIANGLE_STRIP,0,4);requestAnimationFrame(draw);}
+  requestAnimationFrame(draw);
+})();
+
+/* ---------- Pipeline stage light sequence ---------- */
+(function(){
+  const nodes=[...document.querySelectorAll('#pipeStages .stage-node')];
+  let i=0;setInterval(()=>{nodes.forEach(n=>n.classList.remove('on'));nodes[i%nodes.length].classList.add('on');i++;},1000);
+})();
+</script>
+</body>
+</html>

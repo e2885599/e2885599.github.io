@@ -1,0 +1,50 @@
+[
+  {
+    "name": ".gitignore",
+    "path": ".gitignore",
+    "sha": "aafcb345668bd80cbb256b066898d4df8988da0e",
+    "size": 30,
+    "url": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/.gitignore?ref=main",
+    "html_url": "https://github.com/e2885599/e2885599.github.io/blob/main/.gitignore",
+    "git_url": "https://api.github.com/repos/e2885599/e2885599.github.io/git/blobs/aafcb345668bd80cbb256b066898d4df8988da0e",
+    "download_url": "https://raw.githubusercontent.com/e2885599/e2885599.github.io/main/.gitignore",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/.gitignore?ref=main",
+      "git": "https://api.github.com/repos/e2885599/e2885599.github.io/git/blobs/aafcb345668bd80cbb256b066898d4df8988da0e",
+      "html": "https://github.com/e2885599/e2885599.github.io/blob/main/.gitignore"
+    }
+  },
+  {
+    "name": "assets",
+    "path": "assets",
+    "sha": "e5d08ad2ea8e4a1d77b2ec37366124aeb8fc3d22",
+    "size": 0,
+    "url": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/assets?ref=main",
+    "html_url": "https://github.com/e2885599/e2885599.github.io/tree/main/assets",
+    "git_url": "https://api.github.com/repos/e2885599/e2885599.github.io/git/trees/e5d08ad2ea8e4a1d77b2ec37366124aeb8fc3d22",
+    "download_url": null,
+    "type": "dir",
+    "_links": {
+      "self": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/assets?ref=main",
+      "git": "https://api.github.com/repos/e2885599/e2885599.github.io/git/trees/e5d08ad2ea8e4a1d77b2ec37366124aeb8fc3d22",
+      "html": "https://github.com/e2885599/e2885599.github.io/tree/main/assets"
+    }
+  },
+  {
+    "name": "index.html",
+    "path": "index.html",
+    "sha": "cc187fbc3328a09de2663b4936a7a99072b05952",
+    "size": 13477,
+    "url": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/index.html?ref=main",
+    "html_url": "https://github.com/e2885599/e2885599.github.io/blob/main/index.html",
+    "git_url": "https://api.github.com/repos/e2885599/e2885599.github.io/git/blobs/cc187fbc3328a09de2663b4936a7a99072b05952",
+    "download_url": "https://raw.githubusercontent.com/e2885599/e2885599.github.io/main/index.html",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/e2885599/e2885599.github.io/contents/index.html?ref=main",
+      "git": "https://api.github.com/repos/e2885599/e2885599.github.io/git/blobs/cc187fbc3328a09de2663b4936a7a99072b05952",
+      "html": "https://github.com/e2885599/e2885599.github.io/blob/main/index.html"
+    }
+  }
+]
