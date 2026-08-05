@@ -275,6 +275,20 @@
   }
   [tx,ty,rot,sc].forEach(el=>el.addEventListener('input',draw));
   draw();
+  // sync transform params to URL hash so state is shareable / falsifiable
+  function syncHash(){
+    const h=`#tf?tx=${tx.value}&ty=${ty.value}&rot=${rot.value}&sc=${sc.value}`;
+    history.replaceState(null,'',h);
+  }
+  [tx,ty,rot,sc].forEach(el=>el.addEventListener('input',syncHash));
+  // restore from hash on load
+  (function(){
+    const m=location.hash.match(/#tf\?(.*)/); if(!m) return;
+    const p=new URLSearchParams(m[1]);
+    if(p.has('tx'))tx.value=p.get('tx'); if(p.has('ty'))ty.value=p.get('ty');
+    if(p.has('rot'))rot.value=p.get('rot'); if(p.has('sc'))sc.value=p.get('sc');
+    draw(); syncHash();
+  })();
 })();
 
 /* ---------- ③ Fragment shader (WebGL fullscreen quad) ---------- */
