@@ -3,11 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>OODAV LAB｜幫您把資產管得清清楚楚</title>
-<meta name="description" content="OODAV LAB 主動資運工作室：用白話、透明、自動化的方式，幫企業把重要數字看牢、出問題馬上報警。" />
+<title>OODAV LAB｜把混亂，變成您看得懂的秩序</title>
+<meta name="description" content="OODAV LAB 主動資運工作室：用透明、可查證、自動化的方式，幫企業把重要數字看牢、出問題主動報警。每一份交付都能讓您自己驗證。" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
+<canvas id="aurora"></canvas>
 <nav>
   <div class="wrap nav-inner">
     <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
@@ -16,6 +17,7 @@
       <a href="about.html">關於我們</a>
       <a href="services.html">服務項目</a>
       <a href="pricing.html">報價</a>
+      <a href="lab.html">技術實驗場</a>
       <a href="demo.html">看得見的示範</a>
       <a href="contact.html">聯絡</a>
     </div>
@@ -24,50 +26,53 @@
 
 <header class="hero">
   <div class="wrap hero-grid">
-    <div>
+    <div class="reveal in">
       <span class="tag">主動資運工作室</span>
       <h1>把混亂，變成<span class="grad">您看得懂的秩序</span></h1>
-      <p class="lede">我們幫企業把重要數字看牢：系統自動巡檢，一出問題就主動報警，不讓您等到月底才發現怪事。過程透明、價格清楚，沒有黑箱。</p>
+      <p class="lede">我們幫企業把重要數字看牢：系統自動巡檢，一出問題就主動報警，不讓您等到月底才發現怪事。過程透明、價格清楚，沒有黑箱——因為我們相信，<b style="color:var(--txt)">您有權利親手驗證每一筆交付</b>。</p>
       <div class="cta">
         <a class="btn btn-pri" href="contact.html">預約一次資產體檢</a>
-        <a class="btn btn-ghost" href="services.html">看我們能幫您做什麼</a>
+        <a class="btn btn-ghost" href="lab.html">走進技術實驗場</a>
       </div>
     </div>
-    <div class="hero-img">
+    <div class="hero-img reveal in d1 floaty">
       <img src="assets/hero.png" alt="自動化管理儀表板示意" />
-      <div class="hero-badge">● 系統 24 小時自動巡檢中</div>
+      <div class="hero-badge"><span class="dot"></span> 系統 24 小時自動巡檢中</div>
     </div>
   </div>
   <div class="wrap stats">
-    <div class="stat"><b>100%</b><span>數字都可對帳查證</span></div>
-    <div class="stat"><b>20 項</b><span>資產面向全面照顧</span></div>
-    <div class="stat"><b>0</b><span>不藏隐性費用</span></div>
-    <div class="stat"><b>24h</b><span>異常主動報警</span></div>
+    <div class="stat reveal in d1"><b data-count="100" data-suffix="%">0</b><span>數字都可對帳查證</span></div>
+    <div class="stat reveal in d2"><b data-count="20" data-suffix=" 項">0</b><span>資產面向全面照顧</span></div>
+    <div class="stat reveal in d3"><b data-count="0">0</b><span>不藏隐性費用</span></div>
+    <div class="stat reveal in d4"><b data-count="24" data-suffix="h">0</b><span>異常主動報警</span></div>
   </div>
 </header>
 
 <section>
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head reveal">
       <div class="k">我們幫您做什麼</div>
       <h2>三句話說完</h2>
-      <p>不懂技術也沒關係——下面三張卡，就是我們替您解決的三件最頭痛的事。</p>
+      <p>不懂技術也沒關係——下面三張卡，就是我們替您解決的三件最頭痛的事。每一件，背後都有您能親手核對的證據。</p>
     </div>
     <div class="cards">
-      <div class="card">
+      <div class="card reveal d1">
         <div class="ic">⚙️</div>
         <h3>把重複工作交給系統</h3>
-        <p>報表、對帳、串接各平台資料這種瑣事，我們寫成自動程式，每天準時跑好，不必人工點。</p>
+        <p>報表、對帳、串接各平台資料這種瑣事，我們寫成自動程式，每天準時跑好，不必人工點。每跑一次都留<b style="color:var(--cyan)">不可竄改的指紋</b>。</p>
+        <ul><li>每日自動對帳，不一致就標紅</li><li>電商 / 金流 / 物流資料自動串接</li><li>背景定時巡檢，出事主動通知</li></ul>
       </div>
-      <div class="card">
+      <div class="card reveal d2">
         <div class="ic">📊</div>
         <h3>給您一塊管理看板</h3>
-        <p>重要指標集中在一個畫面：哪裡變紅、哪裡異常，一眼就看到，開會時直接打開就能講。</p>
+        <p>重要指標集中在一個畫面：哪裡變紅、哪裡異常，一眼就看到，開會時直接打開就能講。每一步都有<b style="color:var(--cyan)">操作軌跡可查</b>。</p>
+        <ul><li>異常項目紅燈警示</li><li>流程走到哪一步，一眼看清</li><li>誰改了什麼，都能追溯</li></ul>
       </div>
-      <div class="card">
+      <div class="card reveal d3">
         <div class="ic">📐</div>
         <h3>幫您寫清楚說明書</h3>
-        <p>從需求、做法到驗收標準，我們用白話寫成文件，讓您和團隊都看得懂、驗得過。</p>
+        <p>從需求、做法到驗收標準，我們用白話寫成文件，讓您和團隊都看得懂、驗得過。拒絕「您只能相信我們」的黑箱。</p>
+        <ul><li>數位轉型規劃書</li><li>資料來源與查證標準</li><li>出問題時的應變與追溯辦法</li></ul>
       </div>
     </div>
   </div>
@@ -75,40 +80,55 @@
 
 <section>
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head reveal">
       <div class="k">為什麼主管該選我們</div>
       <h2>不黑箱、會報警、價格透明</h2>
+      <p>這三件事，是我們和「只交一份報告就叫完工」的廠商最大的不同。</p>
     </div>
     <div class="why">
-      <div class="item"><h4>① 不藏黑箱</h4><p>每一份交付都有清楚的驗收標準，您隨時能核對對不對，而不是「相信我們說的」。</p></div>
-      <div class="item"><h4>② 出事主動講</h4><p>數字異常、資料斷線，系統會主動標紅並通知，不用等您自己發現。</p></div>
-      <div class="item"><h4>③ 價格先講好</h4><p>依專案大小一次報價，含什麼、不含什麼都寫明白，不中途加價。</p></div>
+      <div class="item reveal d1"><h4>① 不藏黑箱</h4><p>每一份交付都有清楚的驗收標準，您隨時能核對對不對，而不是「相信我們說的」。我們把對帳方式寫進合約附件。</p></div>
+      <div class="item reveal d2"><h4>② 出事主動講</h4><p>數字異常、資料斷線，系統會主動標紅並通知，不用等您自己發現。小問題在變大事之前，就被攔下。</p></div>
+      <div class="item reveal d3"><h4>③ 價格先講好</h4><p>依專案大小一次報價，含什麼、不含什麼都寫明白，不中途加價。我們不靠事後追加費用賺錢。</p></div>
     </div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sec-head">
+    <div class="sec-head reveal">
+      <div class="k">技術實驗場</div>
+      <h2>連「圖形學」，我們都攤開給您玩</h2>
+      <p>我們把平常藏在程式裡的電腦圖學與物理模擬，做成您滑鼠能玩的示範——從一張圖怎麼畫出來、到向《傳送門 2》致敬的可穿牆物理謎題。這些不是裝飾，而是「看得見、驗得過」這句承諾的實體證明。</p>
+      <div class="toc">
+        <a href="lab.html" class="btn btn-pri">進入技術實驗場 →</a>
+        <a href="demo.html" class="btn btn-ghost">基礎圖學示範</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
       <div class="k">報價速覽</div>
       <h2>看規模，一次報價</h2>
-      <p>詳細內容請看<a href="pricing.html">報價頁</a>。以下為台灣市場常見區間。</p>
+      <p>詳細內容請看<a href="pricing.html">報價頁</a>。以下為台灣市場常見區間，最終依需求細節而定。</p>
     </div>
     <div class="price">
-      <div class="tier">
+      <div class="tier reveal d1">
         <div class="tname">小型</div>
         <div class="trange">5–20 萬</div>
         <div class="tsub">約 2–6 週</div>
         <ul><li>形象官網 / 單頁活動站</li><li>單一功能小工具</li><li>自動化腳本</li></ul>
       </div>
-      <div class="tier featured">
+      <div class="tier featured reveal d2">
         <div class="ribbon">最多人選</div>
         <div class="tname">中型</div>
         <div class="trange">20–100 萬</div>
         <div class="tsub">約 2–6 個月</div>
         <ul><li>完整電商 / 會員系統</li><li>內部進銷存 / 客戶管理</li><li>權限管理與基本防護</li></ul>
       </div>
-      <div class="tier">
+      <div class="tier reveal d3">
         <div class="tname">大型 / 企業級</div>
         <div class="trange">100 萬以上</div>
         <div class="tsub">6 個月起</div>
@@ -120,10 +140,10 @@
 
 <section>
   <div class="wrap">
-    <div class="contact">
+    <div class="contact reveal">
       <h2>想先看看我們怎麼把技術「攤開給您看」？</h2>
       <p>我們把平常藏在程式裡的圖形與動畫，做成您滑鼠能玩的示範，證明「看得見、驗得過」。</p>
-      <div class="cta" style="justify-content:center"><a class="btn btn-pri" href="demo.html">去看看得見的示範</a></div>
+      <div class="cta" style="justify-content:center"><a class="btn btn-pri" href="lab.html">走進技術實驗場</a></div>
     </div>
   </div>
 </section>
@@ -135,6 +155,7 @@
       <a href="about.html">關於我們</a>
       <a href="services.html">服務項目</a>
       <a href="pricing.html">報價</a>
+      <a href="lab.html">技術實驗場</a>
       <a href="demo.html">看得見的示範</a>
       <a href="contact.html">聯絡</a>
     </div>
@@ -142,5 +163,8 @@
     <div class="backtop"><a href="#">↑ 回到頂端</a></div>
   </div>
 </footer>
+
+<script src="assets/aurora.js"></script>
+<script src="assets/anim.js"></script>
 </body>
 </html>

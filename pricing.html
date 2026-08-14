@@ -3,34 +3,44 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>報價｜OODAV LAB</title>
-<meta name="description" content="依專案大小一次報價：小型、中型、大型，價格與含哪些內容都寫清楚。" />
+<title>報價｜OODAV LAB · 看規模，一次報價</title>
+<meta name="description" content="依專案大小一次報價：小型、中型、大型，價格與含哪些內容都寫清楚。不藏隐性技術債，不事後追加費用。" />
 <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
+<canvas id="aurora"></canvas>
 <nav>
   <div class="wrap nav-inner">
-    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="brand"><span class="tname"></span> OODAV&nbsp;LAB</div>
     <div class="nav-links">
       <a href="index.html">首頁</a>
       <a href="about.html">關於我們</a>
       <a href="services.html">服務項目</a>
       <a href="pricing.html" class="active">報價</a>
-      <a href="demo.html">看得見的示範</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="demo.html">基礎圖學</a>
       <a href="contact.html">聯絡</a>
     </div>
   </div>
 </nav>
 
+<header class="hero">
+  <div class="wrap">
+    <span class="tag">報價 · Pricing</span>
+    <h1>看規模，<span class="grad">一次報價</span></h1>
+    <p class="lede">以下為台灣市場常見的一次性專案區間（不含長期無償維運）。最終價格依您的需求細節而定——但我們承諾：含什麼、不含什麼，一次寫明，不中途加價。</p>
+  </div>
+</header>
+
 <section>
   <div class="wrap">
-    <div class="sec-head">
-      <div class="k">報價</div>
-      <h2>看規模，一次報價</h2>
-      <p>以下為台灣市場常見的一次性專案區間（不含長期無償維運）。最終價格依您的需求細節而定。</p>
+    <div class="sec-head reveal">
+      <div class="k">三種規模</div>
+      <h2>選一個最接近您案子的</h2>
+      <p>不確定落在哪一檔？告訴我們痛點，我們回傳白話的可行性評估與報價區間。</p>
     </div>
     <div class="price">
-      <div class="tier">
+      <div class="tier reveal d1">
         <div class="tname">小型專案</div>
         <div class="trange">5–20 萬</div>
         <div class="tsub">工期約 2–6 週</div>
@@ -41,7 +51,7 @@
           <li>用現成模組拼裝，速度快</li>
         </ul>
       </div>
-      <div class="tier featured">
+      <div class="tier featured reveal d2">
         <div class="ribbon">最多人選</div>
         <div class="tname">中型專案</div>
         <div class="trange">20–100 萬</div>
@@ -53,7 +63,7 @@
           <li>基本防護與效能調整</li>
         </ul>
       </div>
-      <div class="tier">
+      <div class="tier reveal d3">
         <div class="tname">大型 / 企業級</div>
         <div class="trange">100 萬以上</div>
         <div class="tsub">工期 6 個月起</div>
@@ -70,7 +80,7 @@
 
 <section>
   <div class="wrap">
-    <div class="plain">
+    <div class="plain reveal">
       <h3>報價含什麼、不含什麼</h3>
       <ul>
         <li><span class="as">含</span>：需求確認、程式開發、基本對帳與防護邏輯、上線協助。</li>
@@ -78,7 +88,17 @@
         <li>我們堅持<span class="as">不藏隐性技術債</span>：不會為了便宜而留下日後要花大錢收拾的爛攤子。</li>
       </ul>
       <h3>小提醒（白話版）</h3>
-      <p>如果沒有在資料寫入時就做「雙重比對防篡改」，報表在遭遇斷網或資料被污染時，可能會「看起來對、其實錯」。我們把這道防線寫進每一份交付裡。</p>
+      <p>如果沒有在資料寫入時就做「雙重比對防篡改」，報表在遭遇斷網或資料被污染時，可能會「看起來對、其實錯」。我們把這道防線寫進每一份交付裡——這也是技術實驗場裡那些即時示範背後的同一套工程紀律。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="contact reveal">
+      <h2>想拿到精準報價？</h2>
+      <p>只要說「現在哪裡最煩、最怕出錯」，我們就回傳白話的可行性評估與報價區間。</p>
+      <div class="cta" style="justify-content:center"><a class="btn btn-pri" href="contact.html">寫信給我們</a></div>
     </div>
   </div>
 </section>
@@ -90,12 +110,16 @@
       <a href="about.html">關於我們</a>
       <a href="services.html">服務項目</a>
       <a href="pricing.html">報價</a>
-      <a href="demo.html">看得見的示範</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="demo.html">基礎圖學</a>
       <a href="contact.html">聯絡</a>
     </div>
     <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
     <div class="backtop"><a href="#">↑ 回到頂端</a></div>
   </div>
 </footer>
+
+<script src="assets/aurora.js"></script>
+<script src="assets/anim.js"></script>
 </body>
 </html>
