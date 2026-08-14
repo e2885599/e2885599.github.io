@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="460" viewBox="0 0 800 460">
+<rect width="800" height="460" fill="#0d1422"/>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#36e0d4" stop-opacity="0.18"/>
+<stop offset="1" stop-color="#8b6cff" stop-opacity="0.18"/>
+</linearGradient>
+</defs>
+<rect width="800" height="460" fill="url(#g)"/>
+
+<circle cx="400" cy="230" r="120" fill="none" stroke="#36e0d4" stroke-width="3" opacity="0.5"/>
+<circle cx="400" cy="230" r="80" fill="none" stroke="#8b6cff" stroke-width="3" opacity="0.7"/>
+<path d="M400 130 L460 165 L460 250 L400 300 L340 250 L340 165 Z" fill="none" stroke="#36e0d4" stroke-width="4"/>
+<circle cx="400" cy="215" r="14" fill="#36e0d4"/>
+<line x1="400" y1="229" x2="400" y2="265" stroke="#e7eefb" stroke-width="4"/>
+<text x="400" y="380" fill="#e7eefb" font-family="sans-serif" font-size="16" text-anchor="middle">零信任 · 每個動作先查證</text>
+<circle cx="250" cy="150" r="8" fill="#ffb347"/><circle cx="550" cy="150" r="8" fill="#ffb347"/>
+<circle cx="250" cy="310" r="8" fill="#8b6cff"/><circle cx="550" cy="310" r="8" fill="#8b6cff"/>
+</svg>

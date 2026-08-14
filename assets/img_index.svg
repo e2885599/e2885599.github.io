@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="460" viewBox="0 0 800 460">
+<rect width="800" height="460" fill="#0d1422"/>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#36e0d4" stop-opacity="0.18"/>
+<stop offset="1" stop-color="#8b6cff" stop-opacity="0.18"/>
+</linearGradient>
+</defs>
+<rect width="800" height="460" fill="url(#g)"/>
+
+<rect x="40" y="40" width="320" height="180" rx="12" fill="#111c30" stroke="#1d2c45"/>
+<text x="60" y="72" fill="#92a6c4" font-family="sans-serif" font-size="14">資產巡檢儀表板</text>
+<circle cx="90" cy="130" r="30" fill="none" stroke="#36e0d4" stroke-width="6" stroke-dasharray="150 40"/>
+<text x="140" y="120" fill="#e7eefb" font-family="sans-serif" font-size="20" font-weight="700">98%</text>
+<text x="140" y="145" fill="#92a6c4" font-family="sans-serif" font-size="12">對帳通過率</text>
+<rect x="40" y="240" width="150" height="14" rx="7" fill="#1d2c45"/>
+<rect x="40" y="240" width="138" height="14" rx="7" fill="#36e0d4"/>
+<rect x="40" y="270" width="150" height="14" rx="7" fill="#1d2c45"/>
+<rect x="40" y="270" width="95" height="14" rx="7" fill="#8b6cff"/>
+<rect x="420" y="40" width="340" height="380" rx="12" fill="#111c30" stroke="#1d2c45"/>
+<polyline points="440,360 480,320 520,340 560,260 600,280 640,200 700,220 740,150" fill="none" stroke="#ffb347" stroke-width="3"/>
+<circle cx="740" cy="150" r="5" fill="#ffb347"/>
+<text x="440" y="400" fill="#92a6c4" font-family="sans-serif" font-size="12">即時異常趨勢 · 紅燈自動報警</text>
+</svg>

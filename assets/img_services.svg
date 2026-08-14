@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="460" viewBox="0 0 800 460">
+<rect width="800" height="460" fill="#0d1422"/>
+<defs>
+<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+<stop offset="0" stop-color="#36e0d4" stop-opacity="0.18"/>
+<stop offset="1" stop-color="#8b6cff" stop-opacity="0.18"/>
+</linearGradient>
+</defs>
+<rect width="800" height="460" fill="url(#g)"/>
+
+<rect x="50" y="200" width="140" height="60" rx="10" fill="#111c30" stroke="#36e0d4"/>
+<text x="120" y="235" fill="#e7eefb" font-family="sans-serif" font-size="14" text-anchor="middle">需求</text>
+<rect x="330" y="200" width="140" height="60" rx="10" fill="#111c30" stroke="#8b6cff"/>
+<text x="400" y="235" fill="#e7eefb" font-family="sans-serif" font-size="14" text-anchor="middle">自動化</text>
+<rect x="610" y="200" width="140" height="60" rx="10" fill="#111c30" stroke="#ffb347"/>
+<text x="680" y="235" fill="#e7eefb" font-family="sans-serif" font-size="14" text-anchor="middle">交付</text>
+<line x1="190" y1="230" x2="330" y2="230" stroke="#36e0d4" stroke-width="3" marker-end="url(#a)"/>
+<line x1="470" y1="230" x2="610" y2="230" stroke="#8b6cff" stroke-width="3"/>
+<circle cx="120" cy="120" r="26" fill="none" stroke="#36e0d4" stroke-width="3"/>
+<text x="120" y="126" fill="#92a6c4" font-family="sans-serif" font-size="12" text-anchor="middle">⚙</text>
+<text x="400" y="330" fill="#92a6c4" font-family="sans-serif" font-size="13" text-anchor="middle">自動化程式 · 管理看板 · 白話說明書</text>
+</svg>

@@ -233,6 +233,13 @@ footer{border-top:1px solid var(--line);padding:34px 0 40px;color:var(--muted);f
 .backtop{margin-top:10px}
 .backtop a{color:var(--muted2)}
 
+/* 主題示意圖（SVG，本機生成） */
+.theme-img{width:100%;max-width:520px;height:auto;border-radius:16px;border:1px solid var(--line2);
+  background:var(--panel);box-shadow:var(--shadow);transition:.32s var(--ease)}
+.theme-img:hover{transform:scale(1.02);border-color:var(--cyan)}
+.img-wrap{display:flex;justify-content:center;margin:8px 0 4px}
+.img-cap{text-align:center;color:var(--muted2);font-size:12.5px;margin-top:8px}
+
 /* ---------------- 滾動進場揭示（預設隱藏，JS 加 .in 顯現） ---------------- */
 .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
 .reveal.in{opacity:1;transform:none}
