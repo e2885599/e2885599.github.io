@@ -45,8 +45,8 @@
       <div class="mail">📡 目前聯絡信箱（過渡期）：e2885599@gmail.com</div>
       <p style="margin-top:12px;color:var(--muted);font-size:14px">專屬網域信箱 <b style="color:var(--amber)">studio@oodav-lab.tw 籌備中</b>（註冊 oodav-lab.tw ＋ Google Workspace 中）。過渡期請直接用上方信箱來信，我們都收得到；專屬信箱開通後本頁會立即切回正式位址。</p>
       <div style="margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
-        <a class="btn btn-pri" href="mailto:e2885599@gmail.com">寫信給我們（過渡信箱）</a>
-        <a class="btn btn-ghost" href="mailto:e2885599@gmail.com?subject=資產體檢諮詢">一鍵帶主題撰寫 →</a>
+        <a id="mailPrimary" class="btn btn-pri" href="mailto:e2885599@gmail.com">寫信給我們（過渡信箱）</a>
+        <a id="mailSubject" class="btn btn-ghost" href="mailto:e2885599@gmail.com?subject=資產體檢諮詢">一鍵帶主題撰寫 →</a>
       </div>
     </div>
   </div>
@@ -84,5 +84,20 @@
 
 <script src="assets/aurora.js"></script>
 <script src="assets/anim.js"></script>
+<script>
+// 讀取 ?ref= 參數，將「來自 X 詢問」預填進 mailto 主題，讓報價頁的「詢問此規模」真正生效
+(function(){
+  try{
+    var ref = new URLSearchParams(location.search).get('ref');
+    if(ref){
+      var primary = document.getElementById('mailPrimary');
+      var subject = document.getElementById('mailSubject');
+      var base = 'mailto:e2885599@gmail.com';
+      if(primary) primary.href = base + '?subject=' + encodeURIComponent('【' + ref + '】資產體檢諮詢');
+      if(subject) subject.href = base + '?subject=' + encodeURIComponent('【' + ref + '】資產體檢諮詢');
+    }
+  }catch(e){}
+})();
+</script>
 </body>
 </html>
