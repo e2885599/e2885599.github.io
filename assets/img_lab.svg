@@ -1,19 +1,59 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="800" height="460" viewBox="0 0 800 460">
-<rect width="800" height="460" fill="#0d1422"/>
 <defs>
-<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-<stop offset="0" stop-color="#36e0d4" stop-opacity="0.18"/>
-<stop offset="1" stop-color="#8b6cff" stop-opacity="0.18"/>
-</linearGradient>
+  <radialGradient id="bg" cx="50%" cy="42%" r="75%">
+    <stop offset="0" stop-color="#0d1830"/>
+    <stop offset="1" stop-color="#05070d"/>
+  </radialGradient>
+  <linearGradient id="bdoor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#7dd3fc"/>
+    <stop offset="0.5" stop-color="#38bdf8"/>
+    <stop offset="1" stop-color="#0b6fa8"/>
+  </linearGradient>
+  <linearGradient id="odoor" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#fdba74"/>
+    <stop offset="0.5" stop-color="#fb923c"/>
+    <stop offset="1" stop-color="#a8521a"/>
+  </linearGradient>
+  <radialGradient id="bglow" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#38bdf8" stop-opacity="0.55"/>
+    <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="oglow" cx="50%" cy="50%" r="50%">
+    <stop offset="0" stop-color="#fb923c" stop-opacity="0.55"/>
+    <stop offset="1" stop-color="#fb923c" stop-opacity="0"/>
+  </radialGradient>
+  <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="6"/>
+  </filter>
 </defs>
-<rect width="800" height="460" fill="url(#g)"/>
 
-<rect x="120" y="80" width="40" height="300" rx="6" fill="#36e0d4" opacity="0.85"/>
-<rect x="640" y="80" width="40" height="300" rx="6" fill="#ffb347" opacity="0.85"/>
-<ellipse cx="140" cy="230" rx="18" ry="60" fill="#36e0d4" opacity="0.4"/>
-<ellipse cx="660" cy="230" rx="18" ry="60" fill="#ffb347" opacity="0.4"/>
-<circle cx="320" cy="150" r="16" fill="#e7eefb"/>
-<path d="M336 158 Q450 260 624 218" fill="none" stroke="#8b6cff" stroke-width="3" stroke-dasharray="8 6"/>
-<circle cx="624" cy="218" r="10" fill="#8b6cff"/>
-<text x="400" y="420" fill="#92a6c4" font-family="sans-serif" font-size="14" text-anchor="middle">可穿牆物理謎題 · 動量守恆穿越</text>
+<rect width="800" height="460" fill="url(#bg)"/>
+<rect x="0" y="0" width="800" height="460" fill="#0a0f1a" opacity="0.35"/>
+
+<!-- 藍門（左）光暈 + 門體 -->
+<ellipse cx="150" cy="230" rx="70" ry="150" fill="url(#bglow)" filter="url(#soft)"/>
+<rect x="132" y="95" width="36" height="270" rx="8" fill="url(#bdoor)" stroke="#bfe9ff" stroke-width="2"/>
+<ellipse cx="150" cy="230" rx="13" ry="62" fill="#e8fbff" opacity="0.85"/>
+<ellipse cx="150" cy="230" rx="6" ry="40" fill="#38bdf8" opacity="0.6"/>
+
+<!-- 橙門（右）光暈 + 門體 -->
+<ellipse cx="650" cy="230" rx="70" ry="150" fill="url(#oglow)" filter="url(#soft)"/>
+<rect x="632" y="95" width="36" height="270" rx="8" fill="url(#odoor)" stroke="#ffe2c2" stroke-width="2"/>
+<ellipse cx="650" cy="230" rx="13" ry="62" fill="#fff0e2" opacity="0.85"/>
+<ellipse cx="650" cy="230" rx="6" ry="40" fill="#fb923c" opacity="0.6"/>
+
+<!-- 穿越軌跡：球從藍門射出，經弧線進橙門 -->
+<circle cx="330" cy="170" r="15" fill="#e8fbff" stroke="#38bdf8" stroke-width="3"/>
+<path d="M345 182 Q500 300 615 212" fill="none" stroke="#fb923c" stroke-width="3.5" stroke-dasharray="9 7" opacity="0.9"/>
+<circle cx="615" cy="212" r="11" fill="#fb923c" opacity="0.9"/>
+
+<!-- 動量向量箭頭 -->
+<line x1="345" y1="182" x2="395" y2="210" stroke="#38bdf8" stroke-width="3" marker-end="url(#arr)"/>
+<defs><marker id="arr" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+  <path d="M0,0 L6,3 L0,6 Z" fill="#38bdf8"/></marker></defs>
+
+<!-- 標題/註解 -->
+<text x="400" y="400" fill="#cfe8ff" font-family="Segoe UI, sans-serif" font-size="16" font-weight="600" text-anchor="middle">可穿牆物理謎題 · 動量守恆穿越</text>
+<text x="150" y="410" fill="#38bdf8" font-family="Segoe UI, sans-serif" font-size="13" text-anchor="middle">藍門</text>
+<text x="650" y="410" fill="#fb923c" font-family="Segoe UI, sans-serif" font-size="13" text-anchor="middle">橙門</text>
 </svg>
