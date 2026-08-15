@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>傳送門實驗室 · Portal Lab 2D</title>
+<title>傳送門小遊戲</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
   html,body { height:100%; background:#05070d; overflow:hidden; font-family:"Segoe UI","Microsoft JhengHei",sans-serif; color:#cfe8ff; }
@@ -42,31 +42,31 @@
 <!-- 開始選單 -->
 <div id="menu" class="overlay">
   <div class="panel">
-    <h1>傳送門實驗室 2D</h1>
-    <p>一款向《傳送門 2》致敬的二維物理解謎小遊戲。放置兩個互通傳送門、利用動量守恆翻越關卡，共 5 關。</p>
-    <p style="color:#7fd0ff">請選擇難度開始：</p>
+    <h1>傳送門小遊戲</h1>
+    <p>這是一個小小傳送門遊戲。你會有兩個門：藍門和橘門。走進一個門，就會從另一個門出來。一共有 5 關。</p>
+    <p style="color:#7fd0ff">選一個難度開始玩：</p>
     <div class="btnrow">
-      <button class="mode easy" onclick="startGame('easy')">容易模式</button>
-      <button class="mode hard" onclick="startGame('hard')">困難模式</button>
+      <button class="mode easy" onclick="startGame('easy')">簡單</button>
+      <button class="mode hard" onclick="startGame('hard')">難一點</button>
     </div>
-    <div class="keys">
-      <kbd>A</kbd>/<kbd>D</kbd> 或 <kbd>←</kbd><kbd>→</kbd> 移動 ·
-      <kbd>空白</kbd>/<kbd>W</kbd>/<kbd>↑</kbd> 跳躍 ·
-      <kbd>滑鼠左鍵</kbd> 藍門 · <kbd>右鍵</kbd> 橙門<br>
-      <kbd>E</kbd> 拿起/放下方塊 · <kbd>R</kbd> 重來本關 · <kbd>Esc</kbd> 回選單<br>
-      <span style="color:#fb923c">困難：尖刺即死、計時挑戰；容易：無害、寬鬆。</span>
-    </div>
+  <div class="keys">
+    按 <kbd>A</kbd> 或 <kbd>D</kbd>（也可用 <kbd>←</kbd><kbd>→</kbd>）走路 ·
+    <kbd>空白</kbd> 或 <kbd>W</kbd>（也可用 <kbd>↑</kbd>）跳 ·
+    <kbd>滑鼠左鍵</kbd> 放藍門 · <kbd>右鍵</kbd> 放橘門<br>
+    <kbd>E</kbd> 拿起或放下方塊 · <kbd>R</kbd> 重玩這關 · <kbd>Esc</kbd> 回主畫面<br>
+    <span style="color:#fb923c">難一點：碰到刺刺要重來，還要比快。簡單：不會死，慢慢玩。</span>
+  </div>
   </div>
 </div>
 
 <!-- 過關 / 通關 -->
 <div id="win" class="overlay hidden">
   <div class="panel">
-    <h1 id="winTitle">關卡完成</h1>
+    <h1 id="winTitle">過關了！</h1>
     <p id="winText"></p>
     <div class="btnrow">
       <button class="mode easy" id="winNext" onclick="nextLevel()">下一關</button>
-      <button class="mode hard" onclick="backToMenu()">回選單</button>
+      <button class="mode hard" onclick="backToMenu()">回主畫面</button>
     </div>
   </div>
 </div>
@@ -95,8 +95,8 @@ const len = (x,y)=> Math.hypot(x,y);
 //   方塊關：帶著方塊過門到右側，壓按鈕開門，再走到終點。門必在按鈕與終點之間形成閘門。
 const LEVELS = [
   { // 1 穿越深淵
-    name:"第一關 · 穿越深淵",
-    intro:"左鍵朝左牆射藍門、右鍵朝右牆射橙門，然後往左走進左牆，就會從右牆出來抵達對岸。中間深淵掉下去（困難模式會被尖刺刺死）就重來。",
+    name:"第 1 關：跳過大洞",
+    intro:"用左鍵在左邊的牆上放藍門，用右鍵在右邊的牆上放橘門。然後往左走進藍門，你就會從橘門出來，到對面。中間的大洞掉下去要重來（難一點模式碰到刺刺也會重來）。",
     spawn:{x:140,y:600}, goal:{x:1100,y:600,r:26},
     walls:[
       {x:0,y:0,w:1280,h:40,portalable:true},     // 天花板
@@ -109,8 +109,8 @@ const LEVELS = [
     hardHazards:[ {x:560,y:680,w:160,h:40} ],    // 深淵尖刺
   },
   { // 2 雙重深淵
-    name:"第二關 · 雙重深淵",
-    intro:"兩道深淵擋路。同樣用左牆藍門、右牆橙門穿過去——傳送門會讓你直接繞過所有地形。進階：在高處落進地板門、從牆門射出可做出拋射。",
+    name:"第 2 關：兩個大洞",
+    intro:"這裡有兩個大洞。一樣用左邊藍門、右邊橘門走過去。門會帶你直接跳過大洞。小祕訣：從高處掉進地上的門，會從牆上的門飛出去。",
     spawn:{x:120,y:600}, goal:{x:1120,y:600,r:26},
     walls:[
       {x:0,y:0,w:1280,h:40,portalable:true},
@@ -124,8 +124,8 @@ const LEVELS = [
     hardHazards:[ {x:420,y:680,w:140,h:40}, {x:800,y:680,w:100,h:40} ],
   },
   { // 3 方塊與按鈕
-    name:"第三關 · 方塊與機關",
-    intro:"終點被一道門擋住。用 E 拿起紅心方塊，帶進左牆/右牆的傳送門送到對岸，再把方塊放到地面按鈕上開門，最後走到終點。",
+    name:"第 3 關：方塊開門",
+    intro:"前面有一道門擋住路。用 E 拿起紅色愛心方塊，帶它走進門到對面，再把方塊放在地上的開關上，門就會打開。最後走到閃光的圈圈就過關。",
     spawn:{x:140,y:600}, goal:{x:900,y:600,r:26},
     walls:[
       {x:0,y:0,w:1280,h:40,portalable:true},
@@ -140,8 +140,8 @@ const LEVELS = [
     hardHazards:[ {x:560,y:680,w:160,h:40} ],
   },
   { // 4 組合考驗
-    name:"第四關 · 組合考驗",
-    intro:"同第三關的機關，但深淵更寬、尖刺更密。帶方塊過門、放到按鈕開門、再走到終點——一步都不能失足。",
+    name:"第 4 關：大洞加開門",
+    intro:"跟上一關一樣，但大洞更寬、刺刺更多。拿方塊過門、放開關開門、再走到圈圈。小心不要掉下去。",
     spawn:{x:140,y:600}, goal:{x:900,y:600,r:26},
     walls:[
       {x:0,y:0,w:1280,h:40,portalable:true},
@@ -156,8 +156,8 @@ const LEVELS = [
     hardHazards:[ {x:520,y:680,w:240,h:40} ],
   },
   { // 5 終章
-    name:"第五關 · 終章試煉",
-    intro:"最終關：方塊、按鈕、門、深淵尖刺一應俱全，且裂隙最寬。帶方塊過門、開門、穿越到終點。困難模式失足即重來。",
+    name:"第 5 關：最後一關",
+    intro:"最後一關！有方塊、開關、門，還有最寬的大洞和刺刺。拿方塊過門、開門、走到圈圈就贏了。難一點模式掉下去要重來。",
     spawn:{x:140,y:600}, goal:{x:880,y:600,r:26},
     walls:[
       {x:0,y:0,w:1280,h:40,portalable:true},
@@ -260,7 +260,7 @@ function placePortal(side, mx, my){
     const hit = intersectSegAABB(p.x, p.y, dx, dy, w);
     if(hit && (!best || hit.t < best.t)) best = hit;
   }
-  if(!best){ toast("那裡不能放門（需朝向可門化牆面）"); return; }
+  if(!best){ toast("這裡不能放門（要對著藍色或橘色的牆）"); return; }
   // 法線指向房間內部 (hit normal)，切線與法線垂直
   const nx=best.nx, ny=best.ny;
   const tx=-ny, ty=nx;
@@ -468,16 +468,16 @@ function winLevel(){
   state.won=true;
   const t = elapsed;
   if(curLevel >= LEVELS.length-1){
-    document.getElementById("winTitle").textContent = "🏆 全部通關！";
+    document.getElementById("winTitle").textContent = "🏆 全部過關！";
     document.getElementById("winText").innerHTML =
-      `你完成了全部 5 關（${mode==="easy"?"容易":"困難"}模式）。<br>總耗時 <b>${t.toFixed(1)}</b> 秒。`;
+      `你 5 關都過了（${mode==="easy"?"簡單":"難一點"}模式）。<br>一共花了 <b>${t.toFixed(1)}</b> 秒。`;
     document.getElementById("winNext").textContent = "再玩一次";
     document.getElementById("winNext").setAttribute("onclick","restartAll()");
   } else {
-    document.getElementById("winTitle").textContent = "✅ 關卡完成";
+    document.getElementById("winTitle").textContent = "✅ 過關了！";
     document.getElementById("winText").innerHTML =
-      `${state.name} 通過！<br>本關耗時 <b>${t.toFixed(1)}</b> 秒。` +
-      (mode==="hard"?`<br><span style="color:#fb923c">挑戰：試著更快通過。</span>`:``);
+      `${state.name} 這關過了！<br>這關花了 <b>${t.toFixed(1)}</b> 秒。` +
+      (mode==="hard"?`<br><span style="color:#fb923c">挑戰：下次試著更快過關。</span>`:``);
     document.getElementById("winNext").textContent = "下一關";
     document.getElementById("winNext").setAttribute("onclick","nextLevel()");
   }
@@ -581,7 +581,7 @@ function draw(){
   ctx.fillStyle="#bfe0ff"; ctx.font="bold 20px Segoe UI"; ctx.textAlign="left";
   ctx.fillText(state.name, 20, 32);
   ctx.font="14px Segoe UI"; ctx.fillStyle="#7fb3d8";
-  ctx.fillText(`難度：${mode==="easy"?"容易":"困難"}　時間：${elapsed.toFixed(1)}s`, 20, 54);
+  ctx.fillText(`難度：${mode==="easy"?"簡單":"難一點"}　時間：${elapsed.toFixed(1)} 秒`, 20, 54);
   ctx.textAlign="right";
   ctx.fillText(`第 ${state.idx+1} / ${LEVELS.length} 關`, W-20, 32);
   ctx.textAlign="left";
