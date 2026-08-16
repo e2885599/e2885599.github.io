@@ -69,10 +69,16 @@
     if (v.dataset.loaded) return;
     v.dataset.loaded = "1";
     var dir = v.dataset.dir || "auto";
+    // reduced-motion：仍載入並正放循環（卷軸為緩慢柔和動畫，非暈動觸發型），
+    // 但跳過「自動反向呼吸」切換，避免頻繁方向變化。
+    if (reduce && dir === "auto") dir = "fwd";
     appendSources(v, dir);
     v.load();
     startReel(v, dir);
-    v.addEventListener("loadeddata", function () { v.classList.add("ready"); }, { once: true });
+    // 資料就緒才淡入（確保 opacity 從 0 轉 1，避免卡在透明）
+    function markReady() { v.classList.add("ready"); }
+    v.addEventListener("loadeddata", markReady, { once: true });
+    v.addEventListener("canplay", function () { markReady(); var p = v.play(); if (p && p.catch) p.catch(function () {}); }, { once: true });
   }
   function appendSources(v, dir) {
     // 清除舊 source（切換方向時重掛）
@@ -134,7 +140,15 @@
       });
     }, { threshold: 0.25, rootMargin: "200px 0px" });
     reels.forEach(function (v) { vio.observe(v); });
+  } else if ("IntersectionObserver" in window && reduce) {
+    // reduced-motion 仍用觀察器載入（卷軸為緩慢柔和動畫），只是 loadReel 內部已改為只正放
+    var vioR = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { loadReel(e.target); vioR.unobserve(e.target); }
+      });
+    }, { threshold: 0.25, rootMargin: "200px 0px" });
+    reels.forEach(function (v) { vioR.observe(v); });
   } else {
-    reels.forEach(function (v) { if (!reduce) loadReel(v); else v.classList.add("ready"); });
+    reels.forEach(function (v) { loadReel(v); });
   }
 })();
