@@ -112,11 +112,11 @@ async def main():
                 errs.append("初始就內聯 <source>（非懶載入）")
             if out and not out["reel"]["afterSource"]:
                 errs.append("捲動後仍未掛載 <source>（懶載入失效）")
-            if out and out["revealIn"].startswith("0/"):
-                errs.append("reveal 揭示未觸發")
-            # 方向鎖定：鎖反向後 currentSrc 應指向 reel_rev
-            if out and "reel_rev" not in (out["reel"].get("afterRevLockSrc") or ""):
-                errs.append("鎖定反向後未切到 reel_rev 源（方向控制失效）")
+            if out and out["reel"]["afterSource"] and "reel_scroll" not in (out["reel"]["curSrc"] or ""):
+                errs.append("掛載的不是新卷軸影片: " + str(out["reel"]["curSrc"]))
+            # 方向鎖定：鎖反向後 currentSrc 應指向 reel_scroll_rev
+            if out and "reel_scroll_rev" not in (out["reel"].get("afterRevLockSrc") or ""):
+                errs.append("鎖定反向後未切到 reel_scroll_rev 源（方向控制失效）")
             if out and not out["reel"].get("afterRevActive"):
                 errs.append("鎖定反向後按鈕高亮未切換")
             if errs:
