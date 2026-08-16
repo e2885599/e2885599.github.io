@@ -151,4 +151,113 @@
   } else {
     reels.forEach(function (v) { loadReel(v); });
   }
+
+  // 5) 核心信息短片：滾動刷幀（scroll-scrubbing）
+  //    影片 preload="auto" 已設；進入視口後掛 source 並 load()+pause()（不 autoplay）。
+  //    頁面滾動時依 .story 區塊在視口的進度映射 currentTime：
+  //      「跟隨滾動」= 向下滾→正向(時間增)、向上滾→反向(時間減)；
+  //      「正向/反向」鎖定 = 單向循環（用 playbackRate 或切源）。
+  //    reduced-motion：仍載入，但改自動正放循環（不綁滾動，避免頻繁跳幀引發不適）。
+  var stories = [].slice.call(document.querySelectorAll(".story-video"));
+  function loadStory(v) {
+    if (v.dataset.loaded) return;
+    v.dataset.loaded = "1";
+    var dir = v.dataset.dir || "scroll";
+    appendSources(v, dir === "rev" ? "rev" : "fwd");
+    v.load();
+    v.pause();
+    v.addEventListener("loadeddata", function () { v.classList.add("ready"); }, { once: true });
+  }
+  function setStoryProgress(v, p) {  // p ∈ [0,1] → currentTime
+    p = Math.max(0, Math.min(1, p));
+    try {
+      if (isFinite(v.duration) && v.duration > 0) v.currentTime = p * v.duration;
+    } catch (e) {}
+    var bar = v.parentNode.querySelector(".story-progress span");
+    if (bar) bar.style.width = (p * 100).toFixed(1) + "%";
+  }
+  function storyProgressFromScroll(v) {
+    var rect = v.getBoundingClientRect();
+    var vh = window.innerHeight || document.documentElement.clientHeight;
+    // 區塊從「剛進底部」到「剛出頂部」對應 progress 0→1
+    var total = rect.height + vh;
+    var passed = vh - rect.top;
+    return passed / total;
+  }
+  // 鎖定方向時的單向循環
+  function startStoryLoop(v, dir) {
+    appendSources(v, dir === "rev" ? "rev" : "fwd");
+    v.load();
+    var p = v.play();
+    if (p && p.catch) p.catch(function () {});
+    if (dir === "rev") {
+      v.onended = function () { try { v.playbackRate = -1; var pr = v.play(); if (pr && pr.catch) pr.catch(function(){}); } catch (e) {} };
+    } else {
+      v.onended = function () { v.playbackRate = 1; var pr = v.play(); if (pr && pr.catch) pr.catch(function(){}); };
+    }
+  }
+  // 方向按鈕（story 專用）
+  document.querySelectorAll(".story .rc-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var dir = btn.getAttribute("data-dir");
+      document.querySelectorAll(".story .rc-btn").forEach(function (b) {
+        b.classList.remove("is-active"); b.setAttribute("aria-pressed", "false");
+      });
+      btn.classList.add("is-active"); btn.setAttribute("aria-pressed", "true");
+      stories.forEach(function (v) {
+        if (!v.dataset.loaded) { v.dataset.dir = dir; return; }
+        if (dir === "scroll") {
+          v.onended = null; v.pause();
+        } else {
+          startStoryLoop(v, dir);
+        }
+      });
+    });
+  });
+  // 載入 + 滾動刷幀
+  if ("IntersectionObserver" in window) {
+    var sio = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { loadStory(e.target); sio.unobserve(e.target); }
+      });
+    }, { threshold: 0.1 });
+    stories.forEach(function (v) { sio.observe(v); });
+  } else {
+    stories.forEach(function (v) { loadStory(v); });
+  }
+  var storyTicking = false;
+  function onScrollStory() {
+    if (storyTicking) return;
+    storyTicking = true;
+    requestAnimationFrame(function () {
+      stories.forEach(function (v) {
+        if (!v.dataset.loaded) return;
+        var active = document.querySelector(".story .rc-btn.is-active");
+        var dir = active ? active.getAttribute("data-dir") : "scroll";
+        if (dir === "scroll" && !reduce) {
+          setStoryProgress(v, storyProgressFromScroll(v));
+        }
+      });
+      storyTicking = false;
+    });
+  }
+  if (!reduce) {
+    window.addEventListener("scroll", onScrollStory, { passive: true });
+    // 持續 rAF 監控：確保即使 scroll 事件未派發（部分 headless/嵌入環境）也能刷幀
+    (function rafLoop() {
+      onScrollStory();
+      requestAnimationFrame(rafLoop);
+    })();
+  }
+  // reduced-motion：載入後自動正放循環
+  if (reduce) {
+    stories.forEach(function (v) {
+      var iv = setInterval(function () {
+        if (v.dataset.loaded && (document.querySelector(".story .rc-btn.is-active") || {}).getAttribute
+            && document.querySelector(".story .rc-btn.is-active").getAttribute("data-dir") === "scroll") {
+          startStoryLoop(v, "fwd"); clearInterval(iv);
+        }
+      }, 300);
+    });
+  }
 })();

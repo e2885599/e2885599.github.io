@@ -292,6 +292,17 @@ footer{border-top:1px solid var(--line);padding:var(--sp-4) 0 var(--sp-5);color:
   padding:var(--sp-1) var(--sp-2);border-radius:var(--r-md);display:flex;align-items:center;gap:var(--sp-1)}
 .reel-cap .dot{width:8px;height:8px;border-radius:50%;background:#3dff9e;box-shadow:0 0 10px #3dff9e;animation:pulse 1.6s infinite}
 
+/* 核心信息 · 滾動刷幀短片 */
+.story{position:relative;border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--line2);
+  box-shadow:var(--shadow);background:var(--panel);aspect-ratio:16/9}
+.story-video{width:100%;height:100%;display:block;object-fit:cover;background:#06090f}
+.story-hint{position:absolute;left:var(--sp-2);bottom:var(--sp-2);z-index:2;font-size:var(--fs-2xs);
+  color:var(--cyan);background:rgba(6,9,18,.7);border:1px solid var(--line2);
+  padding:var(--sp-1) var(--sp-2);border-radius:var(--r-md);display:flex;align-items:center;gap:var(--sp-1)}
+.story-hint .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.6s infinite}
+.story-progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(6,9,18,.6);z-index:2}
+.story-progress span{display:block;height:100%;width:0;background:var(--grad);transition:width .08s linear}
+
 /* 方向控制條 */
 .reel-ctrl{position:absolute;right:var(--sp-2);bottom:var(--sp-2);z-index:3;display:flex;gap:var(--sp-1);
   background:rgba(6,9,18,.66);border:1px solid var(--line2);border-radius:var(--r-pill);

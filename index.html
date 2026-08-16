@@ -137,6 +137,33 @@
 <section>
   <div class="wrap">
     <div class="sec-head reveal">
+      <div class="k">核心信息 · 滾動播放</div>
+      <h2>邊滑邊看：16 秒講完我們在做什麼</h2>
+      <p>這支短片有人物、有場景，跟著您的捲動軸前進或倒退——往上滑回頭看、往下滑續看。也可以鎖定方向，讓它單向循環。</p>
+    </div>
+    <div class="story reveal d1">
+      <video class="story-video" muted playsinline preload="auto"
+             poster="assets/hero.png"
+             data-src="assets/story.mp4?v=1" data-webm="assets/story.webm?v=1"
+             data-src-rev="assets/story_rev.mp4?v=1" data-webm-rev="assets/story_rev.webm?v=1"
+             dir="auto">
+      </video>
+      <div class="story-hint">
+        <span class="dot"></span> 滾動以刷幀 · 可正向 / 反向
+      </div>
+      <div class="reel-ctrl" role="group" aria-label="故事方向控制">
+        <button type="button" class="rc-btn is-active" data-dir="scroll" aria-pressed="true">跟隨滾動</button>
+        <button type="button" class="rc-btn" data-dir="fwd" aria-pressed="false">正向 ▶</button>
+        <button type="button" class="rc-btn" data-dir="rev" aria-pressed="false">反向 ◀</button>
+      </div>
+      <div class="story-progress" aria-hidden="true"><span></span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
       <div class="k">報價速覽</div>
       <h2>看規模，一次報價</h2>
       <p>詳細內容請看<a href="pricing.html">報價頁</a>。以下為台灣市場常見區間，最終依需求細節而定。</p>
