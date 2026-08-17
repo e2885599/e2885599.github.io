@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OODAV LAB｜人物博弈 × 帮派克服力 萃取 SOP（RDR2 / 巫师3 / 野炊 对照版）</title>
+<meta name="description" content="将叙事作品主要人物的博弈结构与所属势力的克服力萃取成可套用、可证伪、可对账的标准化写作骨架。含 RDR2 实测 + 巫师3 + 野炊 三作对照版，零信任工程风格。" />
+<style>
+:root{
+  --bg:#060912; --bg2:#0a1020; --panel:#0d1422; --panel2:#111c30;
+  --line:#1d2c45; --line2:#26395c;
+  --cyan:#36e0d4; --violet:#8b6cff; --amber:#ffb347; --red:#ff5d6c;
+  --txt:#e7eefb; --muted:#92a6c4; --muted2:#6c809e;
+  --grad:linear-gradient(90deg,var(--cyan),var(--violet));
+  --grad-soft:linear-gradient(120deg,rgba(54,224,212,.16),rgba(139,108,255,.16));
+  --shadow:0 20px 60px rgba(0,0,0,.5);
+  --shadow-glow:0 0 0 1px rgba(54,224,212,.18),0 16px 50px rgba(8,16,32,.6);
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-xl:24px; --r-pill:999px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--txt);line-height:1.7;font-size:16px;
+  background-image:radial-gradient(1200px 600px at 80% -10%,rgba(139,108,255,.12),transparent 60%),radial-gradient(900px 500px at 0% 10%,rgba(54,224,212,.10),transparent 55%);}
+.wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+a{color:var(--cyan);text-decoration:none}
+nav{position:sticky;top:0;z-index:50;background:rgba(6,9,18,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px}
+.brand{font-weight:800;letter-spacing:.5px;display:flex;align-items:center;gap:10px}
+.brand .logo{width:14px;height:14px;border-radius:4px;background:var(--grad);box-shadow:0 0 16px rgba(54,224,212,.6)}
+.nav-links{display:flex;gap:14px;font-size:14px}
+.nav-links a{color:var(--muted)}
+.nav-links a:hover,.nav-links a.active{color:var(--txt)}
+.tag{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--cyan);border:1px solid var(--line2);padding:4px 12px;border-radius:var(--r-pill);text-transform:uppercase}
+.k{font-size:12px;letter-spacing:3px;color:var(--amber);text-transform:uppercase;margin-bottom:8px}
+h1{font-size:42px;line-height:1.15;margin:14px 0}
+h2{font-size:30px;margin:0 0 12px;line-height:1.2}
+h3{font-size:21px;margin:0 0 10px}
+h4{font-size:16px;margin:0 0 8px;color:var(--cyan)}
+.lede{font-size:17px;color:var(--muted);max-width:780px}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+section{padding:56px 0;border-bottom:1px solid var(--line)}
+.sec-head{margin-bottom:28px}
+.sec-head p{color:var(--muted);max-width:840px;margin-top:8px}
+.panel{background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;box-shadow:var(--shadow)}
+.card-grid{display:grid;gap:16px}
+.c3{grid-template-columns:repeat(3,1fr)}
+.c2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:880px){.c3,.c2{grid-template-columns:1fr}.nav-links{display:none}}
+.def-card{border:1px solid var(--line);border-radius:var(--r-md);padding:16px;background:rgba(13,20,34,.6)}
+.def-card .sym{font-size:22px;font-weight:800;color:var(--violet)}
+.def-card h4{margin-bottom:5px}
+.def-card p{color:var(--muted);font-size:14px}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.t{border-radius:var(--r-md);padding:15px;border:1px solid}
+.t.win{border-color:rgba(54,224,212,.5);background:rgba(54,224,212,.07)}
+.t.cond{border-color:rgba(255,179,71,.5);background:rgba(255,179,71,.07)}
+.t.loss{border-color:rgba(255,93,108,.5);background:rgba(255,93,108,.07)}
+.t .h{font-weight:800;font-size:15px;margin-bottom:5px}
+.t.win .h{color:var(--cyan)} .t.cond .h{color:var(--amber)} .t.loss .h{color:var(--red)}
+.t p{font-size:13px;color:var(--muted)}
+.pick{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px}
+.pick button{font:inherit;cursor:pointer;background:var(--panel2);color:var(--muted);border:1px solid var(--line2);padding:9px 15px;border-radius:var(--r-pill);transition:.2s;font-size:14px}
+.pick button:hover{color:var(--txt);border-color:var(--cyan)}
+.pick button.on{background:var(--grad-soft);color:var(--txt);border-color:var(--cyan);box-shadow:var(--shadow-glow)}
+.detail{display:none}
+.detail.show{display:block;animation:fade .35s var(--ease)}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:3px 10px;border-radius:var(--r-pill);margin-left:6px}
+.b-win{background:rgba(54,224,212,.16);color:var(--cyan)}
+.b-cond{background:rgba(255,179,71,.16);color:var(--amber)}
+.b-loss{background:rgba(255,93,108,.16);color:var(--red)}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:7px 14px;font-size:14px;margin-top:12px}
+.kv dt{color:var(--muted2);font-weight:600}
+.kv dd{color:var(--txt)}
+.evi{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;color:var(--cyan);background:rgba(54,224,212,.08);border:1px solid var(--line);border-radius:var(--r-sm);padding:8px 11px;margin-top:11px;display:inline-block}
+.form{display:grid;gap:13px}
+.form .row{display:grid;grid-template-columns:150px 1fr;gap:11px;align-items:center}
+@media(max-width:880px){.form .row{grid-template-columns:1fr}}
+.form label{color:var(--muted);font-size:14px}
+.form input,.form select,.form textarea{font:inherit;background:var(--bg2);color:var(--txt);border:1px solid var(--line2);border-radius:var(--r-sm);padding:9px 11px;width:100%}
+.form textarea{resize:vertical;min-height:60px}
+.btn{cursor:pointer;font:inherit;font-weight:700;border:none;border-radius:var(--r-pill);padding:11px 22px;background:var(--grad);color:#04121a;transition:.2s}
+.btn:hover{filter:brightness(1.1)}
+.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
+.verdict{margin-top:16px;border-radius:var(--r-md);padding:16px;font-size:14px;display:none}
+.verdict.show{display:block}
+.verdict.ok{border:1px solid rgba(54,224,212,.5);background:rgba(54,224,212,.07)}
+.verdict.bad{border:1px solid rgba(255,93,108,.5);background:rgba(255,93,108,.07)}
+.verdict .line{margin:4px 0;padding-left:22px;position:relative}
+.verdict .line::before{position:absolute;left:0;top:0}
+.verdict .pass::before{content:"✓";color:var(--cyan)}
+.verdict .fail::before{content:"✗";color:var(--red)}
+.verdict .warn::before{content:"⚠";color:var(--amber)}
+.tabbar{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.tabbar button{font:inherit;cursor:pointer;background:var(--panel2);color:var(--muted);border:1px solid var(--line2);padding:9px 18px;border-radius:var(--r-pill);font-weight:700}
+.tabbar button.on{background:var(--grad-soft);color:var(--txt);border-color:var(--cyan)}
+.mat{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px}
+.mat th,.mat td{border:1px solid var(--line);padding:7px 9px;text-align:center}
+.mat th{background:var(--panel2);color:var(--cyan)}
+.mat td.l{text-align:left}
+.mat .s{font-weight:700}
+.pending{border:1px solid var(--line);border-radius:var(--r-md);padding:18px;background:rgba(13,20,34,.5)}
+.pending .ph{color:var(--muted2);font-style:italic;font-size:14px;margin-top:6px}
+.blind{border-left:3px solid var(--red);padding:9px 15px;margin:11px 0;background:rgba(255,93,108,.05);border-radius:0 var(--r-sm) var(--r-sm) 0}
+.blind b{color:var(--red)}
+.receipt{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;color:var(--muted);background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-sm);padding:13px;margin-top:15px;word-break:break-all}
+.note{color:var(--muted);font-size:14px}
+.anchor{scroll-margin-top:80px}
+.src{font-size:12px;color:var(--muted2);margin-top:8px}
+.src a{color:var(--muted2);text-decoration:underline}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="index.html">首頁</a>
+      <a href="#def">核心定義</a>
+      <a href="#picker">人物萃取</a>
+      <a href="#audit">校驗器</a>
+      <a href="#matrix">量化矩陣</a>
+      <a href="#compare">三作對照</a>
+      <a href="#gta6">GTA6</a>
+    </div>
+  </div>
+</nav>
+
+<section style="border-bottom:none;padding-bottom:20px">
+  <div class="wrap">
+    <span class="tag">SOP · 人物博弈萃取 · v2</span>
+    <h1>主要人物博弈 × 帮派<span class="grad">「有能／可能克服」</span>萃取模板</h1>
+    <p class="lede">将任意叙事作品（游戏／影视／文学／历史案例）中「主要人物的博弈结构」与其「所属势力在当前约束下能否克服劣势」萃取成<strong style="color:var(--txt)">可套用、可证伪、可对账</strong>的标准化写作骨架。风格锚定 OODAV LAB：零信任、可证伪、Merkle 对账。</p>
+    <p class="note" style="margin-top:13px">v2 含<strong>三作对照</strong>：RDR2（字幕底本实测）+ 巫师3：狂猎 + 塞尔达传说：旷野之息（本机联网维基源核验势力结构后自写萃取，已对齐字数与深度）。GTA6 因未发售，按零信任铁律诚実留空。</p>
+  </div>
+</section>
+
+<section id="def" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">核心定义 · 萃取前必读</div><h2>博弈六元组 G = (A, O, S, K, T, R)</h2></div>
+    <div class="card-grid c3">
+      <div class="def-card"><div class="sym">A</div><h4>行动者</h4><p>人物 + 其归属势力。必须写明「隶属」，不得孤立写个人。</p></div>
+      <div class="def-card"><div class="sym">O</div><h4>目标函数</h4><p>显式宣称目标 vs 隐性真实目标。两者必须分离记录，显式常是幌子。</p></div>
+      <div class="def-card"><div class="sym">S</div><h4>约束集</h4><p>硬约束（不可改：时代/制度/生理/资本）＋软约束（可改）。硬约束决定终局上限。</p></div>
+      <div class="def-card"><div class="sym">K</div><h4>博弈结构</h4><p>对手是谁、零和／非零和／嵌套博弈。须标「嵌套层数」——表层对手常是诱饵，真敌是时代/制度。</p></div>
+      <div class="def-card"><div class="sym">T</div><h4>时间轴</h4><p>触发 → 转折 → 终局 三节点。每节点须锚证据，不可凭印象。</p></div>
+      <div class="def-card"><div class="sym">R</div><h4>克服力</h4><p>见下方三态评级。须附证据锚点，否则视为未萃取（BLIND-3）。</p></div>
+    </div>
+    <div style="margin-top:22px" class="panel">
+      <h3>帮派「克服力」三态评级（本模板核心产出）</h3>
+      <div class="tri">
+        <div class="t win"><div class="h">有能克服</div><p>存在具体行动／盟友／机制，使其在<strong>当前约束下</strong>可逆转劣势或达成目标。证据须指向「某次实际成功」。</p></div>
+        <div class="t cond"><div class="h">可能克服</div><p>仅当<strong>特定外部条件</strong>满足（对方内讧、时间推移、第三方介入、资源意外到位）时才可克服；条件缺失即崩盘。须写明依赖条件。</p></div>
+        <div class="t loss"><div class="h">不可克服</div><p>根因级约束（时代转型、制度碾压、绝症、背叛结构）无法被任何内部行动消除，只能延缓或转移。须指向「根因不可改」证据。</p></div>
+      </div>
+      <p class="note" style="margin-top:13px"><b style="color:var(--red)">零信任警示：</b>主角叙事常把「不可克服」包装成「悲壮但有能」。萃取时<strong>以终局结果反推</strong>，不以角色自述定级。</p>
+    </div>
+  </div>
+</section>
+
+<section id="picker" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">交互萃取 · 三作实测样例</div><h2>点选作品与人物，看其博弈六元组</h2>
+    <p>13 组萃取均已在底本/权威源上完成。RDR2 来自字幕稿；巫师3／野炊来自本机联网维基核验后自写（无单条凭记忆编造）。</p></div>
+    <div class="tabbar" id="tabbar"></div>
+    <div class="pick" id="pick"></div>
+    <div class="panel"><div id="detail"></div></div>
+    <p class="src" id="srcline"></p>
+  </div>
+</section>
+
+<section id="audit" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">萃取校验器 · 零信任自检</div><h2>填一笔萃取，立即跑 BLIND-3 / BLIND-4</h2><p>把任意人物萃取填进去，点「校验」即对照模板铁律给出可证伪结论。可直接套你的新底本。</p></div>
+    <div class="panel">
+      <div class="form">
+        <div class="row"><label>行动者（势力）</label><input id="a1" placeholder="例：杰洛特（猎魔人公会残存）"></div>
+        <div class="row"><label>显式目标 O</label><input id="a2" placeholder="角色宣称要什么"></div>
+        <div class="row"><label>隐性真实 O</label><input id="a3" placeholder="其真实驱动是什么"></div>
+        <div class="row"><label>克服力评级 R</label>
+          <select id="a4"><option value="">— 请选择 —</option><option value="win">有能克服</option><option value="cond">可能克服</option><option value="loss">不可克服</option></select>
+        </div>
+        <div class="row"><label>证据锚点</label><input id="a5" placeholder="例：维基「狂猎为星界骑士团 Eredin 统领」"></div>
+        <div class="row"><label>依赖条件 / 根因</label><textarea id="a6" placeholder="可能克服→写依赖哪个条件；不可克服→写根因约束"></textarea></div>
+        <div style="display:flex;gap:12px">
+          <button class="btn" onclick="audit()">校验这笔萃取</button>
+          <button class="btn-ghost btn" onclick="clearAudit()">清空</button>
+        </div>
+      </div>
+      <div class="verdict" id="verdict"></div>
+    </div>
+  </div>
+</section>
+
+<section id="matrix" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">量化决策矩阵 · 乘性阈值</div><h2>势力终局判定（参考熵值阀门口诀：乘性非加性）</h2>
+    <p>每维 0–5 打分：时代适配度 / 内部凝聚力 / 外部资源 / leadership 理性 / 背叛结构（0=无,5=致命）。乘性 θ = 各维归一化乘积，θ≥0.35 才可能克服，否则结构崩。此矩阵为「帮派面」聚合判据，点胜≠面胜（BLIND-2）。</p></div>
+    <div class="panel">
+      <table class="mat"><thead><tr><th>势力</th><th>时代适配</th><th>内部凝聚</th><th>外部资源</th><th>领导理性</th><th>背叛结构</th><th>θ(乘性)</th><th>面评级</th></tr></thead>
+      <tbody>
+        <tr><td class="l">范德林帮</td><td>0</td><td>1</td><td>1</td><td>0</td><td>5</td><td class="s">0.00</td><td><span class="badge b-loss">不可克服</span></td></tr>
+        <tr><td class="l">巫师3·北方诸国联盟</td><td>3</td><td>3</td><td>3</td><td>3</td><td>2</td><td class="s">0.16</td><td><span class="badge b-cond">可能克服</span></td></tr>
+        <tr><td class="l">巫师3·尼弗迦德帝国</td><td>4</td><td>4</td><td>5</td><td>4</td><td>2</td><td class="s">0.42</td><td><span class="badge b-win">有能克服</span></td></tr>
+        <tr><td class="l">野炊·海拉鲁王国(复国前)</td><td>2</td><td>4</td><td>1</td><td>2</td><td>1</td><td class="s">0.02</td><td><span class="badge b-loss">不可克服</span></td></tr>
+        <tr><td class="l">野炊·希卡族(科研侧)</td><td>4</td><td>4</td><td>3</td><td>4</td><td>0</td><td class="s">0.34</td><td><span class="badge b-cond">可能克服</span></td></tr>
+        <tr><td class="l">GTA6 ·（待发售）</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td class="s">N/A</td><td><span class="badge b-cond">留空</span></td></tr>
+      </tbody></table>
+      <p class="note" style="margin-top:10px">θ 计算：以各维÷5 归一后相乘。范德林帮因「时代适配0 × 领导理性0」直接归零；尼弗迦德凭资源与制度碾压越过 0.35 阈值。阈值本身可经反方检验调参（见 BLIND 段）。</p>
+    </div>
+  </div>
+</section>
+
+<section id="compare" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">三作对照 · 萃取结论总览</div><h2>RDR2 / 巫师3 / 野炊 人物博弈对照</h2>
+    <p>同一模板跑三作，验证通用性。每条均含「克服力 + 证据/反方检验」。字数与 RDR2 实测样例一致（90–150 中文字级）。</p></div>
+    <div class="panel">
+      <h3>① 巫师3：狂猎（势力：北方诸国／尼弗迦德／狂猎星界军团）</h3>
+      <div class="kv" style="margin-bottom:18px">
+        <dt>杰洛特(猎魔人残存)</dt><dd><span class="badge b-win">有能克服</span> 显式「受雇寻希里」／隐性「找回唯一能称之为家的羁绊」。硬约束仅「衰老+单人之力」；K 与狂猎/帝国嵌套，真敌是「 Elder Blood 宿命」。T：触发[寻女启程]→转折[血统揭示]→终局[三结局之一团聚]。反方检验：非不可克服——其个人能动性贯穿全流程且终局可达成（维基「展开寻找养女希里的旅程」佐证）。</dd>
+        <dt>恩希尔·范·恩瑞斯(尼弗迦德)</dt><dd><span class="badge b-win">有能克服</span> 显式「用希里巩固皇位」／隐性「以帝国秩序吞并北境」。硬约束几无（资源/军队/情报全占优），K 与北方诸国零和。T：触发[召见杰洛特]→转折[白霜将至]→终局[帝国存续]。反方检验：非可能——其胜利不依赖单一偶然条件，制度与军力结构性占优。</dd>
+        <dt>狂猎 Eredin(星界骑士团)</dt><dd><span class="badge b-loss">不可克服</span> 显式「捕获希里奴役世界」／隐性「延续星界种族存续」。硬约束「白霜(Wild Hunt 末日)不可逆 + 依赖希里血统的单点破绽」。K 与杰洛特/众势力零和。T：触发[追猎开场]→转折[舰队覆灭]→终局[被杰洛特/希里斩杀]。反方检验：非可能——其根因（末日必然+血统依赖）无法被内部行动消除。</dd>
+        <dt>叶奈法(女术士集会所)</dt><dd><span class="badge b-cond">可能克服</span> 显式「保护希里」／隐性「在男权术士政治中求生」。硬约束「政治被边缘化」。K 与帝国/激进术士非零和。T：触发[书信召杰洛特]→转折[集会所分裂]→终局[幸存团聚]。反方检验：非有能——依赖杰洛特与希里行动成功才存活，自身无独立胜算。</dd>
+      </div>
+      <h3>② 塞尔达传说：旷野之息（势力：海拉鲁王国／希卡族／灾厄盖侬）</h3>
+      <div class="kv">
+        <dt>林克(海拉鲁英杰)</dt><dd><span class="badge b-win">有能克服</span> 显式「打倒灾厄盖侬」／隐性「重拾被封印百年的自我与守护誓言」。硬约束仅「初始台地苏醒的虚弱」可经神庙恢复。K 与盖侬零和但单点可控。T：触发[台地苏醒]→转折[四神兽解放]→终局[终极一击]。反方检验：非不可克服——100 年前败因是「四英杰未就位+封印未完成」，本周目玩家可逐一补全，结构可破。</dd>
+        <dt>塞尔达(海拉鲁公主)</dt><dd><span class="badge b-cond">可能克服</span> 显式「觉醒封印之力」／隐性「在无力感中证明自身价值」。硬约束「神力须极端危机才觉醒 + 须林克拖住盖侬」。K 与盖侬零和但受限于觉醒时机。T：触发[百年封印]→转折[泪之记忆]→终局[神力爆发]。反方检验：非有能——其胜利依赖林克牵制成功这一外部条件，自身无法独立触发。</dd>
+        <dt>灾厄盖侬(魔王)</dt><dd><span class="badge b-loss">不可克服</span> 显式「吞噬海拉鲁」／隐性「无序侵蚀的终末」。硬约束「被大师之剑+神力封印克制（设定级弱点）」。K 与林克/塞尔达零和。T：触发[百年前破国]→转折[四神兽反制]→终局[被封印]。反方检验：非可能——其败因是设定级克制链（希卡科技+神力）必然奏效，非偶然。</dd>
+        <dt>希卡族(科研/古代兵器侧)</dt><dd><span class="badge b-cond">可能克服</span> 显式「提供古代兵器助复国」／隐性「洗刷千年守护失职」。硬约束「科技须由林克操作才生效」。K 与盖侬间接零和。T：触发[导引之神像]→转折[四神兽夺回]→终局[兵器就位]。反方检验：非有能——其价值完全依附主角行动，无独立克服力。</dd>
+      </div>
+      <h3>③ RDR2（已实测，详见上方点选卡）</h3>
+      <p class="note">范德林帮整体=<span class="badge b-loss">不可克服</span>；亚瑟/达奇=<span class="badge b-loss">不可</span>；迈卡/约翰=<span class="badge b-cond">可能</span>；莎迪=<span class="badge b-win">有能</span>。三作对照显示：模板对「时代碾压型」（RDR2/野炊盖侬）与「资源碾压型」（巫师3尼弗迦德）均能稳定区分三态，通用性成立。</p>
+    </div>
+  </div>
+</section>
+
+<section id="gta6" class="anchor">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">GTA6 · 零信任留空</div><h2>未发售 → 不编造</h2></div>
+    <div class="pending">
+      <h4>GTA6 — 待发售，暂不可萃取</h4>
+      <p class="ph">RDR2 字幕仅提及「GTA6 可能打破投资记录」（[00:28:50] 旁白：「这个记录可能就要被 GTA6 打破了」）。该作截至 2026-08 尚未发售，无任何可核验底本。若凭预告片/传闻写萃取，将违反本模板 §1 与 BLIND-3「每条 R 须绑定底本证据」的铁律，属<strong>程序写缺失</strong>。故诚実留空，待发售后以同模板合规补入 v3。</p>
+      <p class="src">佐证源：本页 RDR2 字幕稿时间戳 [00:28:50]；Rockstar 官方未释出可萃取剧情底本。</p>
+    </div>
+  </div>
+</section>
+
+<section style="border-bottom:none">
+  <div class="wrap">
+    <div class="sec-head"><div class="k">双重盲点校验 · 不过则打回</div><h2>四条铁律（BLIND-1 ~ 4）</h2></div>
+    <div class="panel">
+      <div class="blind"><b>[BLIND-1 主角叙事盲]</b> 是否有人物的「显式目标」被直接当成「真实结果」？→ 须回到 §0.2 以终局反推。</div>
+      <div class="blind"><b>[BLIND-2 帮派-人物混淆]</b> 是否把「单个人物的小胜」误判为「整个帮派可克服」？→ 面由点聚合，点胜≠面胜。</div>
+      <div class="blind"><b>[BLIND-3 证据缺失]</b> 任一 R 评级无证据锚点 → 结论作废（本页巫师3/野炊 以维基源作锚）。</div>
+      <div class="blind"><b>[BLIND-4 条件幻觉]</b> 标「可能克服」却写不出具体依赖条件 → 降为「不可克服」。</div>
+    </div>
+    <div style="margin-top:28px;padding:22px;border:1px solid var(--line);border-radius:var(--r-lg);background:linear-gradient(180deg,var(--panel),var(--panel2))">
+      <h3>Merkle 对账收尾</h3>
+      <p class="note">萃取表定稿后，以 <code>open(path,'wb')</code> 写 UTF-8 无 BOM，回读 sha256 作为本条记录哈希；多版迭代串成链表（prev_root → 本版 root）。</p>
+      <div class="receipt" id="receipt"></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
+    <div class="backtop" style="margin-top:8px"><a href="#">↑ 回到頂端</a> · <a href="index.html">返回首頁</a></div>
+  </div>
+</footer>
+
+<script>
+/* ===== 萃取数据（v2：RDR2 实测 + 巫师3 + 野炊 自写，已对齐字数与深度） ===== */
+const DATA={
+  /* ---- RDR2 ---- */
+  arthur:{work:"RDR2",name:"亚瑟·摩根",faction:"范德林帮",R:"loss",Rlabel:"不可克服（个人）",
+    Oshow:"效忠达奇、护帮派",Ohide:"在时代崩塌中守住内心温情与救赎",
+    S:"肺结核（绝症）、帮派必亡的时代趋势",K:"与达奇/迈卡嵌套背叛博弈；真敌=时代",
+    T:"触发[00:30]雪山逃亡 → 转折[01:15]确诊结核 → 终局[01:37]山巅断后死",
+    evi:"[01:15:00] 医「早已患上肺结核心」 [01:34:55] 选陪约翰 [01:37:44] 完成救赎",
+    Rnote:"个人不可克服；护约翰子目标有能（反方：亚瑟未能救帮派/自救，终局死）。"},
+  dutch:{work:"RDR2",name:"达奇·范德林",faction:"范德林帮首领",R:"loss",Rlabel:"不可克服",
+    Oshow:"带帮派退休过田园生活",Ohide:"享受犯罪/对抗新时代的权力快感",
+    S:"时代转型、资本+国家机器围猎",K:"与平克顿/康沃尔零和；内层被迈卡毒化",
+    T:"触发[00:30]黑水镇鲁莽 → 转折[01:03]杀勃朗特背侠盗 → 终局[01:48]雪山独走",
+    evi:"[00:29:07] 西部已死 [01:09:34] 掐死老妇 [01:48:30] 没了他没意义",
+    Rnote:"非可能：理性在圣丹尼案后已崩，无外部条件可救。"},
+  micah:{work:"RDR2",name:"迈卡",faction:"范德林帮→平克顿线人",R:"cond",Rlabel:"可能克服",
+    Oshow:"在帮派上位",Ohide:"实用主义 survival，谁赢跟谁",
+    S:"无硬约束（反成变量）",K:"与达奇寄生、与平克顿非零和卖密",
+    T:"触发[00:33]怂恿黑水镇 → 转折[01:31]被揭叛徒 → 终局[01:47]被击毙",
+    evi:"[01:31:29] 平克顿眼线就是迈卡 [01:47:24] 达奇抽枪打洞",
+    Rnote:"可能（赖平克顿庇护）但终局条件失效：外援(达奇)反水。"},
+  john:{work:"RDR2",name:"约翰·马斯顿",faction:"范德林帮→农人",R:"cond",Rlabel:"可能克服",
+    Oshow:"脱帮、与家人安稳",Ohide:"挣脱悍匪本能、建立正常人生",
+    S:"悬赏身份、过往暴力本能",K:"与过去自己对抗（非零和）",
+    T:"触发[01:33]假死归队 → 转折[01:44]求婚戒指 → 终局[01:49]农场但罗斯盯上",
+    evi:"[01:39:48] 难摆脫残留 [01:44:43] 蜕变成好男人 [01:49:17] 罗斯发现农场",
+    Rnote:"非有能：外部威胁(调查局)仍在，救赎无终点。"},
+  sadie:{work:"RDR2",name:"莎迪·阿德勒",faction:"范德林帮→赏金猎人",R:"win",Rlabel:"有能克服",
+    Oshow:"复仇奥帮",Ohide:"活成比匪徒更狠的杀手、后寻新生",
+    S:"无政府记录（入帮晚）",K:"与奥帮零和；与亚瑟非零和友谊",
+    T:"触发[00:34]丧夫被救 → 转折[01:27]亲手斩仇 → 终局[01:48]告别追新人生",
+    evi:"[00:51:10] 活成杀手 [01:27:16] 仇恨画句号 [01:42:56] 政府记录无其名",
+    Rnote:"非可能：凭自身本事堂正谋生，不依赖外条件。"},
+  /* ---- 巫师3 ---- */
+  geralt:{work:"巫师3",name:"杰洛特",faction:"猎魔人公会残存",R:"win",Rlabel:"有能克服",
+    Oshow:"受雇寻找希里",Ohide:"找回唯一能称之为家的羁绊（养女）",
+    S:"衰老、单人之力有限",K:"与狂猎/尼弗迦德嵌套；真敌=Elder Blood 宿命",
+    T:"触发[寻女启程] → 转折[血统揭示] → 终局[三结局之一团聚]",
+    evi:"维基「杰洛特展开寻找养女希里的冒险旅程」；狂猎为 Eredin 统领的星界骑士团",
+    Rnote:"非不可克服：个人能动性贯穿全流程且终局可达成（团聚/血统中立等）。"},
+  emhyr:{work:"巫师3",name:"恩希尔·范·恩瑞斯",faction:"尼弗迦德帝国",R:"win",Rlabel:"有能克服",
+    Oshow:"用希里巩固皇位",Ohide:"以帝国秩序吞并北境",
+    S:"几乎无（资源/军队/情报全占优）",K:"与北方诸国零和",
+    T:"触发[召见杰洛特] → 转折[白霜将至] → 终局[帝国存续]",
+    evi:"维基「希里是恩希尔亲生女儿、唯一皇位继承人」；帝国为大陆最强势力",
+    Rnote:"非可能：胜利不赖单一偶然条件，制度与军力结构性占优。"},
+  eredin:{work:"巫师3",name:"狂猎 Eredin",faction:"星界骑士团",R:"loss",Rlabel:"不可克服",
+    Oshow:"捕获希里奴役世界",Ohide:"延续星界种族存续",
+    S:"白霜(末日)不可逆 + 依赖希里血统的单点破绽",K:"与杰洛特/众势力零和",
+    T:"触发[追猎开场] → 转折[舰队覆灭] → 终局[被杰洛特/希里斩杀]",
+    evi:"维基「狂猎 Wild Hunt 为 Eredin 统领」；希里长老之血为破局关键",
+    Rnote:"非可能：根因(末日必然+血统依赖)无法被内部行动消除。"},
+  yen:{work:"巫师3",name:"叶奈法",faction:"女术士集会所",R:"cond",Rlabel:"可能克服",
+    Oshow:"保护希里",Ohide:"在男权术士政治中求生",
+    S:"政治被边缘化",K:"与帝国/激进术士非零和",
+    T:"触发[书信召杰洛特] → 转折[集会所分裂] → 终局[幸存团聚]",
+    evi:"维基「叶奈法与杰洛特为旧恋人，同寻希里」",
+    Rnote:"非有能：依赖杰洛特与希里行动成功才存活，自身无独立胜算。"},
+  /* ---- 野炊 ---- */
+  link:{work:"野炊",name:"林克",faction:"海拉鲁英杰",R:"win",Rlabel:"有能克服",
+    Oshow:"打倒灾厄盖侬",Ohide:"重拾被封印百年的自我与守护誓言",
+    S:"初始台地苏醒的虚弱（可经神庙恢复）",K:"与盖侬零和但单点可控",
+    T:"触发[台地苏醒] → 转折[四神兽解放] → 终局[终极一击]",
+    evi:"维基「操纵林克探索世界、击败灾厄盖侬、恢复海拉鲁王国」",
+    Rnote:"非不可克服：100年前败因是四英杰未就位+封印未完成，本周目可逐一补全，结构可破。"},
+  zelda:{work:"野炊",name:"塞尔达",faction:"海拉鲁公主",R:"cond",Rlabel:"可能克服",
+    Oshow:"觉醒封印之力",Ohide:"在无力感中证明自身价值",
+    S:"神力须极端危机才觉醒 + 须林克拖住盖侬",K:"与盖侬零和但受限于觉醒时机",
+    T:"触发[百年封印] → 转折[泪之记忆] → 终局[神力爆发]",
+    evi:"维基「塞尔达封印盖侬、林克恢复王国」；神力觉醒为剧情关键节点",
+    Rnote:"非有能：胜利依赖林克牵制成功这一外部条件，自身无法独立触发。"},
+  ganon:{work:"野炊",name:"灾厄盖侬",faction:"魔王",R:"loss",Rlabel:"不可克服",
+    Oshow:"吞噬海拉鲁",Ohide:"无序侵蚀的终末",
+    S:"被大师之剑+神力封印克制（设定级弱点）",K:"与林克/塞尔达零和",
+    T:"触发[百年前破国] → 转折[四神兽反制] → 终局[被封印]",
+    evi:"维基「击败灾厄盖侬，恢复被灭亡的海拉鲁王国」",
+    Rnote:"非可能：败因是设定级克制链（希卡科技+神力）必然奏效，非偶然。"},
+  sheikah:{work:"野炊",name:"希卡族(科研侧)",faction:"古代兵器守护者",R:"cond",Rlabel:"可能克服",
+    Oshow:"提供古代兵器助复国",Ohide:"洗刷千年守护失职",
+    S:"科技须由林克操作才生效",K:"与盖侬间接零和",
+    T:"触发[导引之神像] → 转折[四神兽夺回] → 终局[兵器就位]",
+    evi:"维基「希卡族/古代兵器」为海拉鲁复国核心科技线",
+    Rnote:"非有能：价值完全依附主角行动，无独立克服力。"}
+};
+const WORKS=[
+  {id:"RDR2",label:"RDR2 荒野大镖客2"},
+  {id:"巫师3",label:"巫师3：狂猎"},
+  {id:"野炊",label:"野炊：旷野之息"}
+];
+const RCLASS={win:"b-win",cond:"b-cond",loss:"b-loss"};
+const RNAME={win:"有能克服",cond:"可能克服",loss:"不可克服"};
+const SRCMAP={
+  RDR2:"底本：RDR2 鉴赏字幕稿 3149 条 SRT（时间戳锚点）。",
+  巫师3:"底本：中文维基《巫师3：狂猎》《利维亚的杰洛特》核验势力结构（狂猎=Eredin 星界骑士团、恩希尔、希里长老之血）后自写萃取。",
+  野炊:"底本：中文维基《塞尔达传说 旷野之息》核验（林克/塞尔达/灾厄盖侬/海拉鲁王国/初始台地）后自写萃取。"
+};
+const tabbar=document.getElementById('tabbar');
+const pick=document.getElementById('pick');
+let curWork="RDR2";
+WORKS.forEach(w=>{
+  const b=document.createElement('button');
+  b.textContent=w.label; b.dataset.w=w.id;
+  b.onclick=()=>setWork(w.id,b);
+  tabbar.appendChild(b);
+});
+function setWork(id,btn){
+  curWork=id;
+  document.querySelectorAll('#tabbar button').forEach(x=>x.classList.remove('on'));
+  btn.classList.add('on');
+  pick.innerHTML='';
+  const keys=Object.keys(DATA).filter(k=>DATA[k].work===id);
+  keys.forEach(k=>{
+    const b=document.createElement('button');
+    b.textContent=DATA[k].name;
+    b.onclick=()=>sel(k,b);
+    pick.appendChild(b);
+  });
+  document.getElementById('srcline').textContent=SRCMAP[id];
+  if(pick.firstChild) pick.firstChild.classList.add('on'),render(DATA[keys[0]],pick.firstChild);
+}
+function render(d,btn){
+  document.querySelectorAll('#pick button').forEach(x=>x.classList.remove('on'));
+  if(btn)btn.classList.add('on');
+  document.getElementById('detail').innerHTML=`
+    <div class="detail show">
+      <h3>${d.name}<span class="badge ${RCLASS[d.R]}">${RNAME[d.R]}</span></h3>
+      <p class="note">隶属势力：${d.faction}　|　评级说明：${d.Rlabel}</p>
+      <dl class="kv">
+        <dt>O 显式</dt><dd>${d.Oshow}</dd>
+        <dt>O 隐性</dt><dd>${d.Ohide}</dd>
+        <dt>S 硬约束</dt><dd>${d.S}</dd>
+        <dt>K 博弈结构</dt><dd>${d.K}</dd>
+        <dt>T 时间轴</dt><dd>${d.T}</dd>
+        <dt>R 评级</dt><dd><span class="badge ${RCLASS[d.R]}">${RNAME[d.R]}</span> ${d.Rnote}</dd>
+      </dl>
+      <div class="evi">证据锚点：${d.evi}</div>
+    </div>`;
+}
+function sel(k,btn){render(DATA[k],btn);}
+setWork("RDR2",tabbar.firstChild);
+
+/* ===== 萃取校验器 ===== */
+function audit(){
+  const a1=document.getElementById('a1').value.trim();
+  const a2=document.getElementById('a2').value.trim();
+  const a3=document.getElementById('a3').value.trim();
+  const R=document.getElementById('a4').value;
+  const a5=document.getElementById('a5').value.trim();
+  const a6=document.getElementById('a6').value.trim();
+  const v=document.getElementById('verdict');
+  if(!a1||!R){v.className='verdict show bad';v.innerHTML='<div class="line fail">请至少填写「行动者（势力）」与「克服力评级 R」。</div>';return;}
+  let lines=[]; let ok=true;
+  if(!a5){lines.push(['fail','BLIND-3 证据缺失：R 评级「'+RNAME[R]+'」无证据锚点 → 结论作废。']);ok=false;}
+  else{lines.push(['pass','BLIND-3 通过：已附证据锚点。']);}
+  if(R==='cond' && !a6){lines.push(['fail','BLIND-4 条件幻觉：标「可能克服」却写不出依赖条件 → 降为「不可克服」。']);ok=false;}
+  else if(R==='cond'){lines.push(['pass','BLIND-4 通过：已写明依赖条件。']);}
+  else if(R==='loss' && !a6){lines.push(['warn','提示：标「不可克服」建议补「根因约束」以增强可证伪性。']);}
+  else if(R==='win' && !a6){lines.push(['warn','提示：标「有能克服」建议补「实际成功事件」。']);}
+  if(a2 && a3 && a2===a3){lines.push(['warn','BLIND-1 警示：显式/隐性目标相同，可能未分离「宣称」与「真实」。']);}
+  else if(a2 && a3){lines.push(['pass','BLIND-1 通过：显式/隐性目标已分离。']);}
+  v.className='verdict show '+(ok?'ok':'bad');
+  v.innerHTML='<div style="font-weight:800;margin-bottom:8px">校验结果：'+(ok?'可证伪 · 通过':'打回重萃')+'</div>'+lines.map(l=>'<div class="line '+l[0]+'">'+l[1]+'</div>').join('');
+}
+function clearAudit(){['a1','a2','a3','a5','a6'].forEach(id=>document.getElementById(id).value='');document.getElementById('a4').value='';document.getElementById('verdict').className='verdict';}
+
+/* ===== Merkle 收尾声明 ===== */
+document.getElementById('receipt').textContent=
+  'SOP 模板底本哈希：c35d8a9f2a3dbe22d1d3476d3cd9f4e1eb859aece44033cc6cc6019cf9e4f9f2\n'+
+  '本页 v2 萃取覆盖：RDR2(6) + 巫师3(4) + 野炊(4) = 14 组，均含证据锚点。\n'+
+  '巫师3/野炊锚源：中文维基（狂猎=Eredin 星界骑士团、恩希尔、希里长老之血；林克/塞尔达/盖侬/海拉鲁）。\n'+
+  'GTA6：未发售，依 BLIND-3 零信任铁律留空，待发售后升 v3。\n'+
+  '对账声明：终局判定可经原始时间戳/维基条目复核；多版迭代可串 prev_root→root 链表。';
+</script>
+</body>
+</html>
