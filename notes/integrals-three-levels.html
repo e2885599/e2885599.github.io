@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>積分的三層次詮釋 — 從幾何面積到累積機器</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]});"></script>
+<style>
+  :root{
+    --bg:#0e1117; --panel:#161b22; --ink:#e6e6e6; --muted:#9aa4b2;
+    --accent:#7ee787; --accent2:#79c0ff; --accent3:#ffa657; --line:#30363d;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans CJK TC","Microsoft JhengHei",-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.8;font-size:17px}
+  header{padding:48px 20px 28px;text-align:center;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#10231a,#0e1117)}
+  header h1{margin:0 0 10px;font-size:30px;color:var(--accent)}
+  header p{margin:4px 0;color:var(--muted)}
+  main{max-width:880px;margin:0 auto;padding:24px 18px 80px}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 22px;margin:26px 0}
+  .toc a{color:var(--accent2);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  section{margin:40px 0;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:26px 28px}
+  h2{color:var(--accent);border-left:4px solid var(--accent);padding-left:12px;margin-top:4px}
+  h3{color:var(--accent2);margin-top:26px}
+  .lv{display:inline-block;background:var(--accent);color:#0e1117;font-weight:700;
+    border-radius:6px;padding:2px 10px;font-size:14px;margin-right:8px}
+  .formula{background:#0b0f14;border:1px solid var(--line);border-radius:10px;
+    padding:14px 18px;margin:14px 0;overflow-x:auto}
+  .diagram{background:#0b0f14; border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin:16px 0;text-align:center}
+  .diagram svg{width:100%;max-width:560px;height:auto;background:#0d141c;border-radius:8px}
+  .cap{color:var(--muted);font-size:14px;margin-top:6px}
+  table{width:100%;border-collapse:collapse;margin:16px 0}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#10231a;color:var(--accent)}
+  .note{background:#1c1408;border:1px solid #4d3a12;border-radius:10px;padding:12px 16px;color:#ffd9a0;font-size:15px}
+  .challenge{background:#0d1b2a;border:1px solid #1f3a52;border-radius:10px;padding:12px 16px;margin:12px 0}
+  .challenge b{color:var(--accent3)}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 10px 50px;border-top:1px solid var(--line)}
+  code{background:#0b0f14;padding:1px 6px;border-radius:4px;color:#ffa657}
+</style>
+</head>
+<body>
+<header>
+  <h1>積分的三層次詮釋</h1>
+  <p>從幾何面積、反微分運算，到「累積機器」——如何一眼讀懂滿是積分號的式子</p>
+  <p style="font-size:13px">本筆記由影片字幕轉寫整理（繁中 + 公式 + 圖解）</p>
+</header>
+
+<main>
+
+<div class="toc">
+  <b style="color:var(--accent2)">目錄</b>
+  <ol>
+    <li><a href="#overview">總覽：三層次對照</a></li>
+    <li><a href="#lv1">層次一 · 幾何面積（量測空間）</a></li>
+    <li><a href="#lv2">層次二 · 反微分（在數學空間間導航）</a></li>
+    <li><a href="#lv3">層次三 · 累積機器（統合前兩者）</a></li>
+    <li><a href="#apps">應用挑戰：積分到底在累積什麼？</a></li>
+  </ol>
+</div>
+
+<section id="overview">
+  <h2>總覽：三層次對照</h2>
+  <p>影片指出：真正掌握微積分（乃至大部分高級數學與物理）的標誌，是看到一串積分式時，立刻知道它在「說什麼」。為此可把積分解讀為三個層次：</p>
+  <table>
+    <tr><th>層次</th><th>核心直覺</th><th>關鍵問題</th></tr>
+    <tr><td><span class="lv">層次一</span>幾何</td><td>積分 = 曲線下面積 / 立體體積 / 路徑長度</td><td>它在量測哪一種「空間」？</td></tr>
+    <tr><td><span class="lv">層次二</span>反微分</td><td>積分 = 微分的逆運算（在函數空間間導航）</td><td>它從哪個函數重建出哪個函數？</td></tr>
+    <tr><td><span class="lv">層次三</span>累積</td><td>積分是「累積機器」：把無限多無限小的局部貢獻，收斂成一個全域量</td><td>它在把什麼「局部資訊」加總成「全域資訊」？</td></tr>
+  </table>
+  <p class="note">重點：層次一與層次二表面看來毫不相干，但層次三指出它們是「同一個原理（累積）的兩種面貌」——這是三層次真正的連結。</p>
+</section>
+
+<section id="lv1">
+  <h2><span class="lv">層次一</span>積分作為幾何量測</h2>
+  <p>積分最直覺的讀法，是把它看成<strong>曲線下的面積</strong>、<strong>立體的體積</strong>、或<strong>路徑的長度</strong>。這個定義之所以強大，是因為它緊扣我們對三維世界的物理直覺：我們能沿著路徑走、能粉刷牆面、能把容器注滿水。</p>
+
+  <h3>黎曼和 → 極限 → 積分符號</h3>
+  <p>技術上，作法是：用許多矩形「填滿」函數 \(f(x)\) 下方的面積，得到形狀的近似；把每個矩形面積相加（矩形面積公式），這稱為<strong>黎曼和（Riemann sum）</strong>。</p>
+  <div class="formula">
+    \[ \sum_{i=1}^{n} f(x_i)\,\Delta x \quad \xrightarrow[\ n\to\infty\ ]{\ \Delta x\to 0\ }\quad \int_a^b f(x)\,dx \]
+  </div>
+  <p>取極限：讓 \(\Delta x\) 變成「無窮小」並記為 \(dx\)，同時讓矩形數量 \(n\) 趨於無窮大。此時離散的加總消失，變成連續的求和——長程階梯的「下一階與上一階距離趨近零」。求和符號 \(\Sigma\)（拉長的 S，意為 sum）因此被積分符號 \(\int\)（同樣源自「sum」）取代。</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 560 240" xmlns="http://www.w3.org/2000/svg">
+      <!-- 座標軸 -->
+      <line x1="40" y1="200" x2="540" y2="200" stroke="#9aa4b2" stroke-width="1.5"/>
+      <line x1="40" y1="200" x2="40" y2="20" stroke="#9aa4b2" stroke-width="1.5"/>
+      <text x="528" y="216" fill="#9aa4b2" font-size="12">x</text>
+      <!-- 曲線 -->
+      <path d="M40,200 C140,200 160,80 280,70 C400,60 440,120 540,40" fill="none" stroke="#7ee787" stroke-width="2.5"/>
+      <!-- 矩形近似 -->
+      <g fill="#79c0ff" fill-opacity="0.35" stroke="#79c0ff" stroke-width="1">
+        <rect x="60"  y="170" width="34" height="30"/>
+        <rect x="94"  y="150" width="34" height="50"/>
+        <rect x="128" y="128" width="34" height="72"/>
+        <rect x="162" y="108" width="34" height="92"/>
+        <rect x="196" y="92"  width="34" height="108"/>
+        <rect x="230" y="80"  width="34" height="120"/>
+        <rect x="264" y="72"  width="34" height="128"/>
+        <rect x="298" y="74"  width="34" height="126"/>
+        <rect x="332" y="82"  width="34" height="118"/>
+        <rect x="366" y="96"  width="34" height="104"/>
+        <rect x="400" y="112" width="34" height="88"/>
+        <rect x="434" y="106" width="34" height="94"/>
+        <rect x="468" y="90"  width="34" height="110"/>
+      </g>
+      <text x="280" y="232" fill="#e6e6e6" font-size="13" text-anchor="middle">黎曼和：用矩形面積近似曲線下面積</text>
+    </svg>
+    <div class="cap">圖 1 · 層次一：矩形填滿 → 取極限 → 面積</div>
+  </div>
+
+  <h3>路徑長度（弧長積分）</h3>
+  <p>算路徑長時，我們不用二維的矩形，而用一維的「線段」。對每個小直角三角形，用畢氏定理求斜邊：水平腿為 \(\Delta x\)，垂直腿為函數輸出的差（下一個縱向步進）。</p>
+  <div class="formula">
+    \[ \text{小段長} = \sqrt{(\Delta x)^2 + (\Delta y)^2} = \Delta x\,\sqrt{1+\left(\frac{\Delta y}{\Delta x}\right)^2} \]
+    \[ \lim_{\Delta x\to 0} \sum \Delta x\sqrt{1+\left(\frac{\Delta y}{\Delta x}\right)^2}
+       \;=\; \int_a^b \sqrt{1+\bigl(f'(x)\bigr)^2}\,dx \]
+  </div>
+  <p>關鍵：必須把 \(\Delta x\) 提出來，讓和式回到「函數 × 區間 \(\Delta x\)」的標準黎曼和形式。取極限後，\(\frac{\Delta y}{\Delta x}\) 依定義變成導數 \(f'(x)\)，於是得到<strong>弧長積分</strong>。</p>
+
+  <div class="diagram">
+    <svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg">
+      <line x1="40" y1="180" x2="540" y2="180" stroke="#9aa4b2" stroke-width="1.5"/>
+      <path d="M60,160 C140,150 160,60 260,70 C360,80 400,140 520,50" fill="none" stroke="#7ee787" stroke-width="2.5"/>
+      <!-- 分段斜邊 -->
+      <g stroke="#ffa657" stroke-width="2" fill="none">
+        <path d="M60,160 L120,142"/>
+        <path d="M120,142 L180,96"/>
+        <path d="M180,96 L240,78"/>
+        <path d="M240,78 L300,84"/>
+        <path d="M300,84 L360,108"/>
+        <path d="M360,108 L420,132"/>
+        <path d="M420,132 L480,90"/>
+        <path d="M480,90 L520,50"/>
+      </g>
+      <!-- 直角三角形示意 -->
+      <g stroke="#79c0ff" stroke-width="1" fill="none" opacity="0.8">
+        <path d="M120,142 L120,160 L60,160 Z"/>
+        <path d="M180,96 L180,142 L120,142 Z"/>
+      </g>
+      <text x="280" y="210" fill="#e6e6e6" font-size="13" text-anchor="middle">弧長：用斜邊（畢氏定理）逐段近似曲線</text>
+    </svg>
+    <div class="cap">圖 2 · 層次一：一維線段累加 → 路徑長度</div>
+  </div>
+
+  <h3>雙重與三重積分</h3>
+  <p>二重積分可表示<strong>表面積</strong>，三重積分可表示<strong>體積</strong>；推廣下去可談超體積（hypervolume）。經驗法則：量面積常出現二重積分、量體積常出現三重積分——但這不絕對，積分的「重數」取決於物件如何被描述、以及我們對哪些變數積分（多變量微積分的主題）。</p>
+  <div class="formula">
+    \[ \iint_D dA \;\text{（面積）} \qquad \iiint_V f(x,y,z)\,dV \;\text{（體積）} \]
+  </div>
+  <p>體積的直覺：用許多微小<strong>矩形柱</strong>填滿曲面下的區域。每根柱底面積為 \(\Delta x\,\Delta y\)、高度為 \(f(x_i,y_j)\)，體積即兩者相乘；把所有微小體積加總並取極限，即得三重積分。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 560 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- 底面網格 -->
+      <g stroke="#30363d" stroke-width="1">
+        <line x1="120" y1="120" x2="320" y2="120"/><line x1="120" y1="150" x2="320" y2="150"/>
+        <line x1="120" y1="180" x2="320" y2="180"/>
+        <line x1="120" y1="120" x2="120" y2="180"/><line x1="180" y1="120" x2="180" y2="180"/>
+        <line x1="240" y1="120" x2="240" y2="180"/><line x1="300" y1="120" x2="300" y2="180"/>
+      </g>
+      <!-- 柱體 -->
+      <g fill="#79c0ff" fill-opacity="0.4" stroke="#79c0ff" stroke-width="1">
+        <rect x="180" y="78" width="60" height="42"/>
+        <rect x="240" y="60" width="60" height="60"/>
+      </g>
+      <path d="M120,120 C200,60 260,60 320,90" fill="none" stroke="#7ee787" stroke-width="2.5"/>
+      <text x="280" y="210" fill="#e6e6e6" font-size="13" text-anchor="middle">體積：矩形柱（底面 ΔxΔy × 高 f）累加</text>
+    </svg>
+    <div class="cap">圖 3 · 層次一：微小柱體累加 → 體積</div>
+  </div>
+
+  <h3>反例：不是所有積分都量測「物理空間」</h3>
+  <p>影片給了一個關鍵反例：</p>
+  <div class="formula">
+    \[ \int_0^5 g\,dt \qquad (g\approx 9.8\ \text{m/s}^2\text{ 為地表重力加速度，}t\text{ 為時間}) \]
+  </div>
+  <p>這可以「解讀」成常數重力那條水平線下的面積，但那<strong>不是物理空間</strong>。這個積分的結果酷多了：它給出一個原本靜止、在重力下自由落體 5 秒（以秒計時）後<strong>獲得的速度</strong>，即 \(g\times 5 = 49\ \text{m/s}\)。這就把我們帶到層次二。</p>
+</section>
+
+<section id="lv2">
+  <h2><span class="lv">層次二</span>積分作為導航（反微分）</h2>
+  <p>第二種讀法與幾何無關，而是把積分視為<strong>在數學空間之間導航</strong>的運算：它能從一個函數重建出另一個函數，使我們得以借用某一數學分支的資訊去研究另一分支。</p>
+
+  <h3>物理鏈：微分與積分互逆</h3>
+  <p>從物理直覺出發：位移對時間的導數是速度；速度的導數是加速度。反過來，加速度的積分是速度、速度的積分是位移。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 560 150" xmlns="http://www.w3.org/2000/svg">
+      <!-- 微分方向（上，向右） -->
+      <text x="280" y="36" fill="#7ee787" font-size="13" text-anchor="middle">微分（向下游 / 取導數）</text>
+      <g fill="#0d1b2a" stroke="#79c0ff" stroke-width="2">
+        <rect x="40"  y="55" width="120" height="38" rx="6"/><rect x="220" y="55" width="120" height="38" rx="6"/>
+        <rect x="400" y="55" width="120" height="38" rx="6"/>
+      </g>
+      <text x="100" y="79" fill="#e6e6e6" font-size="14" text-anchor="middle">位移 s</text>
+      <text x="280" y="79" fill="#e6e6e6" font-size="14" text-anchor="middle">速度 v</text>
+      <text x="460" y="79" fill="#e6e6e6" font-size="14" text-anchor="middle">加速度 a</text>
+      <g stroke="#79c0ff" stroke-width="2" marker-end="url(#arr)">
+        <line x1="160" y1="74" x2="218" y2="74"/><line x1="340" y1="74" x2="398" y2="74"/>
+      </g>
+      <!-- 積分方向（下，向左） -->
+      <g fill="#10231a" stroke="#7ee787" stroke-width="2">
+        <rect x="40"  y="105" width="120" height="38" rx="6"/><rect x="220" y="105" width="120" height="38" rx="6"/>
+        <rect x="400" y="105" width="120" height="38" rx="6"/>
+      </g>
+      <text x="100" y="129" fill="#e6e6e6" font-size="14" text-anchor="middle">阿布塞門</text>
+      <text x="280" y="129" fill="#e6e6e6" font-size="14" text-anchor="middle">位移 s</text>
+      <text x="460" y="129" fill="#e6e6e6" font-size="14" text-anchor="middle">速度 v</text>
+      <g stroke="#7ee787" stroke-width="2" marker-end="url(#arr2)">
+        <line x1="398" y1="124" x2="342" y2="124"/><line x1="218" y1="124" x2="162" y2="124"/>
+      </g>
+      <text x="280" y="148" fill="#ffa657" font-size="12" text-anchor="middle">積分（向上游 / 反微分）↩</text>
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#79c0ff"/></marker>
+        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#7ee787"/></marker>
+      </defs>
+    </svg>
+    <div class="cap">圖 4 · 層次二：微分與積分是互逆的「導航運算」</div>
+  </div>
+  <p>若加速度恆為常數，其導數為零，後續所有導數也都是零。但若加速度在變（例如車子突然踩煞車），則加速度的導數是一個非零函數，物理上稱為 <strong>jerk（急動度）</strong>。繼續微分：jerk → snap → crackle → pop …。反向積分則：位移的積分是 <strong>absement（阿布塞門，absence + displacement 的組合詞）</strong>。</p>
+  <div class="challenge"><b>阿布塞門範例：</b>物體距你 10 m 靜止不動。停留 1 秒 → absement = 10 m × 1 s = 10 m·s；停留 10 秒 → 10 m × 10 s = 100 m·s。即便物體從未移動，它的 absement 仍持續增加——它衡量「物件離原點多遠、持續了多久」。</div>
+  <p class="note">影片口播把 absement 念成 absent / absolut / absolute 等口誤，正確術語為 <b>absement（阿布塞門）</b>，即位移對時間的積分。</p>
+
+  <h3>微積分基本定理</h3>
+  <p>層次二的關係由微積分最基本定理形式化：積分「反轉」微分。</p>
+  <div class="formula">
+    \[ \int_a^b f'(x)\,dx = f(b) - f(a) \]
+  </div>
+  <p>我們從 \(f\) 的導數出發，積分後得到原函數 \(f\) 在區間兩端的值之差。但注意：\(\frac{d}{dx}f(x)=f'(x)\)，而 \(\frac{d}{dx}[f(x)+1]=f'(x)\)、\(\frac{d}{dx}[f(x)-3.4]=f'(x)\) 也都成立——任何常數 \(C\) 的微分皆為零。</p>
+
+  <h3>定積分 vs 不定積分</h3>
+  <p>因為積分是微分的逆，對 \(f'(x)\) 積分<strong>且不指定區間</strong>時，會得到一整個「函數家族」（差一個常數）：</p>
+  <div class="formula">
+    \[ \int f'(x)\,dx = f(x) + C \qquad\text{（不定積分：區間有自由度）} \]
+    \[ \int_a^b f'(x)\,dx = f(b)-f(a) \qquad\text{（定積分：常數在相減中抵消）} \]
+  </div>
+  <p>一旦定義了積分區間，常數便在「終值減初值」中抵消，剩下原函數輸出的差。這是數學函數整體的性質，不限於物理函數。</p>
+</section>
+
+<section id="lv3">
+  <h2><span class="lv">層次三</span>積分作為累積機器</h2>
+  <p>層次三點出三者的連結：<strong>積分本質上是一台累積機器</strong>——它把無限多個無限小的局部貢獻，結合成一個全域量。它是一種「把局部資訊轉成全域資訊」的方法。</p>
+  <ul>
+    <li>層次一：我們累積微小<strong>面積</strong>，重建出區域總面積。</li>
+    <li>層次二：我們累積瞬時<strong>變化率</strong>，重建出原函數。</li>
+    <li>兩者皆為同一原理——<strong>累積（accumulation）</strong>——的兩種表現。</li>
+  </ul>
+
+  <h3>與序列、級數的類比</h3>
+  <p>研究累積最好的方法之一是<strong>序列（sequence）</strong>與<strong>級數（series）</strong>。序列是有序的數列；級數把這些數<strong>相加</strong>起來。某些級數<strong>收斂</strong>，某些<strong>發散</strong>。積分建立在完全相同的想法上：差別只在於我們相加的不是孤立的數，而是無限多個無限小的量。</p>
+  <div class="formula">
+    \[ \text{有限和} \;\to\; \text{讓小塊越變越小、數量無界增加} \;\to\;
+    \begin{cases}
+    \text{趨近有限值} \Rightarrow \text{積分收斂，該值即所求量}\\
+    \text{不收斂到單一有限值} \Rightarrow \text{積分發散（如同無窮級數發散）}
+    \end{cases} \]
+  </div>
+
+  <h3>流體力學的直覺</h3>
+  <p>把積分想成流體很有幫助：流體看起來完全連續，但微觀上由海量離散微小粒子組成。為求總質量，我們把流體切成無限小的體積元（如小立方體），每個元有微小質量 \(dm = \rho\,dV\)（\(\rho\) 為局部密度）。把這些微小質量在整個流體上加總：</p>
+  <div class="formula">
+    \[ m(V) = \int_V \rho\,dV \qquad\text{（不定區域 V 時，得到依所選體積而變的函數 }m(V)\text{）} \]
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 560 200" xmlns="http://www.w3.org/2000/svg">
+      <g fill="#79c0ff" fill-opacity="0.5" stroke="#79c0ff" stroke-width="1">
+        <rect x="60" y="60" width="26" height="26"/><rect x="92" y="60" width="26" height="26"/>
+        <rect x="124" y="60" width="26" height="26"/><rect x="76" y="92" width="26" height="26"/>
+        <rect x="108" y="92" width="26" height="26"/><rect x="140" y="92" width="26" height="26"/>
+        <rect x="60" y="124" width="26" height="26"/><rect x="92" y="124" width="26" height="26"/>
+        <rect x="124" y="124" width="26" height="26"/>
+      </g>
+      <line x1="200" y1="100" x2="300" y2="100" stroke="#9aa4b2" stroke-width="2" marker-end="url(#arr3)"/>
+      <rect x="320" y="55" width="180" height="90" rx="10" fill="#10231a" stroke="#7ee787" stroke-width="2"/>
+      <text x="410" y="98" fill="#e6e6e6" font-size="15" text-anchor="middle">總質量 m</text>
+      <text x="410" y="122" fill="#9aa4b2" font-size="12" text-anchor="middle">= Σ dm</text>
+      <text x="280" y="180" fill="#e6e6e6" font-size="13" text-anchor="middle">離散粒子（局部 dm）→ 累加 → 全域質量 m</text>
+      <defs><marker id="arr3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+        <path d="M0,0 L6,3 L0,6 Z" fill="#9aa4b2"/></marker></defs>
+    </svg>
+    <div class="cap">圖 5 · 層次三：局部微小量累加 → 全域量（流體質量）</div>
+  </div>
+</section>
+
+<section id="apps">
+  <h2>應用挑戰：積分到底在累積什麼？</h2>
+  <p>影片最後的挑戰——在每個例子裡，辨認出「積分究竟在累積哪個量」：</p>
+
+  <div class="challenge">
+    <b>① 總電荷：</b>帶電物體中，每個微小體積元 \(dV\) 含小量電荷，由局部電荷密度 \(\rho(x,y,z)\) 決定。把物體內所有無限小電荷累加，三重積分重建出<strong>總電荷 \(Q\)</strong>：
+    \[ Q = \iiint \rho(x,y,z)\,dV \]
+  </div>
+
+  <div class="challenge">
+    <b>② 常態分佈的機率：</b>明日氣溫 \(T\) 不確定；若 \(f\) 描述所有可能氣溫的機率密度，則氣溫落在 60° 到 70° 之間的機率為：
+    \[ P(60\le T\le 70) = \int_{60}^{70} f(T)\,dT \]
+    積分累積了 60° 到 70° 間每個可能溫度對應的微小機率，結果可能是例如 80%。
+  </div>
+
+  <div class="challenge">
+    <b>③ 火箭燃料消耗：</b>燃燒率 \(\dot m(t)\) 告訴我們在時刻 \(t\) 每秒燒掉多少質量（如磅）。從 \(t_0\) 積分到 \(t_1\) 得到<strong>總耗油量</strong>；再從初始燃料質量 \(m_0\) 扣掉累積消耗量，即為時刻 \(t\) 的<strong>剩餘燃料</strong>，可估計火箭何時燃料耗盡：
+    \[ \text{總耗油} = \int_{t_0}^{t_1} \dot m(t)\,dt,\qquad m_{\text{剩餘}}(t)=m_0-\int_{t_0}^{t}\dot m(\tau)\,d\tau \]
+  </div>
+
+  <h3>三層次總結</h3>
+  <table>
+    <tr><th>層次</th><th>一句話</th><th>積分在累積什麼</th></tr>
+    <tr><td>一 · 幾何</td><td>量測曲線長、面積、體積</td><td>微小面積 / 長度 / 體積元</td></tr>
+    <tr><td>二 · 反微分</td><td>微分的逆運算</td><td>瞬時變化率 → 原函數</td></tr>
+    <tr><td>三 · 累積</td><td>局部資訊 → 全域資訊</td><td>無限多無限小貢獻 → 單一全域量</td></tr>
+  </table>
+  <p class="note">核心訊息：若每次算積分都得回到定義算極限，會是場噩夢——所以才有各種解析技巧（代換、分部、部分分式等）。熟練三層次詮釋，才能在看到積分式時「一眼讀懂它在說什麼」。</p>
+</section>
+
+</main>
+
+<footer>
+  本頁為影片字幕轉寫筆記 · 公式以 KaTeX 渲染 · 圖解為內聯 SVG · 單檔自包含，可離線開啟或部署至 GitHub Pages。
+</footer>
+</body>
+</html>
