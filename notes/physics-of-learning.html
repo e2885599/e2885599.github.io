@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>學習的物理學 — 給主管看的 AI 成本與可行性白話解讀</title>
+<meta name="description" content="OODAV LAB 技術筆記（主管版）：用物理學視角白話拆解深度學習為什麼貴、為什麼有時不值那個價、以及『混合成本』與『可合算維度』如何幫你判斷一筆 AI 投資該不該花。含 4 幅內聯 SVG 架構圖與可證偽查核。">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]});"></script>
+<style>
+  :root{
+    --bg:#060912; --panel:#0d1422; --ink:#e7eefb; --muted:#92a6c4; --muted2:#6c809e;
+    --cyan:#36e0d4; --violet:#8b6cff; --amber:#ffb347; --red:#ff5d6c;
+    --accent:#36e0d4; --accent2:#8b6cff; --accent3:#ffb347; --line:#26395c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans CJK TC","Microsoft JhengHei",-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.9;font-size:17px}
+  header{padding:48px 20px 28px;text-align:center;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0e1a2e,#060912)}
+  header h1{margin:0 0 10px;font-size:30px;color:var(--cyan)}
+  header p{margin:4px 0;color:var(--muted)}
+  .src{font-size:13px;color:var(--muted2)}
+  .who{font-size:14px;color:var(--amber);margin-top:8px}
+  main{max-width:920px;margin:0 auto;padding:24px 18px 80px}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 22px;margin:26px 0}
+  .toc a{color:var(--accent2);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  section{margin:40px 0;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:26px 28px}
+  h2{color:var(--accent);border-left:4px solid var(--accent);padding-left:12px;margin-top:4px}
+  h3{color:var(--accent2);margin-top:26px}
+  .tag{display:inline-block;background:var(--accent);color:#04121a;font-weight:700;
+    border-radius:6px;padding:2px 10px;font-size:13px;margin-right:8px}
+  .formula{background:#04070e;border:1px solid var(--line);border-radius:10px;
+    padding:14px 18px;margin:14px 0;overflow-x:auto}
+  .diagram{background:#04070e; border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin:16px 0;text-align:center}
+  .diagram svg{width:100%;max-width:640px;height:auto;background:#0a1020;border-radius:8px}
+  .cap{color:var(--muted);font-size:14px;margin-top:6px}
+  table{width:100%;border-collapse:collapse;margin:16px 0}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#0e1a2e;color:var(--accent)}
+  .note{background:#1c1408;border:1px solid #4d3a12;border-radius:10px;padding:12px 16px;color:#ffd9a0;font-size:15px}
+  .claim{background:#0d1b2a;border:1px solid #1f3a52;border-radius:10px;padding:12px 16px;margin:12px 0}
+  .claim b{color:var(--amber)}
+  .falsi{background:#0d1422;border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0}
+  .falsi b{color:var(--red)}
+  .verify{background:#0e1a2e;border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0}
+  .verify b{color:var(--cyan)}
+  .boss{background:linear-gradient(135deg,rgba(139,108,255,.14),rgba(255,179,71,.12));
+    border:1px solid var(--line2);border-radius:12px;padding:16px 20px;margin:18px 0}
+  .boss b{color:var(--amber)}
+  .boss .lbl{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--violet);
+    border:1px solid rgba(139,108,255,.4);border-radius:999px;padding:2px 10px;margin-bottom:8px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 10px 50px;border-top:1px solid var(--line)}
+  code{background:#04070e;padding:1px 6px;border-radius:4px;color:#ffb347}
+  .q{background:linear-gradient(135deg,rgba(139,108,255,.14),rgba(54,224,212,.14));
+    border:1px solid var(--line2);border-radius:12px;padding:18px 22px;margin:26px 0;color:var(--ink)}
+  .q b{color:var(--violet)}
+</style>
+</head>
+<body>
+<header>
+  <h1>學習的物理學：給主管看的 AI 成本與可行性白話解讀</h1>
+  <p>為什麼大模型這麼貴、什麼時候花這筆錢才划算、以及「混合成本」與「可合算維度」怎麼幫你簽核</p>
+  <p class="src">技術筆記（主管導向版）· 整理自 Matthieu Wyart（EPFL / Johns Hopkins）訪談與其團隊論文</p>
+  <p class="who">適讀對象：25–40 歲、需為 AI 專案簽核或選型的主管 · 繁中 + 大白話 + 4 幅架構圖 + 可證偽查核</p>
+</header>
+
+<main>
+
+<div class="toc">
+  <b style="color:var(--accent2)">目錄</b>
+  <ol>
+    <li><a href="#why">為什麼主管要懂「學習的物理學」</a></li>
+    <li><a href="#curse">一、維度詛咒：為什麼資料永遠不夠，又為什麼其實夠</a></li>
+    <li><a href="#jamming">二、雙重下降＝堵塞相變：模型不是越大越好，是「過了門檻才通」</a></li>
+    <li><a href="#abstraction">三、深網為什麼能自學規則：你買的不是算力，是「隱含偏置」</a></li>
+    <li><a href="#latent">四、預測潛空間更省錢：同樣效果，樣本少一大截</a></li>
+    <li><a href="#scaling">五、縮放定律：堆錢買算力的回報，是可被預測的</a></li>
+    <li><a href="#cost">六、混合成本與可合算維度（主管重點）</a></li>
+    <li><a href="#falsify">七、可證偽性查核（含成本維度）</a></li>
+    <li><a href="#qa">八、給主管的三個簽核反向提問</a></li>
+  </ol>
+</div>
+
+<section id="why">
+  <h2>為什麼主管要懂「學習的物理學」</h2>
+  <p>你不需要會寫神經網路，但你需要一套<b>判斷「這筆 AI 預算該不該花」的框架</b>。市面上的說法常兩極：一端是「上大模型就對了，越大越聰明」；另一端是「AI 都是鏟雪車，別浪費錢」。兩端都太粗，簽下去很容易變成冤枉錢。</p>
+  <p>物理學家 Matthieu Wyart 的價值在於：他不用信仰說話，而是把這些現象變成<b>可計算、可預測、可被數據打臉</b>的模型。本筆記把他的論點翻成主管語言——重點不是「AI 多神」，而是三件事：<b>①它什麼時候貴得有道理；②什麼時候只是貴；③你手上的問題到底落在哪一段。</b></p>
+  <div class="boss">
+    <span class="lbl">主管一句話帶走</span>
+    <p><b>AI 的「聰明」不是均勻分佈的。同樣砸一筆錢，落在「已過相變門檻」的任務上值回票價，落在「還在卡住區」的任務上只是把錢燒成熱。關鍵是先判斷你的問題屬於哪一類，再決定預算形狀。</b></p>
+  </div>
+</section>
+
+<section id="curse">
+  <h2>一、維度詛咒：為什麼資料永遠不夠，又為什麼其實夠</h2>
+  <p>先講一個直覺陷阱。一張圖有 <code>D</code> 個像素、一句話有 <code>D</code> 個詞，那「所有可能的輸入」數量會隨維度<b>指數爆炸</b>（約 <code>L^D</code>）。白話說：就算你給模型一兆筆資料，攤在這個超巨大空間裡，每兩筆之間還是隔得老遠。如果資料是「均勻亂撒」的，數學上可證：模型根本無法外推，你需要比全宇宙原子還多的資料才夠——這叫<b>維度詛咒</b>。</p>
+  <p>那為什麼現實中的 AI 還是學得動？因為<b>真實資料不是亂撒的，是有階層結構的</b>。就像一張「街道」照片：底層是幾百萬個像素（邊、色塊），往上聚成「鼻子、眼睛、車子」，再往上聚成「一張臉、一條街」。深層網路厲害的地方在於，它會<b>自動發明這些「粗粒化變數」</b>（用概念取代像素），把原本指數級的難題壓成多項式級——可處理了。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 320" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker>
+      </defs>
+      <rect x="240" y="20" width="140" height="44" rx="8" fill="#0e1a2e" stroke="#36e0d4" stroke-width="2"/>
+      <text x="310" y="47" fill="#e7eefb" font-size="15" text-anchor="middle">街道（抽象概念）</text>
+      <g fill="#111c30" stroke="#8b6cff" stroke-width="1.5">
+        <rect x="60"  y="110" width="130" height="40" rx="8"/><rect x="245" y="110" width="130" height="40" rx="8"/><rect x="430" y="110" width="130" height="40" rx="8"/>
+      </g>
+      <text x="125" y="135" fill="#e7eefb" font-size="13" text-anchor="middle">行人</text>
+      <text x="310" y="135" fill="#e7eefb" font-size="13" text-anchor="middle">汽車</text>
+      <text x="495" y="135" fill="#e7eefb" font-size="13" text-anchor="middle">人行道</text>
+      <g fill="#0a1020" stroke="#ffb347" stroke-width="1">
+        <rect x="40"  y="220" width="90" height="34" rx="6"/><rect x="140" y="220" width="90" height="34" rx="6"/>
+        <rect x="240" y="220" width="90" height="34" rx="6"/><rect x="340" y="220" width="90" height="34" rx="6"/>
+        <rect x="440" y="220" width="90" height="34" rx="6"/><rect x="540" y="220" width="60" height="34" rx="6"/>
+      </g>
+      <text x="310" y="262" fill="#92a6c4" font-size="12" text-anchor="middle">… 像素 / 低層特徵（邊、色塊、角點）…</text>
+      <g stroke="#36e0d4" stroke-width="1.6" fill="none" marker-end="url(#arr)">
+        <path d="M280,64 L125,108"/><path d="M310,64 L310,108"/><path d="M340,64 L495,108"/>
+        <path d="M125,150 L85,218"/><path d="M125,150 L185,218"/>
+        <path d="M310,150 L285,218"/><path d="M310,150 L365,218"/>
+        <path d="M495,150 L485,218"/><path d="M495,150 L545,218"/>
+      </g>
+      <text x="310" y="305" fill="#e7eefb" font-size="13" text-anchor="middle">圖 1 · 階層化世界：抽象概念由底層配置「群聚」湧現，繞開維度詛咒</text>
+    </svg>
+    <div class="cap">概念來自 Wyart「街道」類比：無數行人/汽車/人行道配置，群聚成一個單一「街道」概念，模型不必逐像素記憶。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 A：</b>只要數據由階層化生成過程產生，深網所需樣本數是維度 <code>D</code> 的<b>多項式</b>（而非指數）；淺網或傳統核方法在同等任務上仍近似指數需求。</div>
+  <div class="boss">
+    <span class="lbl">主管解讀</span>
+    <p><b>「資料不夠」通常是假議題。</b>真正的問題不是資料量，而是你的資料有沒有結構、模型架構能不能抓到結構。與其無腦買更多資料，先問「這問題本質上有沒有可壓縮的階層」。</p>
+  </div>
+</section>
+
+<section id="jamming">
+  <h2>二、雙重下降＝堵塞相變：模型不是越大越好，是「過了門檻才通」</h2>
+  <p>訓練模型，本質是讓「預測誤差」當成一個能量景觀，模型沿著它往下滾（梯度下降）。Wyart 發現：這座景觀跟「沙堆、顆粒物」的能量景觀<b>結構一模一樣</b>。</p>
+  <ul>
+    <li><b>參數不夠（欠參數）：</b>景觀粗糙、到處是局部坑洞（亞穩態）。每次重訓都卡在不同地方——像把球丟進多峰山區，落點隨機，表現不穩。</li>
+    <li><b>參數夠多（過參數）：</b>景觀突然出現很多平坦山谷，能量趨近零。系統「暢通」，任何起點都能流到好解。</li>
+  </ul>
+  <p>從「卡住」到「暢通」的轉折，正是物理的<b>堵塞相變（jamming transition）</b>。業界後來獨立發現的「雙重下降」峰值（先降、升、再降），在物理學家眼裡就是這個相變。重點是：<b>在門檻之前加參數，往往更貴又更爛；過了門檻之後，才進入「便宜又穩」的收斂區。</b></p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 280" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="230" x2="590" y2="230" stroke="#92a6c4" stroke-width="1.5"/>
+      <line x1="60" y1="40"  x2="60"  y2="230" stroke="#92a6c4" stroke-width="1.5"/>
+      <text x="560" y="250" fill="#92a6c4" font-size="12">模型容量 / 參數量</text>
+      <text x="36" y="48" fill="#92a6c4" font-size="12">誤差</text>
+      <path d="M70,70 C160,200 250,210 330,150 C360,120 380,195 410,205 C470,222 540,70 580,50"
+            fill="none" stroke="#36e0d4" stroke-width="2.6"/>
+      <line x1="408" y1="60" x2="408" y2="225" stroke="#ff5d6c" stroke-width="1.4" stroke-dasharray="5,4"/>
+      <text x="408" y="44" fill="#ff5d6c" font-size="12" text-anchor="middle">堵塞相變門檻</text>
+      <text x="200" y="225" fill="#8b6cff" font-size="11" text-anchor="middle">卡住區：加參數更貴更爛</text>
+      <text x="500" y="225" fill="#8b6cff" font-size="11" text-anchor="middle">暢通區：便宜又穩</text>
+      <circle cx="410" cy="205" r="4" fill="#ffb347"/>
+    </svg>
+    <div class="cap">圖 2 · 雙重下降：在相變門檻附近誤差出現峰值；過此門檻後誤差隨容量再下降，進入「收斂區」。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 B：</b>雙重下降峰值位置可由「數據約束數 vs 連續自由度數」的相變理論預測；相同任務下，淺網峰值處誤差顯著高於深網。</div>
+  <div class="boss">
+    <span class="lbl">主管解讀</span>
+    <p><b>「模型越大越聰明」是錯的時機判斷。</b>在門檻前堆參數，每元預算的邊際產出可能是負的；過了門檻才進入正報酬。簽核前先問供應商：「這任務目前的容量落在門檻哪一側？」答不出來的，通常沒測過。</p>
+  </div>
+</section>
+
+<section id="abstraction">
+  <h2>三、深網為什麼能自學規則：你買的不是算力，是「隱含偏置」</h2>
+  <p>語言學大師 Chomsky 有個著名論點：孩子不可能只從有限語料就學會生成文法，所以「學規則」一定有先天內建。Wyart 在合成文法世界做了反例實驗：</p>
+  <ul>
+    <li>用上下文無關文法生成句子，句數隨長度 <code>D</code> 指數成長。</li>
+    <li><b>淺網</b>學：正如 Chomsky 所憂，只會背誦，遇新句子就垮。</li>
+    <li><b>深網</b>學：架構本身的強烈偏好（隱含偏置）會自動建出階層變數，用<b>僅多項式量級</b>的句子就學會「創造」從未出現但合規的句子。</li>
+  </ul>
+  <p>結論：深網的架構已替你「做了一半的先天工作」。但 Wyart 謹慎補充——這不表示大腦就是深網，也不否定大腦用少 10 萬倍資料，那反而暗示大腦另有更聰明的機制。</p>
+  <div class="claim"><b>可證偽聲稱 C：</b>固定 CFG 合成任務上，深網達成「生成合規新句」所需樣本數隨句長 <code>D</code> 呈<b>多項式</b>成長；淺網需指數成長或學不會。</div>
+  <div class="boss">
+    <span class="lbl">主管解讀</span>
+    <p><b>「模型會自己學規則」這句話，只在「深網 + 有結構的資料」同時成立。</b>如果你要解決的問題本質是規則性的（報表對帳、流程合規、異常判讀），深網的性價比極高；如果是純隨機雜訊，再深的網也救不了——錢該花在「把問題結構化」，不是無腦堆模型。</p>
+  </div>
+</section>
+
+<section id="latent">
+  <h2>四、預測潛空間更省錢：同樣效果，樣本少一大截</h2>
+  <p>觀察：人腦學語言用的資料遠少於機器。Wyart 團隊約一個月齡的新論文主張——<b>讓模型預測「抽象後的表徵」比預測原始 token 省樣本得多</b>。</p>
+  <p>機制（以「街道」為例）：下一 token / 擴散模型要從「像素」去建「街道」概念，但抽象概念和底層像素的相關性<b>極弱又雜訊大</b>，需要海量資料才測得出信號。反之，若模型先懂「房子、汽車」等中層概念，再去建「街道」時只需預測「附近有房子概念」——<b>概念間相關性強、信號雜訊比高</b>，所需資料大降。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="a1" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff5d6c"/></marker>
+        <marker id="a2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker>
+      </defs>
+      <text x="150" y="28" fill="#ff5d6c" font-size="13" text-anchor="middle">下一 token / 擴散（原始空間）</text>
+      <rect x="120" y="50" width="120" height="38" rx="7" fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.5"/>
+      <text x="180" y="74" fill="#e7eefb" font-size="13" text-anchor="middle">街道（抽象）</text>
+      <rect x="40" y="180" width="100" height="34" rx="6" fill="#0a1020" stroke="#ffb347" stroke-width="1.2"/>
+      <text x="90" y="202" fill="#e7eefb" font-size="12" text-anchor="middle">像素</text>
+      <rect x="200" y="180" width="100" height="34" rx="6" fill="#0a1020" stroke="#ffb347" stroke-width="1.2"/>
+      <text x="250" y="202" fill="#e7eefb" font-size="12" text-anchor="middle">像素</text>
+      <g stroke="#ff5d6c" stroke-width="1.6" fill="none" marker-end="url(#a1)">
+        <path d="M120,180 L165,88"/><path d="M250,180 L195,88"/>
+      </g>
+      <text x="180" y="140" fill="#ff5d6c" font-size="11" text-anchor="middle">長距＋弱相關＝貴</text>
+      <text x="180" y="262" fill="#92a6c4" font-size="11" text-anchor="middle">沿樹每跨一層付「乘法成本」</text>
+      <text x="460" y="28" fill="#36e0d4" font-size="13" text-anchor="middle">自省式 / 潛空間預測</text>
+      <rect x="430" y="50" width="120" height="38" rx="7" fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.5"/>
+      <text x="490" y="74" fill="#e7eefb" font-size="13" text-anchor="middle">街道（抽象）</text>
+      <rect x="350" y="115" width="100" height="34" rx="6" fill="#111c30" stroke="#8b6cff" stroke-width="1.2"/>
+      <text x="400" y="137" fill="#e7eefb" font-size="12" text-anchor="middle">房子</text>
+      <rect x="510" y="115" width="100" height="34" rx="6" fill="#111c30" stroke="#8b6cff" stroke-width="1.2"/>
+      <text x="560" y="137" fill="#e7eefb" font-size="12" text-anchor="middle">汽車</text>
+      <g stroke="#36e0d4" stroke-width="1.6" fill="none" marker-end="url(#a2)">
+        <path d="M400,149 L460,88"/><path d="M560,149 L520,88"/>
+      </g>
+      <text x="490" y="100" fill="#36e0d4" font-size="11" text-anchor="middle">短距＋強相關＝省</text>
+      <text x="490" y="262" fill="#92a6c4" font-size="11" text-anchor="middle">在已理解概念間跳躍，信號雜訊比高</text>
+    </svg>
+    <div class="cap">圖 3 · 三種學習目標的樣本複雜度：自省式（潛空間）預測借「已建立的鄰近概念」大幅降低所需資料量。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 D：</b>同樣合成階層任務上，預測「教師網路潛表徵」（如 Barlow Twins / JEPA 學生—教師設定）達同等抽象品質，所需樣本數<b>顯著少於</b> token 級重建，差距隨抽象層級升高而拉大。</div>
+  <div class="boss">
+    <span class="lbl">主管解讀</span>
+    <p><b>這是「用對方法省大錢」的關鍵槓桿。</b>同樣要模型懂你的產業，與其餵它原始流水（貴、慢、雜訊大），不如先教它中層概念（你的品項、流程節點、異常型態），再讓它往上組合——樣本需求可能差一個數量級。但注意：此聲稱尚在實證階段，大規模自然數據回測未完。</p>
+  </div>
+</section>
+
+<section id="scaling">
+  <h2>五、縮放定律：堆錢買算力的回報，是可被預測的</h2>
+  <p>業界早發現：模型表現隨數據量、參數量、算力平滑改善，於是大家瘋狂堆算力蓋資料中心。但「改善的曲線長什麼樣、斜率多少」長期沒有解釋。Wyart 團隊提出：只需測自然語言的<b>兩個指數</b>就能推導訓練曲線。</p>
+  <ul>
+    <li><b>指數 α：</b>詞之間相關性隨距離 <code>n</code> 冪律衰減 <code>~ n^{-α}</code>（取決於語言）。</li>
+    <li><b>指數 β：</b>看過 <code>n</code> 個 token 後剩餘不確定性（熵）也冪律衰減 <code>~ n^{-β}</code>（可從 LLM 實際行為測得，是關鍵新量）。</li>
+  </ul>
+  <p>兩者組合即給出損失曲線指數，還能預測損失如何依「上下文長度 × 數據量」彎曲——這個二變數形狀也被他們實驗觀測到。</p>
+  <div class="formula">
+    \[ \text{相關性}(n)\sim n^{-\alpha},\qquad \text{剩餘熵}(n)\sim n^{-\beta}\quad\xrightarrow{\ \text{組合}\ }\quad \text{Loss}\sim f(\text{data},\text{context})\ \text{冪律指數} \]
+  </div>
+  <div class="diagram">
+    <svg viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg">
+      <line x1="60" y1="200" x2="590" y2="200" stroke="#92a6c4" stroke-width="1.5"/>
+      <line x1="60" y1="30"  x2="60"  y2="200" stroke="#92a6c4" stroke-width="1.5"/>
+      <text x="560" y="220" fill="#92a6c4" font-size="12">已讀 token 數 n（對數軸）</text>
+      <text x="40" y="30" fill="#92a6c4" font-size="12">量值</text>
+      <path d="M70,60 C200,80 360,140 580,180" fill="none" stroke="#ffb347" stroke-width="2.4"/>
+      <text x="150" y="100" fill="#ffb347" font-size="12">剩餘熵 ~ n^{-β}</text>
+      <path d="M70,90 C180,130 320,170 580,192" fill="none" stroke="#8b6cff" stroke-width="2.4"/>
+      <text x="300" y="150" fill="#8b6cff" font-size="12">相關性 ~ n^{-α}</text>
+      <path d="M70,50 C220,70 350,150 580,185" fill="none" stroke="#36e0d4" stroke-width="2.6" stroke-dasharray="6,4"/>
+      <text x="430" y="120" fill="#36e0d4" font-size="12">訓練損失（兩指數組合）</text>
+    </svg>
+    <div class="cap">圖 4 · 縮放定律雙指數機制：相關性與剩餘熵的冪律衰減，合併推導出損失曲線。Wyart 在學術尺度（~10^9 參數/token）驗證，約對應 2–3 句上下文。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 E：</b>對任意自然語言，測得 <code>(α,β)</code> 後可精確預測該語言上 LLM 訓練損失對「數據量 × 上下文長度」的二變數依賴；跨語言 <code>α,β</code> 差異應能解釋跨語言縮放曲線差異。</div>
+  <div class="boss">
+    <span class="lbl">主管解讀</span>
+    <p><b>「再多給一倍預算，表現會好多少」是可以算的，不是玄學。</b>要求供應商把「追加預算 → 預期表現提升」畫成一條曲線，而不是講願景。若曲線已進入平坦段，再加碼就是買熱。</p>
+  </div>
+</section>
+
+<section id="cost">
+  <h2>六、混合成本與可合算維度（主管重點）</h2>
+  <p>前面五節解釋了「模型為什麼貴、什麼時候貴得有道理」。這一節把它翻成你簽核時真正該算的帳——<b>混合成本（blended cost）</b>與<b>可合算維度（computable dimension）</b>。</p>
+
+  <h3>6.1 混合成本：別只看「每張圖 / 每千 token」的牌價</h3>
+  <p>供應商給你的單價（API 每千 token、GPU 每小時）只是<b>直接成本</b>。一筆 AI 專案的<b>混合成本</b>是所有花費攤在一起後的真實單位成本，至少含四塊：</p>
+  <table>
+    <tr><th>成本塊</th><th>內容</th><th>常被忽略的原因</th></tr>
+    <tr><td>① 推論成本</td><td>API 調用 / GPU 工時（供應商牌價）</td><td>最顯眼，所以大家只盯這塊</td></tr>
+    <tr><td>② 數據與標註成本</td><td>清洗、結構化、領域標註的人月</td><td>常算在「既有人力」裡被隱形化</td></tr>
+    <tr><td>③ 驗證與對帳成本</td><td>確認模型沒亂答、結果可查證的稽核流程</td><td>出事才發現沒編預算</td></tr>
+    <tr><td>④ 失敗與返工成本</td><td>模型在「卡住區」產出的廢結果、人工救火</td><td>散落在各部門工時，無人歸總</td></tr>
+  </table>
+  <div class="formula">
+    \[ \text{混合單位成本}=\frac{\text{①}+\text{②}+\text{③}+\text{④}}{\text{有效產出量}} \]
+  </div>
+  <p>關鍵洞見：<b>如果問題落在「卡住區」（見第二節），④會爆炸性膨脹</b>——模型答得看似合理其實錯，你還得養一批人盯著、救火、重做。這時牌價再便宜，混合成本也可能高到不如不做。反之，問題在「暢通區」且結構清楚，④趨近零，混合成本才真的低。</p>
+
+  <h3>6.2 可合算維度：先判斷「這問題到底幾維」</h3>
+  <p>「可合算維度」是我們借 Wyart 框架給主管的一把尺：<b>這個問題的有效維度，落在指數爆炸區，還是多項式可解區？</b></p>
+  <ul>
+    <li><b>低可合算維度（多項式可解）：</b>問題有清晰階層與規則——例：報表對帳、合規檢查、固定流程異常偵測、把既有的 SOP 自動化。這類用深網 + 你的結構化資料，樣本需求是 <code>poly(D)</code>，<b>混合成本低、回報可預測</b>。</li>
+    <li><b>高可合算維度（指數爆炸）：</b>問題本質是開放式、無結構、需世界級常識與互動——例：從零發明新商業模式、跨領域策略推演。這類樣本需求趨近 <code>exp(D)</code>，<b>純堆模型不會自動解決，混合成本難以收斂</b>。</li>
+  </ul>
+  <div class="diagram">
+    <svg viewBox="0 0 620 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="c1" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker>
+        <marker id="c2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ff5d6c"/></marker>
+      </defs>
+      <line x1="60" y1="210" x2="590" y2="210" stroke="#92a6c4" stroke-width="1.5"/>
+      <line x1="60" y1="30"  x2="60"  y2="210" stroke="#92a6c4" stroke-width="1.5"/>
+      <text x="560" y="230" fill="#92a6c4" font-size="12">問題有效維度 D</text>
+      <text x="40" y="40" fill="#92a6c4" font-size="12">所需資源</text>
+      <!-- 多項式：緩升 -->
+      <path d="M70,200 C200,180 380,150 580,95" fill="none" stroke="#36e0d4" stroke-width="2.6"/>
+      <text x="250" y="160" fill="#36e0d4" font-size="12">多項式 poly(D) · 可合算區（混合成本低）</text>
+      <!-- 指數：陡升 -->
+      <path d="M70,205 C180,205 300,200 360,160 C420,120 520,55 580,40" fill="none" stroke="#ff5d6c" stroke-width="2.6"/>
+      <text x="430" y="150" fill="#ff5d6c" font-size="12">指數 exp(D) · 不可合算區（混合成本爆）</text>
+      <circle cx="360" cy="160" r="4" fill="#ffb347"/>
+      <text x="360" y="185" fill="#ffb347" font-size="11" text-anchor="middle">分界</text>
+    </svg>
+    <div class="cap">圖 5 · 可合算維度：問題有效維度決定所需資源曲線形狀；落在多項式區才能談「划算」。</div>
+  </div>
+
+  <h3>6.3 決策矩陣：什麼時候該花、什麼時候別花</h3>
+  <table>
+    <tr><th>你的問題</th><th>可合算維度</th><th>落在相變哪一側</th><th>混合成本預期</th><th>主管動作</th></tr>
+    <tr><td>報表對帳 / 合規 / 固定流程自動化</td><td>低（有結構）</td><td>暢通區</td><td>低且可預測</td><td><b>值得投</b>，用深網 + 你的資料</td></tr>
+    <tr><td>客服問答 / 文件摘要（領域明確）</td><td>中</td><td>接近門檻</td><td>中，看標註品質</td><td>可投，但先小規模驗證④不爆</td></tr>
+    <tr><td>開放式創意 / 跨域策略推演</td><td>高（無結構）</td><td>卡住區</td><td>高且難收斂</td><td><b>先別大撒幣</b>，改用人機協作閉環</td></tr>
+  </table>
+  <div class="note">OODAV 的方法論錨點：我們對每一筆 AI 交付，都先幫你判斷「這問題落在哪個維度、哪一側相變」，再決定預算形狀——而不是先答應做、再做不出來。這正是「可親手驗證、不黑箱」的工程紀律在成本面的體現。</div>
+  <div class="claim"><b>可證偽聲稱 F（成本維度）：</b>對同一產業任務，若先用「中層概念結構化」（降低可合算維度）再上模型，其混合單位成本（含④返工）應<b>顯著低於</b>直接餵原始資料；且在「暢通區」任務上，追加預算的邊際表現提升應可被雙指數縮放定律（聲稱 E）預測，而非無法解釋的跳變。</div>
+</section>
+
+<section id="falsify">
+  <h2>七、可證偽性查核（含成本維度）</h2>
+  <p>下表把本筆記每條核心聲稱，對應到「若為假，什麼實驗會打臉」以及「目前證據強度」。這是 OODAV 對每一份交付的標準動作——不把「聽起來有道理」當成「已證實」。</p>
+  <table>
+    <tr><th>聲稱</th><th>證偽條件（falsifier）</th><th>當前證據強度</th></tr>
+    <tr><td>A 階層化解維度詛咒</td><td>階層合成數據上深網樣本需求隨 <code>D</code> 仍呈指數</td><td>★★★ 強（多項式 scaling 已實測）</td></tr>
+    <tr><td>B 雙重下降=堵塞相變</td><td>峰值位置無法由約束/自由度相變理論預測</td><td>★★★ 強（與統計物理同構已建立）</td></tr>
+    <tr><td>C 深網自發抽象=反例於刺激貧乏論</td><td>深網在 CFG 任務仍需指數樣本才學會生成</td><td>★★★ 強（合成實驗已驗證）</td></tr>
+    <tr><td>D 潛空間預測更省樣本</td><td>JEPA/自省式在同等抽象品質下樣本不優於 token 級</td><td>★☆ 弱（理論新，大規模自然數據未回測）</td></tr>
+    <tr><td>E 縮放定律雙指數</td><td>用 <code>(α,β)</code> 推導的曲線偏離實測損失</td><td>★★ 中（10^9 尺度驗證，外推未證）</td></tr>
+    <tr><td>F 混合成本隨可合算維度變化</td><td>結構化後混合成本未顯低於原始餵入；或暢通區邊際提升無法被 E 預測</td><td>★☆ 弱（框架推論，待在產業資料集實測）</td></tr>
+  </table>
+  <div class="falsi"><b>不可輕信之處：</b>聲稱 D、E 的「外推到萬億級」、以及聲稱 F 的「成本維度」目前都建立在<b>學術算力邊界</b>或<b>框架推論</b>內。任何供應商把這些直接宣稱「已解釋你的產業場景」的說法，都屬未證實外推——應被標註為「假說」而非「定理」。</div>
+  <div class="verify"><b>OODAV 實作建議：</b>若要把上述框架用於你的決策儀表板或自動化系統，我方會先以<b>小規模合成任務重現 A–C</b>（可在你的資料上跑通並留下不可竄改指紋），再以<b>你的真實任務量測可合算維度與混合成本</b>來驗證 F，絕不把未回測的假說當成生產依據。</div>
+</section>
+
+<section id="qa">
+  <h2>八、給主管的三個簽核反向提問</h2>
+  <div class="q">
+    <p><b>反向提問 ①（維度判斷）：</b>在簽這筆預算前，供應商能否明確回答「<b>我的問題有效維度落在多項式區還是指數區、目前模型容量在相變門檻哪一側</b>」？答不出來的，等於還沒做可行性分析就來要錢——這筆該擋下。</p>
+  </div>
+  <div class="q">
+    <p><b>反向提問 ②（混合成本歸總）：</b>報價單上的「每千 token / 每小時」只是①。我們有沒有把<b>②數據標註、③驗證對帳、④失敗返工</b>也攤進同一張表，算出真實混合單位成本？若④在卡住區爆炸，牌價再便宜也可能是冤枉錢。</p>
+  </div>
+  <div class="q">
+    <p><b>反向提問 ③（邊際回報可預測性）：</b>當我們說「再加一倍預算表現會更好」，這個「更好」有沒有一條<b>可被數據打臉的預測曲線</b>（如聲稱 E 的雙指數）撐著？還只是願景式承諾？曲線若已進入平坦段，再加碼就是買熱。</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  本頁為訪談與論文內容的技術筆記（主管導向版）整理 · 數學式以 KaTeX 渲染（需聯網）· 圖解皆內聯 SVG（可離線）· 單檔自包含，可部署至 GitHub Pages。
+</footer>
+</body>
+</html>
