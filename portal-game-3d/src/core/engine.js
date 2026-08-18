@@ -73,6 +73,7 @@ export class GameEngine {
     this.camera.position.copy(this.playerPos);
 
     this.scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x202830, 1.0));
+    this.scene.add(new THREE.AmbientLight(0xffffff, 0.6));   // 確保角色模型在無 envMap 下可見（防過暗/透明感）
     const dir = new THREE.DirectionalLight(0xffffff, 2.0);
     dir.position.set(5, 10, 5);
     dir.castShadow = true;

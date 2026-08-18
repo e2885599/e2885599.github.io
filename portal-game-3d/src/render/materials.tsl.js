@@ -120,7 +120,26 @@ export async function loadPlayerModel(modelKey = 'khronos') {
     const gltf = await new GLTFLoader().loadAsync(url);
     const group = gltf.scene;
     group.name = 'playerModel';
-    group.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+    // 材質徹底重寫：丟棄 GLB 原材質（避免透明/雙面剔除/過暗導致「透明身軀」），
+    // 統一改用可控的 StandardMaterial（強制不透明 + 雙面 + 可見底色，保留原貼圖若有）
+    group.traverse(o => {
+      if (o.isMesh) {
+        o.castShadow = true;
+        o.frustumCulled = false;
+        const old = Array.isArray(o.material) ? o.material[0] : o.material;
+        const mat = new THREE.MeshStandardMaterial({
+          color: old && old.color ? old.color.clone() : new THREE.Color(0xbfc7d0),
+          map: old && old.map ? old.map : null,
+          roughness: 0.75,
+          metalness: 0.05,
+          side: THREE.DoubleSide,
+          transparent: false,
+          opacity: 1,
+          depthWrite: true,
+        });
+        o.material = mat;
+      }
+    });
     let mixer = null, actions = {}, hasAnim = false;
     if (gltf.animations && gltf.animations.length) {
       mixer = new THREE.AnimationMixer(group);
