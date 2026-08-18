@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { FirstPersonControls } from './controls.js';
 import { PortalSystem } from './portals.js';
-import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground } from '../render/materials.tsl.js';
+import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem } from '../render/materials.tsl.js';
 
 const WORLD_W = 900, WORLD_D = 600;
 // 垂直比例參照傳送門2（Portal 2）：以玩家身高 PH=34 為基準
@@ -41,6 +41,8 @@ export class GameEngine {
     this._timeLeft = 0;
     this._portals = null;
     this.portalMeshes = [];
+    this.lavas = [];          // 岩漿材質集合（流體感驅動）
+    this.snow = null;         // 雪花系統（細緻多邊形化）
     this.deadFlash = 0;
     this.won = false;
     this.elapsed = 0;
@@ -167,12 +169,15 @@ export class GameEngine {
       this.world.add(mesh);
     }
 
-    // 岩漿（只有 easy 也顯示，但僅 hard 致命）；垂直尺寸套用 VSCALE
+    // 岩漿（流體感：各塊獨立相位）；垂直尺寸套用 VSCALE
+    let lavaPhase = 0;
     for (const hz of L.hazards || []) {
       const hh = (hz.h || 8) * VSCALE;
-      const m = new THREE.Mesh(new THREE.BoxGeometry(hz.w, hh, hz.d), makeLavaMaterial());
+      lavaPhase += 2.1;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(hz.w, hh, hz.d), makeLavaMaterial(lavaPhase));
       m.position.set(hz.x + hz.w / 2, hh / 2, hz.z + hz.d / 2);
       this.world.add(m);
+      this.lavas.push(m.material);   // 收錄材質供 update 驅動流體感
       const isHard = !!hz.hard;
       this.hazards.push({ x: hz.x, z: hz.z, w: hz.w, d: hz.d, hard: isHard, motion: hz.motion || null, base: { x: hz.x, z: hz.z }, mesh: m });
     }
@@ -208,6 +213,11 @@ export class GameEngine {
     ex.position.set(L.exit.x, exH / 2, L.exit.z);
     this.world.add(ex);
     this.exitBox = { x: L.exit.x, z: L.exit.z, w: L.exit.w, d: L.exit.d };
+
+    // 雪花系統（細緻多邊形化）：建一次，關卡切換時清除舊的
+    if (this.snow) { this.scene.remove(this.snow); this.snow.geometry.dispose(); this.snow.material.dispose(); }
+    this.snow = makeSnowSystem(900, 900, 600);
+    this.world.add(this.snow);
 
     // 移動尖刺補充 mesh（hard 模式才顯示，這裡先建好由 update 控制可見性）
     this.scene.add(this.world);
@@ -383,6 +393,36 @@ export class GameEngine {
       this.splat.rotation.y = tt * 0.02;
       this.splat.position.y = Math.sin(tt * 0.3) * 18;
     }
+    // 岩漿流體感：UV 滾動（表面湧動）+ 熱斑脈動 emissive（各塊相位偏移）
+    for (const m of this.lavas) {
+      const ph = m.userData.phase || 0;
+      const t = this.elapsed + ph;
+      if (m.map) { m.map.offset.x = (t * 0.05) % 1; m.map.offset.y = (t * 0.03) % 1; }
+      m.emissiveIntensity = m.userData.baseEmissive + Math.sin(t * 1.6) * 0.22 + 0.12;
+    }
+    // 雪花飄落 + 自旋（細緻多邊形實體動態）
+    if (this.snow) {
+      const data = this.snow.userData.snow;
+      const H = this.snow.userData.height, R = this.snow.userData.radius;
+      const dummy = new THREE.Object3D();
+      for (let i = 0; i < data.length; i++) {
+        const d = data[i];
+        d.y += d.vy * dt;
+        d.x += d.vx * dt * Math.sin(this.elapsed * 0.5 + d.phase);
+        d.ry += d.vr * dt;
+        if (d.y < 2) {            // 落地後從頂部迴圈重生
+          d.y = H;
+          d.x = (Math.random() * 2 - 1) * R;
+          d.z = (Math.random() * 2 - 1) * R;
+        }
+        dummy.position.set(d.x, d.y, d.z);
+        dummy.rotation.set(d.rx + d.ry * 0.3, d.ry, d.rz);
+        dummy.scale.setScalar(d.size);
+        dummy.updateMatrix();
+        this.snow.setMatrixAt(i, dummy.matrix);
+      }
+      this.snow.instanceMatrix.needsUpdate = true;
+    }
     // 難度倒數
     if (this.difficulty === 'hard' && this._timeLeft > 0) {
       this._timeLeft = Math.max(0, this._timeLeft - dt);
@@ -394,14 +434,14 @@ export class GameEngine {
   _checkHazards(p) {
     const hardOnly = this.difficulty !== 'hard';
     for (const hz of this.hazards) {
-      if (hz.hard && hardOnly) continue;       // easy 模式移動尖刺不致命
+      if (hz.hard && hardOnly) continue;       // easy 模式移動尖刺不致命（岩漿不帶 hard 標記，不受此限）
       const box = hz.motion
         ? { x: hz.mesh.position.x - hz.w / 2, z: hz.mesh.position.z - hz.d / 2, w: hz.w, d: hz.d }
         : { x: hz.x, z: hz.z, w: hz.w, d: hz.d };
       // 玩家足跡是否落在岩漿/尖刺上（xz 重疊且 y 接近地面）
       if (p.x > box.x - PR && p.x < box.x + box.w + PR && p.z > box.z - PR && p.z < box.z + box.d + PR) {
-        if (this.difficulty === 'hard') { this._die(); return; }
-        // easy：岩漿為視覺，不致死；但若有 lavaInstantDeath 標記仍標記（本作 easy 不致死）
+        // 岩漿（無 hard 標記）任何模式致死；移動尖刺僅 hard 模式（easy 已在 line397 濾掉）
+        this._die(); return;
       }
     }
   }

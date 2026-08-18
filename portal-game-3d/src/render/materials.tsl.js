@@ -46,8 +46,8 @@ export function makePortalMaterial(kind = 'blue') {
   });
 }
 
-// 岩漿：PBR 貼圖 + emissive 暖色
-export function makeLavaMaterial() {
+// 岩漿：PBR 貼圖 + emissive 暖色 + 流體感（UV 滾動 + 熱斑脈動，由 engine 驅動 uTime）
+export function makeLavaMaterial(phase = 0) {
   const mat = new THREE.MeshStandardMaterial({
     roughness: 0.6, metalness: 0.0, transparent: true, opacity: 0.96,
   });
@@ -56,7 +56,53 @@ export function makeLavaMaterial() {
   safeNormal(mat, TEX.lavaNormal, 0.6);
   mat.emissive = new THREE.Color(0xff4408);
   mat.emissiveIntensity = 0.4;
+  mat.userData.phase = phase;       // 各岩漿塊相位偏移，避免同步
+  mat.userData.baseEmissive = 0.4;
   return mat;
+}
+
+// 雪花系統：細緻多邊形化（InstancedMesh + IcosahedronGeometry 細分，非方點 Points）
+// 每片雪花是獨立旋轉/飄落的真實多邊形實體，具六邊晶體感。
+export function makeSnowSystem(count = 900, radius = 900, height = 600) {
+  // IcosahedronGeometry(1, 1) = 80 面細分球，遠觀似六邊雪花晶體（多邊形化、非粗糙方點）
+  const geo = new THREE.IcosahedronGeometry(1, 1);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xeaf4ff, roughness: 0.35, metalness: 0.0,
+    transparent: true, opacity: 0.92, emissive: new THREE.Color(0x9fc4ff), emissiveIntensity: 0.25,
+    flatShading: true,   // 保留多邊形刻面感
+  });
+  const mesh = new THREE.InstancedMesh(geo, mat, count);
+  mesh.frustumCulled = false;
+  mesh.name = 'snowSystem';
+  // 每片雪花的參數：位置/旋轉軸/速度/尺寸/相位
+  const data = [];
+  let s = 44217;
+  const rnd = () => { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < count; i++) {
+    const d = {
+      x: (rnd() * 2 - 1) * radius,
+      y: rnd() * height + 40,
+      z: (rnd() * 2 - 1) * radius,
+      rx: rnd() * 6.28, ry: rnd() * 6.28, rz: rnd() * 6.28,
+      vx: (rnd() * 2 - 1) * 8,        // 水平飄移
+      vy: -(12 + rnd() * 22),         // 飄落速度
+      vr: (rnd() * 2 - 1) * 1.5,      // 自旋速度
+      size: 1.4 + rnd() * 3.2,        // 精細尺寸（多邊形可見）
+      phase: rnd() * 6.28,
+    };
+    data.push(d);
+    dummy.position.set(d.x, d.y, d.z);
+    dummy.rotation.set(d.rx, d.ry, d.rz);
+    dummy.scale.setScalar(d.size);
+    dummy.updateMatrix();
+    mesh.setMatrixAt(i, dummy.matrix);
+  }
+  mesh.instanceMatrix.needsUpdate = true;
+  mesh.userData.snow = data;
+  mesh.userData.height = height;
+  mesh.userData.radius = radius;
+  return mesh;
 }
 
 // 可 portal 牆：brick PBR 貼圖 + 微弱 emissive 提示
