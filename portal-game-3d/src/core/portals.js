@@ -11,12 +11,12 @@ import * as THREE from 'three';
 const UP = new THREE.Vector3(0, 1, 0);
 const PORTAL_RX = 34;   // 門橢圓半寬（水平）
 const PORTAL_RY = 46;   // 門橢圓半高（垂直）
-const PR = 16;          // 玩家半徑（對齊 engine.js 的 PR，用於穿越出口推出距離）
 const TELE_COOLDOWN = 0.12; // 秒，防止穿門後立即回穿
 
 export class PortalSystem {
-  constructor(scene) {
+  constructor(scene, playerRadius = 16) {
     this.scene = scene;
+    this.PR = playerRadius;  // 玩家半徑（由 engine 傳入，對齊 PR）
     this.blue = null;    // { group, position:Vector3, normal:Vector3, mesh }
     this.orange = null;
     this.cooldown = 0;
@@ -93,7 +93,7 @@ export class PortalSystem {
       const n = from.normal;
       const s0 = prevCenter.clone().sub(from.position).dot(n);
       const s1 = nextCenter.clone().sub(from.position).dot(n);
-      if (s0 > 0 && s1 <= 0) {
+      if (s0 < 0 && s1 >= 0) {
         // 由外穿入 from 門：檢查落點是否在門橢圓內
         const rel = this._tmp.copy(nextCenter).sub(from.position);
         const t = new THREE.Vector3().crossVectors(UP, n).normalize(); // 水平切向
@@ -120,7 +120,7 @@ export class PortalSystem {
         // n2 指向場景內（門朝場景內開口），故「門外側」＝沿 -n2 推出 (PR+4)，
         // 再保留切向/垂直偏移，使玩家從牆面外側出現、不會卡在牆裡穿不過。
         const newPos = to.position.clone()
-          .addScaledVector(n2, -(PR + 4))       // 沿 -法線 推出門外（PR=玩家半徑=16）
+          .addScaledVector(n2, -(this.PR + 4))       // 沿 -法線 推出門外（this.PR=玩家半徑）
           .addScaledVector(t, tu)               // 切向偏移保持
           .addScaledVector(UP, uu);             // 垂直偏移保持
 

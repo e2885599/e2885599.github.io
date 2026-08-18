@@ -76,7 +76,7 @@ export class GameEngine {
     this.scene.add(dir);
 
     this.controls = new FirstPersonControls(this.camera, this.canvas);
-    this._portals = new PortalSystem(this.scene);
+    this._portals = new PortalSystem(this.scene, PR);
 
     this._bindInput();
     window.__portalReady = false;
