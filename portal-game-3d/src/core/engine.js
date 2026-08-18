@@ -269,12 +269,32 @@ export class GameEngine {
     return { nx, nz, pen };
   }
 
+  // 玩家是否正處於某扇已放置門的橢圓洞內（xz 投影）
+  // 若為 true，_collideWalls 對 portalable 牆跳過碰撞 → 門成為牆上可穿過的洞
+  _inPortalHole(ent, r) {
+    const PRX = 34, PRY = 46;   // 與 portals.js PORTAL_RX/RY 對齊（門橢圓半寬/半高）
+    const portals = [this._portals.blue, this._portals.orange].filter(Boolean);
+    for (const p of portals) {
+      const rx = ent.x - p.position.x, rz = ent.z - p.position.z;
+      // 門法線 n 與水平切向 t = cross(UP, n)
+      const nx = p.normal.x, nz = p.normal.z;
+      // 水平切向 t = cross(UP=(0,1,0), n=(nx,0,nz)) = (nz, 0, -nx)
+      const tX = nz, tZ = -nx;
+      const alongN = rx * nx + rz * nz;   // 沿法線（門深）分量
+      const alongT = rx * tX + rz * tZ;   // 沿切向（門寬/高，水平）分量
+      if (Math.abs(alongT) < PRY - r * 0.5 && Math.abs(alongN) < PRX + r) return true;
+    }
+    return false;
+  }
+
   _collideWalls(ent, r) {
     let grounded = false;
     const boxes = [];
-    for (const w of this.levelData.walls) boxes.push({ x: w.x, z: w.z, w: w.w, d: w.d });
+    for (const w of this.levelData.walls) boxes.push({ x: w.x, z: w.z, w: w.w, d: w.d, portalable: !!w.portalable });
     for (let pass = 0; pass < 3; pass++) {
       for (const box of boxes) {
+        // portalable 牆：若玩家正處於某扇門的橢圓洞內，跳過碰撞（門＝牆上的洞）
+        if (box.portalable && this._inPortalHole(ent, r)) continue;
         const hit = this._resolveCircleAABB(ent, r, box);
         if (hit) {
           ent.x += hit.nx * hit.pen; ent.z += hit.nz * hit.pen;
