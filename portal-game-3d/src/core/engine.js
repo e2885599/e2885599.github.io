@@ -8,9 +8,16 @@ import { FirstPersonControls } from './controls.js';
 import { PortalSystem } from './portals.js';
 import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground } from '../render/materials.tsl.js';
 
-const WORLD_W = 900, WORLD_D = 600, WALL_H = 220;
-const PR = 16, PH = 34;               // 玩家半徑/身高
-const GRAV = 2200, MOVE = 30, JUMP = 760, TERMINAL = 1400;
+const WORLD_W = 900, WORLD_D = 600;
+// 垂直比例參照傳送門2（Portal 2）：以玩家身高 PH=34 為基準
+//   Portal 2 天花板高約 2.6× 玩家身高 → 本作目標牆高 = 90（原 levels.json 以 220 為語意值）
+//   VSCALE 把 levels.json 裡的語意高度（220/200/120/60）線性映射到 Portal 2 視覺比例
+const WALL_H_REF = 220;            // levels.json 裡的語意牆高（不動關卡座標）
+const WALL_H_TARGET = 90;         // Portal 2 比例下的實際牆高（2.65× PH）
+const VSCALE = WALL_H_TARGET / WALL_H_REF;
+const PR = 11, PH = 34;            // 玩家半徑/身高（半徑 0.32× 身高，Portal 2 感）
+const EYE = PH * 0.42;             // 眼睛高度偏移：視線在身高 0.92 處（Portal 2 第一人稱視角）
+const GRAV = 2200, MOVE = 85, JUMP = 760, TERMINAL = 1400;
 const SUBSTEPS = 2;                   // 子步進提升碰撞/穿越穩定
 const COLORS = {
   wall: 0x39435a, portalWall: 0xe4ecf8, floor: 0x131a28,
@@ -148,21 +155,23 @@ export class GameEngine {
     this.splat = makeSplatBackground(2200, 900);
     this.world.add(this.splat);
 
-    // 牆（portalable → 可門化 TSL 微光材質）
+    // 牆（portalable → 可門化材質）；垂直尺寸套用 Portal 2 比例 VSCALE
     for (const w of L.walls) {
+      const wh = (w.h || WALL_H_REF) * VSCALE;
       const mesh = w.portalable
-        ? new THREE.Mesh(new THREE.BoxGeometry(w.w, w.h, w.d), makePortalableWallMaterial())
-        : mk(w.w, w.h, w.d, COLORS.wall);
-      mesh.position.set(w.x + w.w / 2, w.h / 2, w.z + w.d / 2);
+        ? new THREE.Mesh(new THREE.BoxGeometry(w.w, wh, w.d), makePortalableWallMaterial())
+        : mk(w.w, wh, w.d, COLORS.wall);
+      mesh.position.set(w.x + w.w / 2, wh / 2, w.z + w.d / 2);
       mesh.castShadow = true; mesh.receiveShadow = true;
       if (w.portalable) { mesh.userData.portalable = true; this.portalMeshes.push(mesh); }
       this.world.add(mesh);
     }
 
-    // 岩漿（TSL 流動材質；只有 easy 也顯示，但僅 hard 致命）
+    // 岩漿（只有 easy 也顯示，但僅 hard 致命）；垂直尺寸套用 VSCALE
     for (const hz of L.hazards || []) {
-      const m = new THREE.Mesh(new THREE.BoxGeometry(hz.w, hz.h || 8, hz.d), makeLavaMaterial());
-      m.position.set(hz.x + hz.w / 2, (hz.h || 8) / 2, hz.z + hz.d / 2);
+      const hh = (hz.h || 8) * VSCALE;
+      const m = new THREE.Mesh(new THREE.BoxGeometry(hz.w, hh, hz.d), makeLavaMaterial());
+      m.position.set(hz.x + hz.w / 2, hh / 2, hz.z + hz.d / 2);
       this.world.add(m);
       const isHard = !!hz.hard;
       this.hazards.push({ x: hz.x, z: hz.z, w: hz.w, d: hz.d, hard: isHard, motion: hz.motion || null, base: { x: hz.x, z: hz.z }, mesh: m });
@@ -184,17 +193,19 @@ export class GameEngine {
       this.buttons.push({ x: b.x, z: b.z, w: b.w, d: b.d, door: b.door, pressed: false, mesh: m });
     }
 
-    // 門（未開啟視為實心牆）
+    // 門（未開啟視為實心牆）；垂直尺寸套用 VSCALE
     for (const dr of L.doors || []) {
-      const m = mk(dr.w, dr.h, dr.d, COLORS.door);
-      m.position.set(dr.x + dr.w / 2, dr.h / 2, dr.z + dr.d / 2); m.castShadow = true;
+      const dh = (dr.h || WALL_H_REF) * VSCALE;
+      const m = mk(dr.w, dh, dr.d, COLORS.door);
+      m.position.set(dr.x + dr.w / 2, dh / 2, dr.z + dr.d / 2); m.castShadow = true;
       this.world.add(m);
       this.doors.push({ x: dr.x, z: dr.z, w: dr.w, h: dr.h, d: dr.d, open: false, mesh: m });
     }
 
-    // 出口（綠柱發光）
-    const ex = new THREE.Mesh(new THREE.BoxGeometry(L.exit.w, L.exit.h, L.exit.d), makeExitMaterial());
-    ex.position.set(L.exit.x, L.exit.h / 2, L.exit.z);
+    // 出口（綠柱發光）；垂直尺寸套用 VSCALE
+    const exH = (L.exit.h || WALL_H_REF) * VSCALE;
+    const ex = new THREE.Mesh(new THREE.BoxGeometry(L.exit.w, exH, L.exit.d), makeExitMaterial());
+    ex.position.set(L.exit.x, exH / 2, L.exit.z);
     this.world.add(ex);
     this.exitBox = { x: L.exit.x, z: L.exit.z, w: L.exit.w, d: L.exit.d };
 
@@ -213,6 +224,7 @@ export class GameEngine {
     this.playerPos.set(L.start.x, PH / 2, L.start.z);
     this.playerVel.set(0, 0, 0);
     this.camera.position.copy(this.playerPos);
+    this.camera.position.y += EYE;
     this.controls.setLook(0, 0);
     this.onGround = true;
     this.mode = 'playing';
@@ -342,6 +354,7 @@ export class GameEngine {
     this._checkExit(p);
 
     this.camera.position.copy(p);
+    this.camera.position.y += EYE;   // Portal 2 第一人稱：視線在玩家眼睛高度
 
     // X：splat 背景層飄浮驅動（高斯潑濺風塵埃）
     // 用物件級 transform（旋轉+整體微浮），避免 WebGPU 下 BufferAttribute array 即時更新坑
