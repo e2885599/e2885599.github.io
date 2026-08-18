@@ -431,12 +431,24 @@ export class GameEngine {
       while (diff < -Math.PI) diff += Math.PI * 2;
       this.playerModel.rotation.y = cur + diff * Math.min(1, dt * 12);
       this._lastRotY = this.playerModel.rotation.y;   // 供驗證讀取轉身結果
-      // 骨骼動畫：移動播 walk、靜止播 idle（若模型有對應 clip）
+      // 骨骼動畫：移動播動作、靜止凍結（避免 CesiumMan 單 clip 無 idle 時空幀）
       if (this.playerMixer) {
+        if (this._baseAction === undefined) {
+          // 取第一個可用 clip 作為基礎動作（walk/idle 皆宜）
+          this._baseAction = Object.values(this.playerActions)[0] || null;
+          if (this._baseAction) { this._baseAction.play(); this._currentAction = this._baseAction; }
+        }
         this.playerMixer.update(dt);
         const moving = (this.playerVel.x * this.playerVel.x + this.playerVel.z * this.playerVel.z) > 1;
-        const want = moving ? this._pickAction(['Walk', 'Run', 'walk', 'run']) : this._pickAction(['Idle', 'idle', 'Stand', 'stand']);
-        if (want && want !== this._currentAction) { this._currentAction.fadeOut(0.2); want.reset().fadeIn(0.2).play(); this._currentAction = want; }
+        // 有獨立 idle clip 才切換；否則以 timeScale 凍結/播放（靜止定格在當前姿勢）
+        const idle = this._pickAction(['Idle', 'idle', 'Stand', 'stand']);
+        if (idle && idle !== this._baseAction) {
+          const want = moving ? this._baseAction : idle;
+          if (want !== this._currentAction) { this._currentAction.fadeOut(0.2); want.reset().fadeIn(0.2).play(); this._currentAction = want; }
+          this.playerMixer.timeScale = 1;
+        } else {
+          this.playerMixer.timeScale = moving ? 1 : 0;   // 無 idle：靜止凍結
+        }
       }
     }
 
