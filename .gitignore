@@ -2,6 +2,10 @@ node_modules/
 .DS_Store
 *.log
 *.json
+# portal-game-3d 必要資料（遊戲關卡 JSON 必須上傳，解除 *.json 全域忽略）
+!portal-game-3d/levels/levels.json
+!portal-game-3d/probe_result.json
+!portal-game-3d/probe_result_asis.json
 home.html
 contents.json
 pages.json

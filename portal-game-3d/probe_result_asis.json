@@ -1,0 +1,1 @@
+{"ok":false,"hasWebGPURenderer":false,"hasTSL":false,"backend":"n/a","err":"TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:8766/vendor/three.webgpu.js","ua":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)"}
