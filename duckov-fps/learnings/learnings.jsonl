@@ -1,0 +1,2 @@
+{"ts":"2026-08-18T00:00:00+08:00","feature":"統一資產索引","context":"vibe-coding 影片方法論落地","lesson":"分散的資產清單（base.json/missions.json/splat_points.json）應收攏成 assets/index.json 當作 AI 與渲染層的 canonical registry，避免每次請求都遍歷檔案樹。索引只指路不複製值。","evidence":"新增 tests/test_asset_index.mjs 驗收 depends_on 雙向一致，ALL PASS。","sha256":"init-seed"}
+{"ts": "2026-08-18T06:22:26+08:00", "feature": "資產索引雙向校驗", "context": "vibe-coding 落地驗收", "lesson": "索引分類要區分 render/core/tools 三類，否則 consumed_by 指向 core 模組會被誤判未登記（首版 2 項 FAIL 即此因）", "evidence": "tests/test_asset_index.mjs 修正後 ALL PASS"}

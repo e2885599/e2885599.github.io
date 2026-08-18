@@ -1,0 +1,8 @@
+# 排除項（部署 GitHub Pages 不需）
+_vendor_src/          # Khronos git clone 源（1.4GB 重複，已由 assets/models 收錄）
+node_modules/
+.state/
+*.log
+.DS_Store
+__pycache__/
+.codex_audit/

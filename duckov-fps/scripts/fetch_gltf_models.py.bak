@@ -1,0 +1,145 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+【角色 R】資產運維工程師：從 Khronos 官方 glTF 範例倉抓取 21 項 3D 模型模板。
+【目標 O】將官方 CC0/MIT 授權的 .glb（或 .gltf+.bin+貼圖）下載至 assets/models/<name>/，
+           產出 manifest.json 與 Merkle 收據，供 duckov-fps 遊戲資產使用。
+【限制 L】僅走官方源 raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets（已證 200 可達、
+           非短網址、非 exe）；不代下未授權素材；下載失敗須明確非零退出（防假通過）。
+【範例 E】對齊既有 scripts/ 風格：subprocess list 呼叫＋shell=False、位元組層 Merkle、中文註解。
+"""
+import json
+import os
+import sys
+import hashlib
+import subprocess
+import urllib.request
+from datetime import datetime, timezone
+
+# ── 設定常數（集中管理，避免散落硬編碼）──
+REPO_RAW = "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models"
+REPO_API = "https://api.github.com/repos/KhronosGroup/glTF-Sample-Assets/contents/Models"
+OUT_ROOT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "assets", "models")
+MODELS = [
+    "CesiumMan", "Duck", "DamagedHelmet", "ToyCar", "CesiumMilkTruck",
+    "Fox", "RiggedFigure", "RiggedSimple", "BrainStem", "WaterBottle",
+    "BoomBox", "Lantern", "AntiqueCamera", "ChronographWatch", "SunglassesKhronos",
+    "Avocado", "BoxAnimated", "SciFiHelmet", "FlightHelmet", "Suzanne",
+    "MaterialsVariantsShoe",
+]
+TARGET_COUNT = 21  # 用戶要求抓 21 項模板
+
+
+def sha256_of_file(path: str) -> str:
+    """位元組層 sha256（守 Windows \\n→\\r\\n 污染鐵律：必須 rb 回讀）。"""
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def http_download(url: str, dest: str) -> bool:
+    """下載單一 URL 到位元組檔；404 或其他錯誤返回 False（不拋例外，交由呼叫方決策）。"""
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "duckov-fps-asset-fetcher/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            if resp.status != 200:
+                return False
+            data = resp.read()
+    except Exception:
+        return False
+    os.makedirs(os.path.dirname(dest), exist_ok=True)
+    with open(dest, "wb") as f:
+        f.write(data)
+    return True
+
+
+def list_gltf_dir(model: str) -> list:
+    """經 GitHub API 列出 <model>/glTF/ 目錄內檔案（回退路徑：無 .glb 時抓整個 glTF 目錄）。"""
+    api = f"{REPO_API}/{model}/glTF"
+    try:
+        req = urllib.request.Request(api, headers={"User-Agent": "duckov-fps-asset-fetcher/1.0"})
+        with urllib.request.urlopen(req, timeout=60) as resp:
+            entries = json.load(resp)
+        return [e["name"] for e in entries if isinstance(e, dict) and "name" in e]
+    except Exception:
+        return []
+
+
+def fetch_model(model: str) -> dict:
+    """抓取單一模型：glb 優先，失敗回退 glTF/ 目錄。回傳 {name, ok, files, bytes}。"""
+    out_dir = os.path.join(OUT_ROOT, model)
+    os.makedirs(out_dir, exist_ok=True)
+    # 路徑 A：glTF-Binary 單檔 .glb
+    glb_url = f"{REPO_RAW}/{model}/glTF-Binary/{model}.glb"
+    glb_dest = os.path.join(out_dir, f"{model}.glb")
+    files = []
+    total_bytes = 0
+    if http_download(glb_url, glb_dest):
+        files.append(f"{model}.glb")
+        total_bytes += os.path.getsize(glb_dest)
+    else:
+        # 路徑 B：glTF/ 目錄（.gltf + .bin + 貼圖）
+        for fname in list_gltf_dir(model):
+            f_url = f"{REPO_RAW}/{model}/glTF/{fname}"
+            f_dest = os.path.join(out_dir, fname)
+            if http_download(f_url, f_dest):
+                files.append(fname)
+                total_bytes += os.path.getsize(f_dest)
+    ok = len(files) > 0
+    return {"name": model, "ok": ok, "files": files, "bytes": total_bytes}
+
+
+def main() -> int:
+    if len(MODELS) != TARGET_COUNT:
+        print(f"[FAIL] 模型清單應為 {TARGET_COUNT} 項，實際 {len(MODELS)} 項", file=sys.stderr)
+        return 2
+    os.makedirs(OUT_ROOT, exist_ok=True)
+    manifest = {"generated_at": datetime.now(timezone.utc).isoformat(),
+                "source": REPO_RAW, "models": []}
+    leaves = []
+    ok_count = 0
+    for m in MODELS:
+        rec = fetch_model(m)
+        manifest["models"].append(rec)
+        if rec["ok"]:
+            ok_count += 1
+            for fn in rec["files"]:
+                fp = os.path.join(OUT_ROOT, m, fn)
+                leaves.append(sha256_of_file(fp))
+        print(f"[{'OK' if rec['ok'] else 'FAIL'}] {m}: {len(rec['files'])} 檔 / {rec['bytes']} bytes")
+    # Merkle 收據：leaves 排序後兩兩雜湊，直到單根
+    sorted_leaves = sorted(leaves)
+    while len(sorted_leaves) > 1:
+        nxt = []
+        for i in range(0, len(sorted_leaves), 2):
+            a = sorted_leaves[i]
+            b = sorted_leaves[i + 1] if i + 1 < len(sorted_leaves) else a
+            nxt.append(hashlib.sha256((a + b).encode()).hexdigest())
+        sorted_leaves = nxt
+    merkle_root = sorted_leaves[0] if sorted_leaves else "EMPTY"
+    receipt = {
+        "date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "items": ok_count,
+        "target": TARGET_COUNT,
+        "merkle_root": merkle_root,
+        "leaves": len(leaves),
+    }
+    receipts_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "receipts")
+    os.makedirs(receipts_dir, exist_ok=True)
+    receipt_path = os.path.join(receipts_dir, f"models_{datetime.now(timezone.utc).strftime('%Y-%m-%dT%H-%M-%SZ')}.json")
+    with open(receipt_path, "wb") as f:
+        f.write(json.dumps(receipt, ensure_ascii=False, indent=2).encode("utf-8"))
+    with open(os.path.join(OUT_ROOT, "manifest.json"), "wb") as f:
+        f.write(json.dumps(manifest, ensure_ascii=False, indent=2).encode("utf-8"))
+    print(f"[收據] items={ok_count}/{TARGET_COUNT} merkle_root={merkle_root[:16]}…")
+    # 防假通過：未達 21 項成功即非零退出
+    if ok_count < TARGET_COUNT:
+        print(f"[FAIL] 僅 {ok_count}/{TARGET_COUNT} 項成功，視為失敗", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

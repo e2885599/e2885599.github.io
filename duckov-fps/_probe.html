@@ -1,0 +1,15 @@
+<!doctype html>
+<html><body><pre id="out">running...</pre>
+<script>
+(async () => {
+  let r = 'navigator.gpu=' + (!!navigator.gpu);
+  if (navigator.gpu) {
+    try {
+      const a = await navigator.gpu.requestAdapter();
+      r += ' adapter=' + (!!a);
+      if (a) { const i = a.info || {}; r += ' name=' + (i.description || i.vendor || 'unknown'); }
+    } catch (e) { r += ' adapterErr=' + e.message; }
+  }
+  document.getElementById('out').textContent = r;
+})();
+</script></body></html>
