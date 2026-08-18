@@ -10,7 +10,7 @@ import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeE
 
 const WORLD_W = 900, WORLD_D = 600, WALL_H = 220;
 const PR = 16, PH = 34;               // 玩家半徑/身高
-const GRAV = 2200, MOVE = 320, JUMP = -760, TERMINAL = 1400;
+const GRAV = 2200, MOVE = 320, JUMP = 760, TERMINAL = 1400;
 const SUBSTEPS = 2;                   // 子步進提升碰撞/穿越穩定
 const COLORS = {
   wall: 0x39435a, portalWall: 0xe4ecf8, floor: 0x131a28,
@@ -47,19 +47,13 @@ export class GameEngine {
   }
 
   async init() {
-    const useWebGL = !navigator.gpu;
-    if (useWebGL) console.warn('[portal] WebGPU 不可用，降級 WebGL2 backend');
-    this.renderer = new THREE.WebGPURenderer({ canvas: this.canvas, antialias: true, forceWebGL: useWebGL });
-    try {
-      await this.renderer.init();
-    } catch (e) {
-      throw new Error('渲染器初始化失敗（WebGPU/WebGL 均不可用）：' + e);
-    }
+    // 標準 WebGLRenderer（WebGL2）——最廣相容、最穩定，不依賴 WebGPU 實驗性支援
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.setSize(innerWidth, innerHeight);
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x05060a);
     this.scene.fog = new THREE.Fog(0x05060a, 420, 1250);
@@ -323,7 +317,7 @@ export class GameEngine {
     if ((this.keys['Space'] || this.keys['KeyW'] && false) && this.onGround) { this.playerVel.y = JUMP; this.onGround = false; }
     // 跳躍鍵：Space
     if (this.keys['Space'] && this.onGround) { this.playerVel.y = JUMP; this.onGround = false; }
-    this.playerVel.y = Math.min(TERMINAL, this.playerVel.y + GRAV * dt);
+    this.playerVel.y = Math.max(-TERMINAL, this.playerVel.y - GRAV * dt);
 
     const sdt = dt / SUBSTEPS;
     for (let s = 0; s < SUBSTEPS; s++) {
@@ -491,9 +485,7 @@ export class GameEngine {
     const loop = () => {
       const dt = Math.min(0.033, this.clock.getDelta() || 0);
       this.update(dt);
-      // renderAsync 失敗（極少數 headless/swiftshader 環境）不應殺死主迴圈
-      const pr = this.renderer.renderAsync(this.scene, this.camera);
-      if (pr && typeof pr.catch === 'function') pr.catch((e) => { if (window.__portalReady) console.warn('[portal] render 警告:', e && e.message); });
+      this.renderer.render(this.scene, this.camera);
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);

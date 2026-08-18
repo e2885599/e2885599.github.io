@@ -1,10 +1,9 @@
-// TSL 材質美化模組（Three.js WebGPU + TSL）— Z+X 視覺升級版
+// 材質模組（Three.js WebGPU + WebGL2 雙相容）— Z+X 視覺升級版（穩定版）
 // Z：PBR 貼圖（brick/metal/lava 由 tools/gen_textures.mjs 本地生成，零外部依賴）
 // X：splat 風背景層（THREE.Points 程序化光點塵埃 + 場景霧）
+// 注意：使用標準 MeshStandardMaterial / MeshBasicMaterial（非 Node 版），
+//       避免 TSL 節點（emissiveNode/colorNode）在部分 backend 下靜默編譯失敗。
 import * as THREE from 'three';
-import { Fn, uniform, positionLocal, time, vec2, vec3, vec4, float, mix,
-         oscSine, mx_fractal_noise_float, positionWorld, color, mul, add, sin, length, smoothstep,
-         texture, uv, normalMap } from 'three/tsl';
 
 const PORTAL_COLORS = { blue: 0x33aaff, orange: 0xff7700 };
 
@@ -28,76 +27,70 @@ const TEX = {
   lavaNormal:  loadTex('lava_normal.png'),
   lavaRough:   loadTex('lava_rough.png'),
 };
-// 重複平鋪（牆/地板按尺寸）
 [TEX.brickAlbedo, TEX.brickNormal, TEX.brickRough].forEach(t => { t.repeat.set(2, 2); t.needsUpdate = true; });
 [TEX.metalAlbedo, TEX.metalNormal, TEX.metalRough].forEach(t => { t.repeat.set(4, 4); t.needsUpdate = true; });
 [TEX.lavaAlbedo, TEX.lavaNormal, TEX.lavaRough].forEach(t => { t.repeat.set(3, 3); t.needsUpdate = true; });
 
-// 門面發光材質：emissive 脈動（藍/橘）
-export function makePortalMaterial(kind = 'blue') {
-  const base = new THREE.Color(PORTAL_COLORS[kind] || 0x33aaff);
-  const mat = new THREE.MeshStandardNodeMaterial({
-    color: 0x05060a, roughness: 0.4, metalness: 0.1,
-    transparent: true, opacity: 0.92, side: THREE.DoubleSide,
-  });
-  const pulse = oscSine(time.mul(1.5)).mul(0.32).add(0.68);
-  mat.emissiveNode = vec3(base.r, base.g, base.b).mul(pulse);
-  return mat;
+function safeNormal(mat, tex, scale = 1) {
+  mat.normalMap = tex;
+  mat.normalScale = new THREE.Vector2(scale, scale);
 }
 
-// 岩漿：PBR 貼圖 + TSL 流動 emissive
+// 門面發光材質（標準材質 + emissive 固定色）
+export function makePortalMaterial(kind = 'blue') {
+  const c = PORTAL_COLORS[kind] || 0x33aaff;
+  return new THREE.MeshStandardMaterial({
+    color: 0x0a0e16, roughness: 0.4, metalness: 0.1,
+    transparent: true, opacity: 0.9, side: THREE.DoubleSide,
+    emissive: new THREE.Color(c), emissiveIntensity: 0.85,
+  });
+}
+
+// 岩漿：PBR 貼圖 + emissive 暖色
 export function makeLavaMaterial() {
-  const mat = new THREE.MeshStandardNodeMaterial({
-    roughness: 0.55, metalness: 0.0, transparent: true, opacity: 0.95,
+  const mat = new THREE.MeshStandardMaterial({
+    roughness: 0.6, metalness: 0.0, transparent: true, opacity: 0.96,
   });
   mat.map = TEX.lavaAlbedo;
   mat.roughnessMap = TEX.lavaRough;
-  if ('normalMap' in mat) { mat.normalMap = TEX.lavaNormal; mat.normalScale = new THREE.Vector2(0.6, 0.6); }
-  // TSL：世界座標流動噪聲驅動 emissive，讓貼圖「活」起來
-  const n = mx_fractal_noise_float(
-    positionWorld.xz.mul(0.02).add(vec2(time.mul(0.15), 0.0)), 4, 2.0, 0.5
-  );
-  const t = smoothstep(float(0.25), float(0.8), n);
-  mat.emissiveNode = mix(vec3(0.7, 0.12, 0.04), vec3(1.0, 0.85, 0.25), t).mul(0.7);
+  safeNormal(mat, TEX.lavaNormal, 0.6);
+  mat.emissive = new THREE.Color(0xff4408);
+  mat.emissiveIntensity = 0.4;
   return mat;
 }
 
-// 可 portal 牆：brick PBR 貼圖 + 邊緣微光提示
+// 可 portal 牆：brick PBR 貼圖 + 微弱 emissive 提示
 export function makePortalableWallMaterial() {
-  const mat = new THREE.MeshStandardNodeMaterial({
-    color: 0xffffff, roughness: 0.7, metalness: 0.05,
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xffffff, roughness: 0.75, metalness: 0.05,
   });
   mat.map = TEX.brickAlbedo;
   mat.roughnessMap = TEX.brickRough;
-  if ('normalMap' in mat) { mat.normalMap = TEX.brickNormal; mat.normalScale = new THREE.Vector2(1, 1); }
-  const glow = oscSine(time.mul(0.8)).mul(0.06).add(0.94);
-  mat.emissiveNode = vec3(0.18, 0.32, 0.5).mul(glow);
+  safeNormal(mat, TEX.brickNormal, 1);
+  mat.emissive = new THREE.Color(0x224466);
+  mat.emissiveIntensity = 0.15;
   return mat;
 }
 
-// 新增：金屬地板 PBR 材質（Z 升級，取代原本扁平 Lambert）
+// 金屬地板 PBR 材質（Z 升級，取代原本扁平 Lambert）
 export function makeMetalFloorMaterial() {
-  const mat = new THREE.MeshStandardNodeMaterial({
+  const mat = new THREE.MeshStandardMaterial({
     color: 0xffffff, roughness: 0.5, metalness: 0.6,
   });
   mat.map = TEX.metalAlbedo;
   mat.roughnessMap = TEX.metalRough;
-  if ('normalMap' in mat) { mat.normalMap = TEX.metalNormal; mat.normalScale = new THREE.Vector2(0.8, 0.8); }
+  safeNormal(mat, TEX.metalNormal, 0.8);
   return mat;
 }
 
-// 出口綠柱發光
+// 出口綠柱發光（標準基礎材質 + emissive）
 export function makeExitMaterial() {
-  const mat = new THREE.MeshBasicNodeMaterial({
+  return new THREE.MeshBasicMaterial({
     color: 0x2fe08a, transparent: true, opacity: 0.5, side: THREE.DoubleSide,
   });
-  const pulse = oscSine(time.mul(2.0)).mul(0.25).add(0.6);
-  mat.colorNode = vec3(0.18, 0.88, 0.54).mul(pulse);
-  return mat;
 }
 
-// X：splat 風背景層 — 程序化飄浮光點（高斯潑濺風塵埃/光斑）
-// 回傳 THREE.Points 物件（基礎 PointsMaterial，WebGPU 相容、零 TSL 風險），由 engine 加入場景並在 update 驅動飄浮。
+// X：splat 風背景層 — 程序化飄浮光點
 export function makeSplatBackground(count = 2200, radius = 900) {
   const geo = new THREE.BufferGeometry();
   const pos = new Float32Array(count * 3);
