@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans+TC:wght@400;500;700&display=swap');
 /* ============================================================
    OODAV LAB · 工作室官網樣式 v3（比例系統重構，基於線上版 8477024 基底）
    設計語言：Fable 風格電影感深色 — 極光流動網格 / 玻璃擬態 /
@@ -56,11 +57,13 @@
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{font-family:-apple-system,"Segoe UI",Roboto,"PingFang TC","Microsoft JhengHei",sans-serif;
+body{font-family:"Space Grotesk","IBM Plex Sans TC","PingFang TC","Microsoft JhengHei",-apple-system,system-ui,sans-serif;
   background:var(--bg);
   color:var(--txt);line-height:1.8;overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
 }
+/* 特色字體：拉丁/數字走 Space Grotesk（工程幾何感），中文走 IBM Plex Sans TC（有設計意圖）
+   —— 取代「系統字主導」的 AI slop 字體信號。作為反向可證偽錨點：部署後 document.fonts 應含此二族。 */
 /* 極光流動網格背景（canvas 置底，CSS 漸層兜底） */
 #aurora{position:fixed;inset:0;z-index:-2;width:100%;height:100%;display:block;
   background:
@@ -155,9 +158,8 @@ section{padding:var(--sp-6) 0;position:relative}
 .sec-head h2{margin:var(--sp-1) 0 var(--sp-2)}
 .sec-head p{color:var(--muted);max-width:var(--w-read);font-size:var(--fs-body)}
 
-/* 卡片 */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)}
-@media(max-width:900px){.cards{grid-template-columns:1fr}}
+/* 卡片（自由流動，打破「永遠等寬三卡」的機械感） */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--sp-3)}
 .card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
   border-radius:var(--radius);padding:var(--sp-4);transition:.32s var(--ease);position:relative;overflow:hidden}
 .card::after{content:"";position:absolute;top:0;left:0;right:0;height:2px;
@@ -174,9 +176,8 @@ section{padding:var(--sp-6) 0;position:relative}
 .card ul li{padding:var(--sp-half) 0 var(--sp-half) var(--sp-3);position:relative}
 .card ul li::before{content:"▸";position:absolute;left:0;color:var(--cyan)}
 
-/* 三項理由 */
-.why{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-2);margin-top:var(--sp-1)}
-@media(max-width:900px){.why{grid-template-columns:1fr}}
+/* 三項理由（自由流動，非機械三等分） */
+.why{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--sp-2);margin-top:var(--sp-1)}
 .why .item{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
   border-radius:var(--r-lg);padding:var(--sp-3);transition:.3s var(--ease)}
 .why .item:hover{border-color:var(--violet);transform:translateY(-4px)}
@@ -252,9 +253,8 @@ input[type=range]{width:100%;accent-color:var(--cyan);height:4px;cursor:pointer}
 .stage-node.on{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(54,224,212,.25);background:rgba(54,224,212,.08)}
 .note{font-size:var(--fs-xs);color:var(--muted);margin-top:var(--sp-2);border-left:2px solid var(--violet);padding-left:var(--sp-1);line-height:1.7}
 
-/* 傳送門技術專區卡片 */
-.lab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-3)}
-@media(max-width:900px){.lab-grid{grid-template-columns:1fr}}
+/* 傳送門技術專區卡片（自由流動，打破等寬三卡） */
+.lab-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--sp-3)}
 .lab-card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);
   border-radius:var(--radius);padding:var(--sp-3);transition:.32s var(--ease);position:relative;overflow:hidden}
 .lab-card:hover{transform:translateY(-6px);border-color:var(--cyan);box-shadow:var(--shadow-glow)}
@@ -292,7 +292,27 @@ footer{border-top:1px solid var(--line);padding:var(--sp-4) 0 var(--sp-5);color:
   padding:var(--sp-1) var(--sp-2);border-radius:var(--r-md);display:flex;align-items:center;gap:var(--sp-1)}
 .reel-cap .dot{width:8px;height:8px;border-radius:50%;background:#3dff9e;box-shadow:0 0 10px #3dff9e;animation:pulse 1.6s infinite}
 
-/* 核心信息 · 滾動刷幀短片 */
+/* 滾動驅動極光脈衝（scroll-scrub） */
+.scrub-hero{padding-bottom:var(--sp-4)}
+.scrub-stage{position:relative;border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--line2);
+  box-shadow:var(--shadow);background:#04070e;aspect-ratio:21/9;max-width:var(--w-page);margin:var(--sp-3) auto 0}
+.scrub-canvas{display:block;width:100%;height:100%}
+.scrub-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  pointer-events:none;text-shadow:0 2px 24px rgba(0,0,0,.8)}
+.scrub-pct{font-family:"Space Grotesk",var(--fs-stat),sans-serif;font-size:clamp(44px,9vw,96px);font-weight:700;
+  color:var(--txt);line-height:1;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.scrub-pct i{font-size:.4em;font-style:normal;color:var(--muted);margin-left:.1em;font-weight:500}
+.scrub-hint{position:absolute;left:var(--sp-2);bottom:var(--sp-2);font-size:var(--fs-2xs);color:var(--cyan);
+  background:rgba(6,9,18,.7);border:1px solid var(--line2);padding:var(--sp-1) var(--sp-2);border-radius:var(--r-md);
+  display:flex;align-items:center;gap:var(--sp-1)}
+.scrub-hint .dot{width:8px;height:8px;border-radius:50%;background:#3dff9e;box-shadow:0 0 10px #3dff9e;animation:pulse 1.6s infinite}
+.scrub-progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(6,9,18,.6)}
+.scrub-progress span{display:block;height:100%;width:0;background:var(--grad);transition:width .08s linear}
+@media(prefers-reduced-motion:reduce){
+  .scrub-hero .reveal{opacity:1;transform:none}
+  .scrub-hint .dot{animation:none}
+  /* reduced-motion：極光靜態降級（無 scrub 跳動），由 JS 繪一幀固定畫面 */
+}
 .story{position:relative;border-radius:var(--r-xl);overflow:hidden;border:1px solid var(--line2);
   box-shadow:var(--shadow);background:var(--panel);aspect-ratio:16/9}
 .story-video{width:100%;height:100%;display:block;object-fit:cover;background:#06090f}

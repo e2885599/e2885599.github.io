@@ -60,3 +60,6 @@ notes/verify_extraction_dual_sample.py
 scripts/verify_bp_render.py
 scripts/verify_cg_render.py
 scripts/verify_site_e2e.py
+
+# 防 agent 誤帶本地備份
+*.bak_agent_*
