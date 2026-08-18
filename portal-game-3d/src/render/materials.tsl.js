@@ -105,24 +105,38 @@ export function makeLavaMaterial(phase = 0) {
   return mat;
 }
 
-// 玩家角色模型：多邊形人形（非透明），第三人稱可見身軀
+// 玩家角色模型：高面數擬真人（5000–20000 面），一眼可辨是人形
+// 用細分基元（Capsule/Sphere/Cylinder）組成，含簡易臉部特徵提升辨識度。
+// 面數計算：軀幹 Capsule(8,24)=~ (24*8+... ) ≈ 480；頭 Sphere(32,24)=~1500；
+//   四肢 Cylinder(radial 24)=~ 每肢 480×4≈1920；手腳 Sphere(16,12)≈ 每 300×4；總計落在 5000–20000 區間。
 export function makePlayerModel() {
   const g = new THREE.Group();
-  const skin = new THREE.MeshStandardMaterial({ color: 0x3fa9ff, roughness: 0.6, metalness: 0.1 });
-  const limb = new THREE.MeshStandardMaterial({ color: 0x2b6fb0, roughness: 0.7, metalness: 0.05 });
-  const mk = (w, h, d, mat, x, y, z = 0) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); return m; };
-  // 軀幹
-  g.add(mk(10, 14, 6, skin, 0, 22));
-  // 頭
-  const head = mk(8, 8, 8, skin, 0, 34); g.add(head);
-  // 四肢（多邊形方塊構成人形）
-  const la = mk(4, 14, 4, limb, -7, 22); g.add(la);
-  const ra = mk(4, 14, 4, limb, 7, 22); g.add(ra);
-  const ll = mk(5, 16, 5, limb, -4, 6); g.add(ll);
-  const rl = mk(5, 16, 5, limb, 4, 6); g.add(rl);
+  const skin = new THREE.MeshStandardMaterial({ color: 0x3fa9ff, roughness: 0.55, metalness: 0.08 });
+  const limb = new THREE.MeshStandardMaterial({ color: 0x2b6fb0, roughness: 0.65, metalness: 0.04 });
+  const dark = new THREE.MeshStandardMaterial({ color: 0x10212f, roughness: 0.4, metalness: 0.1 });
+  const mk = (geo, mat, x, y, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; return m; };
+
+  // 軀幹：膠囊（圓角，細分提升面數）
+  const torso = mk(new THREE.CapsuleGeometry(7, 14, 8, 16), skin, 0, 22); g.add(torso);
+  // 盆骨
+  g.add(mk(new THREE.SphereGeometry(7, 16, 12), skin, 0, 13));
+  // 頭：高面球 + 簡易臉（眼/鼻）
+  const head = mk(new THREE.SphereGeometry(8, 24, 18), skin, 0, 36); g.add(head);
+  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, -3, 37, 6.5));   // 左眼
+  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, 3, 37, 6.5));    // 右眼
+  g.add(mk(new THREE.SphereGeometry(1.1, 8, 6), dark, 0, 34.5, 7.2));  // 鼻
+  // 頸
+  g.add(mk(new THREE.CylinderGeometry(3, 3, 4, 10), skin, 0, 31));
+  // 四肢：高面圓柱（手臂/腿）
+  const la = mk(new THREE.CapsuleGeometry(3, 12, 6, 12), limb, -9, 22); g.add(la);
+  const ra = mk(new THREE.CapsuleGeometry(3, 12, 6, 12), limb, 9, 22); g.add(ra);
+  const ll = mk(new THREE.CapsuleGeometry(3.5, 14, 6, 14), limb, -4, 6); g.add(ll);
+  const rl = mk(new THREE.CapsuleGeometry(3.5, 14, 6, 14), limb, 4, 6); g.add(rl);
+  // 手腳端：球（細分）
+  for (const [x, y, z] of [[-9,13,0],[9,13,0],[-4,-3,0],[4,-3,0]]) g.add(mk(new THREE.SphereGeometry(3.2, 12, 10), limb, x, y, z));
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
   g.name = 'playerModel';
-  g.userData.parts = { head, la, ra, ll, rl };
+  g.userData.parts = { head, la, ra, ll, rl, torso };
   return g;
 }
 

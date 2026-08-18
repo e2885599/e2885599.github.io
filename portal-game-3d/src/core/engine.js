@@ -4,7 +4,7 @@
 // 對齊 DESIGN_SPEC.md 與 2D 主要版 portal-game.html 的已驗證物理
 
 import * as THREE from 'three';
-import { FirstPersonControls } from './controls.js';
+import { FreeOrbitControls } from './controls.js';
 import { PortalSystem } from './portals.js';
 import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem, makePlayerModel } from '../render/materials.tsl.js';
 
@@ -79,7 +79,7 @@ export class GameEngine {
     dir.shadow.mapSize.set(2048, 2048);
     this.scene.add(dir);
 
-    this.controls = new FirstPersonControls(this.camera, this.canvas);
+    this.controls = new FreeOrbitControls(this.camera, this.canvas, this.playerPos);
     this._portals = new PortalSystem(this.scene, PR);
 
     this._bindInput();
@@ -95,12 +95,9 @@ export class GameEngine {
       if (e.key === 'Escape') this._backToMenu();
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
-    this.canvas.addEventListener('click', () => {
-      if (this.mode === 'playing' && !this.controls.isLocked) this.controls.lock();
-    });
-    this.canvas.addEventListener('contextmenu', (e) => e.preventDefault());
     addEventListener('mousedown', (e) => {
-      if (this.mode !== 'playing' || !this.controls.isLocked) return;
+      if (this.mode !== 'playing') return;
+      // 自由視角：左鍵射藍門、右鍵射橘門（camera 前向即瞄準方向）
       if (e.button === 0) this._firePortal('blue');
       else if (e.button === 2) this._firePortal('orange');
     });
@@ -109,7 +106,6 @@ export class GameEngine {
 
   _backToMenu() {
     this.mode = 'menu';
-    this.controls.unlock();
     const menu = document.getElementById('menu');
     const hud = document.getElementById('hud');
     if (menu) menu.classList.remove('hidden');
@@ -244,13 +240,12 @@ export class GameEngine {
     this.playerVel.set(0, 0, 0);
     this.camera.position.copy(this.playerPos);
     this.camera.position.y += EYE;
-    this.controls.setLook(0, 0);
+    this.controls.yaw = Math.PI; this.controls.pitch = 0.35; this.controls.distance = 140; this.controls._apply();
     this.onGround = true;
     this.mode = 'playing';
   }
 
   _firePortal(color) {
-    if (!this.controls.isLocked) return;
     const ray = new THREE.Raycaster();
     const dir = new THREE.Vector3();
     this.camera.getWorldDirection(dir);
@@ -405,17 +400,8 @@ export class GameEngine {
       this.playerModel.rotation.y = Math.atan2(Math.sin(yaw), Math.cos(yaw));
     }
 
-    // 第三人稱追隨相機：在玩家後上方、朝玩家前方看（可見身軀），朝向由 yaw 計算
-    const camFwd = new THREE.Vector3(Math.sin(this.controls.yaw), 0, Math.cos(this.controls.yaw));
-    const camDist = 42, camH = 34;
-    const camTarget = new THREE.Vector3(
-      p.x - camFwd.x * camDist,
-      p.y + camH,
-      p.z - camFwd.z * camDist
-    );
-    this.camera.position.lerp(camTarget, 0.35);
-    const lookAt = new THREE.Vector3(p.x, p.y + 20, p.z);
-    this.camera.lookAt(lookAt);
+    // 自由觀察視角：每幀把 orbit 中心設到玩家，由 FreeOrbitControls 自行計算 camera 位置（旋轉/平移/縮放由使用者拖拽控制）
+    this.controls.setTarget(new THREE.Vector3(p.x, p.y + 18, p.z));
 
     // X：splat 背景層飄浮驅動（高斯潑濺風塵埃）
     // 用物件級 transform（旋轉+整體微浮），避免 WebGPU 下 BufferAttribute array 即時更新坑
@@ -579,13 +565,11 @@ export class GameEngine {
     if (this.deadFlash > 0 || this.won) return;
     this.dying = true;
     this.deadFlash = 0.9;
-    this.controls.unlock();
     this._showHint('💀 失敗！按 R 或等待重生');
   }
 
   _winLevel() {
     this.won = true;
-    this.controls.unlock();
     this.mode = 'won';
     const isLast = this.levelIndex >= this._totalLevels() - 1;
     const title = document.getElementById('winTitle');

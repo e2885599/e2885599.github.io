@@ -2,15 +2,10 @@
 # 關卡可通性靜態幾何驗證器（對齊 noether-portal auto_solver 傳統）
 # 對 5 關做可解性證明：出生/出口不嵌牆岩漿、存在雙門穿越解、每關觸及核心機制。
 # 不依賴 THREE/WebGPU，純 2D 平面（x,z）幾何近似（y 軸退化，與 2D 主要版一致）。
-import collections
-import json
-import math
-import sys
-from pathlib import Path
-
+import json, sys, math, collections
 
 def load():
-    with open(Path(__file__).with_name('levels').joinpath('levels.json'), encoding='utf-8') as f:
+    with open(__file__.replace('level_solvable.py', 'levels/levels.json'), encoding='utf-8') as f:
         return json.load(f)
 
 def aabb(px, pz, b):
@@ -33,7 +28,7 @@ def wall_portal_faces(L):
     for w in L['walls']:
         if not w.get('portalable'): continue
         cx, cz = w['x'] + w['w']/2, w['z'] + w['d']/2
-        if w['w'] >= w['d']:  # 水平牆（頂/底）：法線沿 z，雙向
+        if w['h'] < w['w']:  # 水平牆（頂/底）：法線沿 z，雙向
             for nz in (1, -1):
                 faces.append({'x':cx, 'z':cz, 'nx':0, 'nz':nz, 'w':w})
         else:  # 豎直牆（左/右）：法線沿 x，雙向
@@ -47,11 +42,10 @@ def hazards(L):
 def path_clear(x1, z1, x2, z2, L, hard=False, ignore_wall=None, ignore_lava=False):
     # 直線路徑檢查
     # ignore_lava=True：忽略岩漿（玩家可再開門跨越，落地後走路到出口），僅查實心牆
-    for h in hazards(L):
-        if ignore_lava and not h.get('hard'):
-            continue
-        if h.get('hard') and not hard: continue
-        if seg_hits_box(x1, z1, x2, z2, h): return False
+    if not ignore_lava:
+        for h in hazards(L):
+            if h.get('hard') and not hard: continue
+            if seg_hits_box(x1, z1, x2, z2, h): return False
     for w in L['walls']:
         if w is ignore_wall: continue
         if seg_hits_box(x1, z1, x2, z2, w): return False
@@ -95,8 +89,7 @@ def solvable(L, hard=False):
     if len(faces) < 2: return False, 'fewer than 2 portalable walls'
     # 3) 存在一對門 (A 放藍, B 放橘)：
     #    spawn→A 前（直線嚴查）可達；穿越後 B 外落點安全 且 其可走域含 exit（對齊落地後走動到出口）
-    step = 20
-    exit_ij = (ex // step, ez // step)
+    exit_ij = (ex // 20, ez // 20)
     for A in faces:
         # spawn 到 A 中點（門前）直線可達（嚴查：不穿岩漿/牆）
         if not path_clear(sx, sz, A['x'], A['z'], L, hard, ignore_wall=A['w']): continue
@@ -108,7 +101,7 @@ def solvable(L, hard=False):
             in_lava = any(aabb(ox, oz, h) for h in hazards(L) if (h.get('hard') and hard) or not h.get('hard'))
             if in_lava: continue
             # 落點→exit：玩家落地後走動到出口（BFS 可走域，不穿岩漿/牆），對齊主流玩家實際玩法
-            bd = walk_domain(L, int(ox), int(oz), hard, step=step)
+            bd = walk_domain(L, int(ox), int(oz), hard)
             if exit_ij in bd:
                 return True, "blue@%s,%s orange@%s,%s" % (A['w'].get('x'), A['w'].get('z'), B['w'].get('x') if 'x' in B['w'] else B['w'].get('x'), B['w'].get('z'))
     return False, 'no dual-portal path to exit'

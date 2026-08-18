@@ -7,7 +7,6 @@ import math
 UP = (0.0, 1.0, 0.0)
 PORTAL_RX = 34.0
 PORTAL_RY = 46.0
-PLAYER_R = 16.0
 
 def dot(a, b): return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]
 def sub(a, b): return (a[0]-b[0], a[1]-b[1], a[2]-b[2])
@@ -38,9 +37,8 @@ def try_teleport(prev, nxt, vel, blue, orange):
             t2 = norm(cross(UP, n2))
             ct = dot(vel, t)
             cn = dot(vel, n)
-            cu = dot(vel, UP)
-            vWorld = (ct*t2[0] + cu*UP[0] - cn*n2[0], ct*t2[1] + cu*UP[1] - cn*n2[1], ct*t2[2] + cu*UP[2] - cn*n2[2])
-            newPos = add(add(add(to['position'], scale(n2, -(PLAYER_R + 4.0))), scale(t2, tu)), scale(UP, uu))
+            vWorld = (ct*t2[0] - cn*n2[0], vel[1], ct*t2[2] - cn*n2[2])
+            newPos = add(add(add(to['position'], scale(n2, 1.5)), scale(t, tu)), scale(UP, uu))
             return {'teleported': True, 'position': newPos, 'velocity': vWorld}
     return None
 
@@ -60,8 +58,8 @@ def test_pass_sample():
     # 速度大小守恆
     sp_in = length(vel); sp_out = length(r['velocity'])
     assert approx(sp_in, sp_out), "速度大小應守恆: in=%.4f out=%.4f" % (sp_in, sp_out)
-    # 從橘門外側出（橘門法線-x，外側 = position - n2 * offset，x 應 > 800）
-    assert r['position'][0] > 800, "應從橘門外側出，x>800，實得 %.2f" % r['position'][0]
+    # 從橘門外側出（橘門法線-x，外側 = position + 1.5*(-1,0,0) 偏移，x 應 < 800）
+    assert r['position'][0] < 800, "應從橘門外側出，x<800，實得 %.2f" % r['position'][0]
     # 速度方向：in=(10,0,0) 朝 -x 穿入藍門（藍門 normal=+x 指向場景內）
     # 穿出橘門（normal=-x 指向場景內），出口沿場景內（+x）方向 → vWorld≈(+10,0,0)
     assert approx(r['velocity'][0], 10, 1e-4), "出口速度應沿場景內(+x)約 +10，實得 %.4f" % r['velocity'][0]
