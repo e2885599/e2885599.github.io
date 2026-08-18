@@ -356,10 +356,12 @@ export class GameEngine {
     this.elapsed += dt;
     const p = this.playerPos;
 
-    // 水平移動（取相機前向在 xz 平面投影）
-    const fwd = new THREE.Vector3();
-    this.camera.getWorldDirection(fwd); fwd.y = 0; fwd.normalize();
-    const right = new THREE.Vector3().crossVectors(fwd, new THREE.Vector3(0, 1, 0)).normalize();
+    // 水平移動：前向直接由 controls.yaw 計算（與 controls._apply 的 YXZ 歐拉一致），
+    // 不依賴 camera.getWorldDirection —— 第三人稱追隨相機會被 lookAt 覆寫朝向，導致移動反向
+    // 驗證：第一人稱 yaw=-π/2 看西射門成功 ⇒ fwd=(sin yaw, 0, cos yaw)
+    const yaw = this.controls.yaw;
+    const fwd = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
+    const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
     const move = new THREE.Vector3();
     if (this.keys['KeyW'] || this.keys['ArrowUp']) move.add(fwd);
     if (this.keys['KeyS'] || this.keys['ArrowDown']) move.sub(fwd);
@@ -396,17 +398,15 @@ export class GameEngine {
     // 出口判定
     this._checkExit(p);
 
-    // 玩家角色模型每幀擺位（身軀跟隨 playerPos + 視線朝向）
+    // 玩家角色模型每幀擺位（身軀跟隨 playerPos + 視線朝向，朝向由 yaw 計算）
     if (this.playerModel) {
       this.playerModel.position.set(p.x, p.y - 17, p.z);   // 模型腳底對齊玩家底部（p.y 是腳底）
-      const fwd = new THREE.Vector3();
-      this.camera.getWorldDirection(fwd); fwd.y = 0;
-      if (fwd.lengthSq() > 1e-4) { this.playerModel.rotation.y = Math.atan2(fwd.x, fwd.z); }
+      const yaw = this.controls.yaw;
+      this.playerModel.rotation.y = Math.atan2(Math.sin(yaw), Math.cos(yaw));
     }
 
-    // 第三人稱追隨相機：在玩家後上方、朝玩家前方看（可見身軀）
-    const camFwd = new THREE.Vector3();
-    this.camera.getWorldDirection(camFwd); camFwd.y = 0; camFwd.normalize();
+    // 第三人稱追隨相機：在玩家後上方、朝玩家前方看（可見身軀），朝向由 yaw 計算
+    const camFwd = new THREE.Vector3(Math.sin(this.controls.yaw), 0, Math.cos(this.controls.yaw));
     const camDist = 42, camH = 34;
     const camTarget = new THREE.Vector3(
       p.x - camFwd.x * camDist,
