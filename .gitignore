@@ -10,4 +10,53 @@ user.json
 scope.txt
 index_pub.html
 lab_pub.html
-branches.json
+branches.json/
+
+# === 備選區 · Drafts：絕不上傳（Sam 2026-08-18 硬規；agent 推送前必須先詢問用戶）===
+# 以下皆為實驗 / 草稿 / 備份 / 對帳產物 / 私有 SOP，禁止進入版本庫與 GitHub Pages。
+# 注意：gitignore 對「已追蹤」的正式檔無效，故 notes/ 與 lab/ 下已上傳的正式檔不受影響。
+
+# —— 整個草稿目錄 ——
+_verify/
+content/
+docs/
+governance/
+method/
+laplace-notes/
+# portal-game-3d/  ← 2026-08-18 起解除草稿排除：已重建為可玩 WebGPU+TSL 版，部署至 e2885599.github.io/portal-game-3d/（B 方案）
+
+# —— 備份 / 對帳腳本（模式）——
+lab/*.bak
+scripts/*.bak2
+
+# —— 根目錄具名草稿 ——
+=/
+_online_check.html
+cron-catchup-architecture.html
+identity-clarity.html
+optimization-bootcamp-mindmap.html
+laplace_first_principles.md
+game-director-sop.md
+wef2019.pdf
+assets/scrub.js
+verify_laplace.py
+"SOP-資訊專員工作手冊.md"
+
+# —— lab/ 下未上傳草稿（已追蹤的 lab/portal-2d.html 不受影響）——
+lab/cg-orchestration.html
+lab/engine-orchestration-blueprint.html
+
+# —— notes/ 下未上傳草稿（已追蹤的 inception-* / integrals-* / physics-of-learning 不受影響）——
+notes/SOP-knowledge-extraction-template.md
+notes/build_course_receipt.py
+notes/course-pg-internals-extraction.html
+notes/dune-visual-design-duel.html
+notes/frontend-architecture-audit.html
+notes/frontend-architecture-evolution.html
+notes/method-anti-ai-slop.html
+notes/verify_extraction_dual_sample.py
+
+# —— scripts/ 下未上傳驗證腳本 ——
+scripts/verify_bp_render.py
+scripts/verify_cg_render.py
+scripts/verify_site_e2e.py

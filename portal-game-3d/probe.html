@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-TW">
+<head><meta charset="utf-8"/>
+<title>PROBE_RUNNING</title>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.webgpu.js",
+    "three/webgpu": "./vendor/three.webgpu.js",
+    "three/tsl": "./vendor/three.tsl.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<pre id="out">PROBE_RUNNING</pre>
+<script type="module">
+const R = { ok:false, hasWebGPURenderer:false, hasTSL:false, backend:'n/a', err:null, ua:navigator.userAgent.slice(0,80) };
+let done = false;
+async function report() {
+  if (done) return; done = true;
+  window.__probe = R;
+  try { document.getElementById('out').textContent = JSON.stringify(R); } catch(e){}
+  try { document.title = 'PROBE_RESULT:' + JSON.stringify(R); } catch(e){}
+  try {
+    await fetch('/__probe_save', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(R) });
+  } catch (e) { /* 伺服器不支援時忽略 */ }
+}
+async function main() {
+  try {
+    const THREE = await import('three');
+    const TSL = await import('three/tsl');
+    R.hasWebGPURenderer = (typeof THREE.WebGPURenderer === 'function');
+    R.hasTSL = !!(TSL && typeof TSL === 'object' && Object.keys(TSL).length > 0);
+    if (R.hasWebGPURenderer) {
+      const renderer = new THREE.WebGPURenderer({ canvas: document.getElementById('cv'), antialias:true });
+      // 防止 init 永遠掛起：15 秒硬逾時
+      await Promise.race([
+        renderer.init(),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('WebGPURenderer.init() 逾時 15s')), 15000))
+      ]);
+      R.ok = true;
+      R.backend = (renderer.backend && renderer.backend.isWebGPUBackend) ? 'webgpu' : 'webgl-fallback';
+    } else {
+      R.backend = 'no-renderer';
+    }
+  } catch (e) {
+    R.err = String((e && e.stack) || e).slice(0,1500);
+  }
+  await report();
+}
+main();
+// 看門狗：最遲 20 秒內一定回報（含逾時標記）
+setTimeout(() => { if (!done) { R.err = (R.err || '看門狗觸發：') + ' init 未在 20s 內完成'; report(); } }, 20000);
+</script>
+</body>
+</html>

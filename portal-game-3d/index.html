@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>portal-game-3d · 傳送門（WebGPU + TSL）</title>
+<style>
+  html,body{margin:0;height:100%;background:#05060a;overflow:hidden;font-family:"Segoe UI","Microsoft JhengHei",system-ui,sans-serif;color:#e8eef7}
+  #game{display:block;width:100vw;height:100vh;cursor:crosshair}
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  #top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;padding:10px 16px}
+  .chip{background:rgba(9,14,24,.82);border:1px solid #1e3050;border-radius:8px;padding:6px 11px;font-size:13px}
+  .chip b{color:#7fe9ff}
+  #hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(9,14,24,.82);border:1px solid #1e3050;border-radius:8px;padding:8px 14px;font-size:13px;max-width:84vw;text-align:center}
+  #xh{position:absolute;left:50%;top:50%;width:18px;height:18px;transform:translate(-50%,-50%)}
+  #xh:before,#xh:after{content:"";position:absolute;background:#7fe9ff}
+  #xh:before{left:8px;top:0;width:2px;height:18px}
+  #xh:after{left:0;top:8px;width:18px;height:2px}
+  #menu{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#101a2e,#05060a);z-index:20}
+  .card{width:min(560px,92vw);background:rgba(10,16,28,.94);border:1px solid #22375c;border-radius:14px;padding:26px 30px;text-align:center}
+  .card h1{font-size:26px;letter-spacing:3px;color:#7fe9ff}
+  button{margin-top:18px;padding:12px 22px;border:1px solid #2b4570;border-radius:9px;background:linear-gradient(180deg,#16233c,#101a2e);color:#dbe8f7;font-size:15px;cursor:pointer}
+  button:hover{border-color:#7fe9ff;color:#7fe9ff}
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.webgpu.js",
+    "three/webgpu": "./vendor/three.webgpu.js",
+    "three/tsl": "./vendor/three.tsl.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="game"></canvas>
+<div id="hud" class="hidden">
+  <div id="xh"></div>
+  <div id="top">
+    <div class="chip">關卡 <b id="cLv">1/5</b></div>
+    <div class="chip" id="cName">—</div>
+    <div class="chip">模式 <b id="cMode">容易</b></div>
+    <div class="chip" id="cTimer">∞</div>
+  </div>
+  <div id="hint">WASD 移動 ｜ 點擊鎖定視角 ｜ 左鍵藍門 ｜ 右鍵橘門 ｜ R 重玩 ｜ H 切難度 ｜ ESC 解除</div>
+</div>
+<div id="menu">
+  <div class="card">
+    <h1>PORTAL GAME · 3D</h1>
+    <p style="color:#9fb8d4;margin-top:10px">WebGPU + TSL 重建版（合併 portal-lab 3D 與 noether 3D 物理關卡）</p>
+    <button id="startBtn">開始遊戲</button>
+  </div>
+</div>
+<script type="module">
+  import { boot } from './src/core/engine.js';
+  const menu = document.getElementById('menu');
+  document.getElementById('startBtn').addEventListener('click', async () => {
+    try {
+      await boot('game');
+      menu.classList.add('hidden');
+      document.getElementById('hud').classList.remove('hidden');
+    } catch (e) {
+      document.title = 'BOOT_FAIL:' + String(e);
+      console.error('[FAIL]', e);
+    }
+  });
+  window.__bootAttempted = true;
+</script>
+</body>
+</html>
