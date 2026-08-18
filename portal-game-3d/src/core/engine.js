@@ -238,6 +238,7 @@ export class GameEngine {
     if (this.playerModel) { this.world.remove(this.playerModel); }
     // 玩家角色模型：復用預載的 GLB（真實人類）或降級幾何人形
     this.playerModel = this._playerAsset.group;
+    this._playerBaseScale = this.playerModel.scale.x || 1;   // 記錄 loadPlayerModel 設的縮放（對齊玩家身高），animate loop 不得覆蓋
     this.playerMixer = this._playerAsset.mixer ? new THREE.AnimationMixer(this.playerModel) : null;
     this.playerActions = {};
     if (this.playerMixer && this._playerAsset.actions) {
@@ -506,16 +507,17 @@ export class GameEngine {
     // 死亡動畫：身軀收縮下沉 + 閃紅
     if (this.dying && this.playerModel) {
       const k = Math.max(0, this.deadFlash / 0.9);    // 0→1 動畫進度（deadFlash 倒數）
-      const sc = 0.4 + 0.6 * k;                        // 收縮
+      const sc = (0.4 + 0.6 * k) * this._playerBaseScale;   // 收縮（保留基準縮放）
       this.playerModel.scale.setScalar(sc);
       this.playerModel.position.y = p.y - 17 - (1 - k) * 24;  // 下沉
       const parts = this.playerModel.userData.parts;
-      [parts.head, parts.la, parts.ra, parts.ll, parts.rl].forEach(mes => {
-        if (mes && mes.material) { mes.material.emissive = new THREE.Color(0xff0000); mes.material.emissiveIntensity = (1 - k) * 1.5; }
-      });
-    } else if (this.playerModel) {
-      this.playerModel.scale.setScalar(1);
+      if (parts) {
+        [parts.head, parts.la, parts.ra, parts.ll, parts.rl].forEach(mes => {
+          if (mes && mes.material) { mes.material.emissive = new THREE.Color(0xff0000); mes.material.emissiveIntensity = (1 - k) * 1.5; }
+        });
+      }
     }
+    // 非死亡：保留 loadPlayerModel 設的基準縮放（不得重設為 1，否則模型塌縮成原尺寸小點）
     // 雪花飄落 + 自旋（細緻多邊形實體動態）
     if (this.snow) {
       const data = this.snow.userData.snow;
