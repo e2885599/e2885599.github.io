@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<title>逃離鴨科夫 · 射擊遊戲總架構藍圖</title>
+<style>
+  :root{ --bg:#020617; --card:#0f172a; --grid:#1e293b; --cyan:#22d3ee; --emerald:#34d399; --violet:#a78bfa; --amber:#fbbf24; --rose:#fb7185; --slate:#94a3b8; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:#e2e8f0; font-family:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:28px 20px 60px; }
+  header h1{ font-size:20px; margin:0 0 4px; }
+  header .sub{ color:var(--slate); font-size:12px; }
+  .pulse{ display:inline-block; width:9px; height:9px; border-radius:50%; background:var(--emerald); margin-right:8px; animation:p 1.6s infinite; }
+  @keyframes p{ 0%,100%{opacity:1} 50%{opacity:.25} }
+  .stage{ background:var(--card); border:1px solid var(--grid); border-radius:14px; padding:18px; margin-top:18px; }
+  .flow{ display:flex; flex-wrap:wrap; gap:14px; align-items:stretch; }
+  .box{ flex:1 1 200px; border-radius:10px; padding:12px 14px; border:1.5px solid; position:relative; }
+  .box .t{ font-size:13px; font-weight:700; }
+  .box .d{ font-size:10px; color:var(--slate); margin-top:6px; line-height:1.5; }
+  .b-fe{ border-color:var(--cyan); background:rgba(8,51,68,.4); }
+  .b-be{ border-color:var(--emerald); background:rgba(6,78,59,.4); }
+  .b-db{ border-color:var(--violet); background:rgba(76,29,149,.4); }
+  .b-am{ border-color:var(--amber); background:rgba(120,53,15,.3); }
+  .b-se{ border-color:var(--rose); background:rgba(136,19,55,.4); }
+  .b-ex{ border-color:var(--slate); background:rgba(30,41,59,.5); }
+  .arrow{ text-align:center; color:var(--slate); font-size:18px; align-self:center; }
+  .legend{ display:flex; flex-wrap:wrap; gap:14px; margin-top:16px; font-size:10px; }
+  .legend span{ display:inline-flex; align-items:center; gap:6px; }
+  .dot{ width:10px; height:10px; border-radius:3px; display:inline-block; }
+  .cards{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-top:18px; }
+  .card{ background:var(--card); border:1px solid var(--grid); border-radius:12px; padding:14px; }
+  .card h3{ font-size:13px; margin:0 0 8px; display:flex; align-items:center; gap:8px; }
+  .card ul{ margin:0; padding-left:16px; font-size:11px; color:#cbd5e1; line-height:1.7; }
+  .note{ margin-top:18px; font-size:11px; color:var(--slate); border-left:3px solid var(--amber); padding-left:12px; line-height:1.7; }
+  footer{ margin-top:24px; font-size:10px; color:var(--slate); text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="pulse"></span>逃離鴨科夫 · 射擊遊戲 — 技術總架構</h1>
+    <div class="sub">路線：Web 優先原型 ｜ Blender 資產生產 → glTF → Three.js(WebGPU) 即時遊戲 ＋ 高斯潑濺場景層 ｜ 目標 7GB / 40h 通關 / 難度調勻</div>
+  </header>
+
+  <div class="stage">
+    <div class="flow">
+      <div class="box b-fe"><div class="t">① Blender 資產生產</div><div class="d">角色骨架動畫／武器模型／場景模組／EEVEE Next 烘焙 PBR＋GI 貼圖</div></div>
+      <div class="arrow">→</div>
+      <div class="box b-be"><div class="t">② glTF 匯出管線</div><div class="d">統一 .glb（draco 壓縮）＋ 多視角渲染產 splat 訓練集</div></div>
+      <div class="arrow">→</div>
+      <div class="box b-db"><div class="t">③ Three.js WebGPU 引擎</div><div class="d">核心迴圈／渲染／NPC 行為樹／武器系統／難度調度器</div></div>
+    </div>
+    <div class="flow" style="margin-top:14px;">
+      <div class="box b-am"><div class="t">④ 難度調度器</div><div class="d">固定曲線（8 章遞增＋波動＋Boss 尖峰）× 自適應 offset（K/D·命中率·死亡頻）</div></div>
+      <div class="arrow">↔</div>
+      <div class="box b-se"><div class="t">⑤ splat 場景層</div><div class="d">自訓練 3DGS 作背景／遠景；前景遊戲物件走 PBR 即時</div></div>
+      <div class="arrow">→</div>
+      <div class="box b-ex"><div class="t">⑥ GitHub Pages 部署</div><div class="d">靜態站＋資產分包流送；Merkle 收據對帳每次發版</div></div>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot" style="background:var(--cyan)"></i>資產生產</span>
+    <span><i class="dot" style="background:var(--emerald)"></i>匯出管線</span>
+    <span><i class="dot" style="background:var(--violet)"></i>遊戲引擎</span>
+    <span><i class="dot" style="background:var(--amber)"></i>難度系統</span>
+    <span><i class="dot" style="background:var(--rose)"></i>高斯潑濺</span>
+    <span><i class="dot" style="background:var(--slate)"></i>部署</span>
+  </div>
+
+  <div class="cards">
+    <div class="card"><h3><span class="dot" style="background:var(--violet)"></span>引擎模組</h3><ul>
+      <li>core：遊戲迴圈／ECS 骨架</li>
+      <li>render：WebGPURenderer＋PBR＋後處理</li>
+      <li>npc：行為樹＋狀態機＋腳本對話</li>
+      <li>weapon：射線／彈道／後坐力／彈匣／傷害</li>
+    </ul></div>
+    <div class="card"><h3><span class="dot" style="background:var(--amber)"></span>難度雙軌</h3><ul>
+      <li>固定曲線：progress∈[0,1] 映射密度/傷害/命中/稀缺/反應</li>
+      <li>自適應：依玩家表現偏移 ±20%</li>
+      <li>目標：中段流失最低、終局有挑戰</li>
+    </ul></div>
+    <div class="card"><h3><span class="dot" style="background:var(--rose)"></span>容量預算 7GB</h3><ul>
+      <li>角色/動畫 ~1.8GB</li>
+      <li>武器/特效 ~1.2GB</li>
+      <li>場景模組 ~2.5GB</li>
+      <li>splat 場景 ~1.0GB</li>
+      <li>音頻/語音 ~0.5GB</li>
+    </ul></div>
+  </div>
+
+  <div class="note">說明：本藍圖為階段一（Web 優先）的「可擴展骨架」。Blender 統一負責全部資產生產；Three.js WebGPU 負責即時執行；splat 為場景背景層掛接點（階段二接入自訓練 3DGS）。首版交付以「可跑 FPS 骨架＋難度模型＋武器/NPC 核心」為可證偽驗收基準。</div>
+
+  <footer>逃離鴨科夫 · OODAV LAB 主動資運工程工作室 — 架構藍圖 v0.1（中文）</footer>
+</div>
+</body>
+</html>
