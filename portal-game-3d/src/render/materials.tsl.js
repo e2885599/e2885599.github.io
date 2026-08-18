@@ -46,7 +46,8 @@ export function makePortalMaterial(kind = 'blue') {
   });
 }
 
-// 岩漿：PBR 貼圖 + emissive 暖色 + 流體感（UV 滾動 + 熱斑脈動，由 engine 驅動 uTime）
+// 岩漿：PBR 貼圖 + emissive 暖色 + 流體感（UV 滾動 + 熱斑脈動）由 engine 驅動 uTime
+// 進階：onBeforeCompile 注入 GLSL 擾動扭曲（頂點鼓包起伏 + 片元流動噪聲），真正液體湧動而非貼圖平移
 export function makeLavaMaterial(phase = 0) {
   const mat = new THREE.MeshStandardMaterial({
     roughness: 0.6, metalness: 0.0, transparent: true, opacity: 0.96,
@@ -58,7 +59,71 @@ export function makeLavaMaterial(phase = 0) {
   mat.emissiveIntensity = 0.4;
   mat.userData.phase = phase;       // 各岩漿塊相位偏移，避免同步
   mat.userData.baseEmissive = 0.4;
+  // GLSL 擾動扭曲注入
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uTime = { value: phase };
+    shader.uniforms.uPhase = { value: phase };
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', `#include <common>
+        uniform float uTime; uniform float uPhase;
+        // 頂點鼓包起伏：表面湧動
+        float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+        float vnoise(vec2 p){
+          vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+          return mix(mix(hash(i),hash(i+vec2(1,0)),f.x), mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x), f.y);
+        }`)
+      .replace('#include <begin_vertex>', `#include <begin_vertex>
+        float wv = vnoise(uv * 6.0 + uTime * 0.8 + uPhase);
+        float wv2 = sin(uv.x * 10.0 + uTime * 1.7 + uPhase) * cos(uv.y * 8.0 - uTime * 1.3);
+        transformed.y += (wv * 0.9 + wv2 * 0.25);   // 頂部起伏（沿法線近似 +y）
+        transformed.x += sin(uv.y * 14.0 + uTime * 2.1 + uPhase) * 0.18;
+        transformed.z += cos(uv.x * 12.0 - uTime * 1.9 + uPhase) * 0.18;`);
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', `#include <common>
+        uniform float uTime; uniform float uPhase;
+        float fhash(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+        float fnoise(vec2 p){
+          vec2 i=floor(p), f=fract(p); f=f*f*(3.0-2.0*f);
+          return mix(mix(fhash(i),fhash(i+vec2(1,0)),f.x), mix(fhash(i+vec2(0,1)),fhash(i+vec2(1,1)),f.x), f.y);
+        }`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+        // 流動噪聲扭曲 UV → 岩漿液體扭曲而非平移
+        vec2 warp = vec2(
+          fnoise(vMapUv * 5.0 + uTime * 0.6 + uPhase) - 0.5,
+          fnoise(vMapUv * 5.0 - uTime * 0.5 + uPhase * 1.3) - 0.5
+        ) * 0.35;
+        vec2 warpedUv = vMapUv + warp;
+        #ifdef USE_MAP
+          vec4 warpedTex = texture2D( map, warpedUv * 1.0 );
+          diffuseColor *= warpedTex;
+        #endif
+        // 熱斑沿空間噪聲脈動
+        float hot = fnoise(vMapUv * 9.0 + uTime * 1.1 + uPhase);
+        totalEmissiveRadiance += diffuseColor.rgb * (0.25 + hot * 0.5);`);
+    mat.userData.shader = shader;
+  };
   return mat;
+}
+
+// 玩家角色模型：多邊形人形（非透明），第三人稱可見身軀
+export function makePlayerModel() {
+  const g = new THREE.Group();
+  const skin = new THREE.MeshStandardMaterial({ color: 0x3fa9ff, roughness: 0.6, metalness: 0.1 });
+  const limb = new THREE.MeshStandardMaterial({ color: 0x2b6fb0, roughness: 0.7, metalness: 0.05 });
+  const mk = (w, h, d, mat, x, y, z = 0) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y, z); return m; };
+  // 軀幹
+  g.add(mk(10, 14, 6, skin, 0, 22));
+  // 頭
+  const head = mk(8, 8, 8, skin, 0, 34); g.add(head);
+  // 四肢（多邊形方塊構成人形）
+  const la = mk(4, 14, 4, limb, -7, 22); g.add(la);
+  const ra = mk(4, 14, 4, limb, 7, 22); g.add(ra);
+  const ll = mk(5, 16, 5, limb, -4, 6); g.add(ll);
+  const rl = mk(5, 16, 5, limb, 4, 6); g.add(rl);
+  g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
+  g.name = 'playerModel';
+  g.userData.parts = { head, la, ra, ll, rl };
+  return g;
 }
 
 // 雪花系統：細緻多邊形化（InstancedMesh + IcosahedronGeometry 細分，非方點 Points）

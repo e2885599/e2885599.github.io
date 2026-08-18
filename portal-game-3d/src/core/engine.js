@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { FirstPersonControls } from './controls.js';
 import { PortalSystem } from './portals.js';
-import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem } from '../render/materials.tsl.js';
+import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem, makePlayerModel } from '../render/materials.tsl.js';
 
 const WORLD_W = 900, WORLD_D = 600;
 // 垂直比例參照傳送門2（Portal 2）：以玩家身高 PH=34 為基準
@@ -43,6 +43,8 @@ export class GameEngine {
     this.portalMeshes = [];
     this.lavas = [];          // 岩漿材質集合（流體感驅動）
     this.snow = null;         // 雪花系統（細緻多邊形化）
+    this.playerModel = null;  // 第三人稱可見身軀
+    this.dying = false;       // 死亡動畫進行中
     this.deadFlash = 0;
     this.won = false;
     this.elapsed = 0;
@@ -219,6 +221,13 @@ export class GameEngine {
     this.snow = makeSnowSystem(900, 900, 600);
     this.world.add(this.snow);
 
+    // 玩家角色模型（第三人稱可見身軀，非透明）
+    if (this.playerModel) { this.world.remove(this.playerModel); }
+    this.playerModel = makePlayerModel();
+    this.world.add(this.playerModel);
+    this.dying = false;
+    this.deadFlash = 0;
+
     // 移動尖刺補充 mesh（hard 模式才顯示，這裡先建好由 update 控制可見性）
     this.scene.add(this.world);
 
@@ -329,13 +338,17 @@ export class GameEngine {
   }
 
   update(dt) {
-    if (this.mode !== 'playing') return;
+    if (this.mode !== 'playing') return;   // 操作/勝利畫面凍結
     const L = this.levelData;
 
-    // 死亡閃爍期：凍結並重生
+    // 死亡動畫期：仍執行 update（驅動死亡收縮/閃紅動畫），但不接受移動輸入
     if (this.deadFlash > 0) {
       this.deadFlash -= dt;
-      if (this.deadFlash <= 0) this.resetLevel();
+      if (this.deadFlash <= 0) { this.resetLevel(); return; }
+      const p = this.playerPos;
+      this.elapsed += dt;
+      // 僅更新視覺動畫（岩漿/雪花/身軀），不處理移動/碰撞/出口
+      this._animPass(dt);
       return;
     }
     if (this.won) return;
@@ -383,8 +396,26 @@ export class GameEngine {
     // 出口判定
     this._checkExit(p);
 
-    this.camera.position.copy(p);
-    this.camera.position.y += EYE;   // Portal 2 第一人稱：視線在玩家眼睛高度
+    // 玩家角色模型每幀擺位（身軀跟隨 playerPos + 視線朝向）
+    if (this.playerModel) {
+      this.playerModel.position.set(p.x, p.y - 17, p.z);   // 模型腳底對齊玩家底部（p.y 是腳底）
+      const fwd = new THREE.Vector3();
+      this.camera.getWorldDirection(fwd); fwd.y = 0;
+      if (fwd.lengthSq() > 1e-4) { this.playerModel.rotation.y = Math.atan2(fwd.x, fwd.z); }
+    }
+
+    // 第三人稱追隨相機：在玩家後上方、朝玩家前方看（可見身軀）
+    const camFwd = new THREE.Vector3();
+    this.camera.getWorldDirection(camFwd); camFwd.y = 0; camFwd.normalize();
+    const camDist = 42, camH = 34;
+    const camTarget = new THREE.Vector3(
+      p.x - camFwd.x * camDist,
+      p.y + camH,
+      p.z - camFwd.z * camDist
+    );
+    this.camera.position.lerp(camTarget, 0.35);
+    const lookAt = new THREE.Vector3(p.x, p.y + 20, p.z);
+    this.camera.lookAt(lookAt);
 
     // X：splat 背景層飄浮驅動（高斯潑濺風塵埃）
     // 用物件級 transform（旋轉+整體微浮），避免 WebGPU 下 BufferAttribute array 即時更新坑
@@ -393,12 +424,58 @@ export class GameEngine {
       this.splat.rotation.y = tt * 0.02;
       this.splat.position.y = Math.sin(tt * 0.3) * 18;
     }
-    // 岩漿流體感：UV 滾動（表面湧動）+ 熱斑脈動 emissive（各塊相位偏移）
+    // 視覺動畫統一入口（岩漿擾動 + 死亡動畫 + 雪花）；正常與死亡期共用
+    this._animPass(dt);
+    // 難度倒數
+    if (this.difficulty === 'hard' && this._timeLeft > 0) {
+      this._timeLeft = Math.max(0, this._timeLeft - dt);
+      if (this._hudTimerEl) this._hudTimerEl.textContent = Math.ceil(this._timeLeft) + 's';
+      if (this._timeLeft <= 0) { this._die(); }
+    }
+  }
+
+  _checkHazards(p) {
+    const hardOnly = this.difficulty !== 'hard';
+    for (const hz of this.hazards) {
+      if (hz.hard && hardOnly) continue;       // easy 模式移動尖刺不致命（岩漿不帶 hard 標記，不受此限）
+      const box = hz.motion
+        ? { x: hz.mesh.position.x - hz.w / 2, z: hz.mesh.position.z - hz.d / 2, w: hz.w, d: hz.d }
+        : { x: hz.x, z: hz.z, w: hz.w, d: hz.d };
+      // 玩家足跡是否落在岩漿/尖刺上（xz 重疊且 y 接近地面）
+      if (p.x > box.x - PR && p.x < box.x + box.w + PR && p.z > box.z - PR && p.z < box.z + box.d + PR) {
+        // 岩漿（無 hard 標記）任何模式致死；移動尖刺僅 hard 模式（easy 已在 line397 濾掉）
+        this._die(); return;
+      }
+    }
+  }
+
+  // 視覺動畫統一入口：岩漿擾動扭曲 + 死亡動畫 + 雪花飄落
+  // 正常 update 與死亡期（deadFlash>0）共用，確保死亡動畫真的被驅動
+  _animPass(dt) {
+    const p = this.playerPos;
+    // 岩漿流體感：GLSL 擾動扭曲（頂點起伏 + 片元流動噪聲）+ 熱斑脈動
     for (const m of this.lavas) {
       const ph = m.userData.phase || 0;
       const t = this.elapsed + ph;
       if (m.map) { m.map.offset.x = (t * 0.05) % 1; m.map.offset.y = (t * 0.03) % 1; }
       m.emissiveIntensity = m.userData.baseEmissive + Math.sin(t * 1.6) * 0.22 + 0.12;
+      if (m.userData.shader) {
+        m.userData.shader.uniforms.uTime.value = t;
+        m.userData.shader.uniforms.uPhase.value = ph;
+      }
+    }
+    // 死亡動畫：身軀收縮下沉 + 閃紅
+    if (this.dying && this.playerModel) {
+      const k = Math.max(0, this.deadFlash / 0.9);    // 0→1 動畫進度（deadFlash 倒數）
+      const sc = 0.4 + 0.6 * k;                        // 收縮
+      this.playerModel.scale.setScalar(sc);
+      this.playerModel.position.y = p.y - 17 - (1 - k) * 24;  // 下沉
+      const parts = this.playerModel.userData.parts;
+      [parts.head, parts.la, parts.ra, parts.ll, parts.rl].forEach(mes => {
+        if (mes && mes.material) { mes.material.emissive = new THREE.Color(0xff0000); mes.material.emissiveIntensity = (1 - k) * 1.5; }
+      });
+    } else if (this.playerModel) {
+      this.playerModel.scale.setScalar(1);
     }
     // 雪花飄落 + 自旋（細緻多邊形實體動態）
     if (this.snow) {
@@ -422,27 +499,6 @@ export class GameEngine {
         this.snow.setMatrixAt(i, dummy.matrix);
       }
       this.snow.instanceMatrix.needsUpdate = true;
-    }
-    // 難度倒數
-    if (this.difficulty === 'hard' && this._timeLeft > 0) {
-      this._timeLeft = Math.max(0, this._timeLeft - dt);
-      if (this._hudTimerEl) this._hudTimerEl.textContent = Math.ceil(this._timeLeft) + 's';
-      if (this._timeLeft <= 0) { this._die(); }
-    }
-  }
-
-  _checkHazards(p) {
-    const hardOnly = this.difficulty !== 'hard';
-    for (const hz of this.hazards) {
-      if (hz.hard && hardOnly) continue;       // easy 模式移動尖刺不致命（岩漿不帶 hard 標記，不受此限）
-      const box = hz.motion
-        ? { x: hz.mesh.position.x - hz.w / 2, z: hz.mesh.position.z - hz.d / 2, w: hz.w, d: hz.d }
-        : { x: hz.x, z: hz.z, w: hz.w, d: hz.d };
-      // 玩家足跡是否落在岩漿/尖刺上（xz 重疊且 y 接近地面）
-      if (p.x > box.x - PR && p.x < box.x + box.w + PR && p.z > box.z - PR && p.z < box.z + box.d + PR) {
-        // 岩漿（無 hard 標記）任何模式致死；移動尖刺僅 hard 模式（easy 已在 line397 濾掉）
-        this._die(); return;
-      }
     }
   }
 
@@ -521,7 +577,8 @@ export class GameEngine {
 
   _die() {
     if (this.deadFlash > 0 || this.won) return;
-    this.deadFlash = 0.6;
+    this.dying = true;
+    this.deadFlash = 0.9;
     this.controls.unlock();
     this._showHint('💀 失敗！按 R 或等待重生');
   }
