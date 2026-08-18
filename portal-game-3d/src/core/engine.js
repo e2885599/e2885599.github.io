@@ -10,7 +10,7 @@ import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeE
 
 const WORLD_W = 900, WORLD_D = 600, WALL_H = 220;
 const PR = 16, PH = 34;               // 玩家半徑/身高
-const GRAV = 2200, MOVE = 320, JUMP = 760, TERMINAL = 1400;
+const GRAV = 2200, MOVE = 30, JUMP = 760, TERMINAL = 1400;
 const SUBSTEPS = 2;                   // 子步進提升碰撞/穿越穩定
 const COLORS = {
   wall: 0x39435a, portalWall: 0xe4ecf8, floor: 0x131a28,
@@ -310,7 +310,7 @@ export class GameEngine {
     if (this.keys['KeyS'] || this.keys['ArrowDown']) move.sub(fwd);
     if (this.keys['KeyD'] || this.keys['ArrowRight']) move.add(right);
     if (this.keys['KeyA'] || this.keys['ArrowLeft']) move.sub(right);
-    if (move.lengthSq() > 0) move.normalize().multiplyScalar(MOVE * dt);
+    if (move.lengthSq() > 0) move.normalize().multiplyScalar(MOVE);
     this.playerVel.x = move.x; this.playerVel.z = move.z;
 
     // 跳躍 / 重力
