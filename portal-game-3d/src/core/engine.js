@@ -125,8 +125,8 @@ export class GameEngine {
     const modelKey = (new URLSearchParams(location.search).get('model') === 'meshy') ? 'meshy' : 'khronos';
     if (!this._playerAssets) this._playerAssets = {};
     if (!this._playerAssets[modelKey]) {
-      this._showHint('載入角色模型中…');
-      this._playerAssets[modelKey] = await loadPlayerModel(modelKey);
+      document.getElementById('loadPanel')?.classList.remove('hidden');
+      this._playerAssets[modelKey] = await loadPlayerModel(modelKey, (p) => this._showLoadProgress(p));
     }
     this._playerModelKey = modelKey;
     this._playerAsset = this._playerAssets[modelKey];
@@ -252,8 +252,7 @@ export class GameEngine {
     this.world.add(this.playerModel);
     this.dying = false;
     this.deadFlash = 0;
-
-    // 移動尖刺補充 mesh（hard 模式才顯示，這裡先建好由 update 控制可見性）
+    this._finishLoadProgress(this._playerAsset);   // 載入完成：隱藏進度面板 + 顯示顯存估算
     this.scene.add(this.world);
 
     const nameEl = document.getElementById('cName');
@@ -648,6 +647,33 @@ export class GameEngine {
   _showHint(msg) {
     const el = document.getElementById('hint');
     if (el) { el.textContent = msg; el.style.opacity = 1; }
+  }
+
+  // 載入流量管理：顯示已載/總位元組 + 剩餘秒數 + 顯存估算
+  _showLoadProgress(p) {
+    const fill = document.getElementById('loadBarFill');
+    const bytesEl = document.getElementById('loadBytes');
+    const etaEl = document.getElementById('loadEta');
+    if (!p) return;
+    const loadedKB = (p.loaded / 1024).toFixed(0);
+    const totalKB = p.total > 0 ? (p.total / 1024).toFixed(0) : '?';
+    if (fill) fill.style.width = (p.total > 0 ? Math.min(100, (p.loaded / p.total) * 100) : 0) + '%';
+    if (bytesEl) bytesEl.textContent = `${loadedKB} / ${totalKB} KB`;
+    if (etaEl) {
+      if (p.remainingSec >= 0) etaEl.textContent = `剩餘 ${p.remainingSec.toFixed(1)} 秒`;
+      else etaEl.textContent = '剩餘 — 秒（計算中）';
+    }
+  }
+
+  // 載入完成：隱藏進度面板 + 顯示顯存估算
+  _finishLoadProgress(asset) {
+    const panel = document.getElementById('loadPanel');
+    if (panel) panel.classList.add('hidden');
+    const memEl = document.getElementById('loadMem');
+    if (memEl && asset) {
+      const mb = asset.memMB != null ? asset.memMB : 0;
+      memEl.textContent = `預計顯存佔用：${mb.toFixed(2)} MB（幾何 ${(asset.geoBytes||0)/1024|0} KB / 紋理 ${(asset.texBytes||0)/1024|0} KB）`;
+    }
   }
 
   start() {

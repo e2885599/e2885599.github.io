@@ -114,10 +114,27 @@ const PLAYER_MODELS = {
   khronos: './vendor/models/khronos_CesiumMan.glb',   // 主力：零成本 + 骨骼動畫
   meshy:   './vendor/models/meshy_human.glb',         // 高精：照片級真人（需 Meshy 生成）
 };
-export async function loadPlayerModel(modelKey = 'khronos') {
+export async function loadPlayerModel(modelKey = 'khronos', onProgress) {
   const url = PLAYER_MODELS[modelKey] || PLAYER_MODELS.khronos;
   try {
-    const gltf = await new GLTFLoader().loadAsync(url);
+    const gltf = await new Promise((resolve, reject) => {
+      const loader = new GLTFLoader();
+      // 載入流量管理：onProgress 回報已載/總位元組 + 估算剩餘秒數
+      let _t0 = performance.now();
+      loader.load(url, resolve, (xhr) => {
+        if (onProgress && xhr) {
+          const loaded = xhr.loaded || 0;
+          const total = xhr.lengthComputable ? xhr.total : 0;
+          let remainingSec = -1;
+          if (total > 0 && loaded > 0) {
+            const elapsed = (performance.now() - _t0) / 1000;
+            const rate = loaded / Math.max(elapsed, 0.001);   // bytes/s（灌入流量）
+            remainingSec = rate > 0 ? (total - loaded) / rate : -1;
+          }
+          onProgress({ loaded, total, remainingSec, url });
+        }
+      }, reject);
+    });
     const group = gltf.scene;
     group.name = 'playerModel';
     // 材質徹底重寫：丟棄 GLB 原材質（避免透明/雙面剔除/過暗導致「透明身軀」），
@@ -151,10 +168,25 @@ export async function loadPlayerModel(modelKey = 'khronos') {
     const h = box.max.y - box.min.y;
     const scale = h > 0 ? 34 / h : 1;
     group.scale.setScalar(scale);
-    return { group, mixer, actions, hasAnim, modelKey, fallback: false };
+    // 記憶體估算：幾何可見記憶體（頂點+索引+紋理）≈ GPU 顯存佔用
+    let geoBytes = 0, texBytes = 0;
+    group.traverse(o => {
+      if (o.isMesh && o.geometry) {
+        const g = o.geometry;
+        if (g.attributes.position) geoBytes += g.attributes.position.count * 12;   // xyz float32
+        if (g.attributes.normal) geoBytes += g.attributes.normal.count * 12;
+        if (g.attributes.uv) geoBytes += g.attributes.uv.count * 8;
+        if (g.index) geoBytes += g.index.count * 4;
+        const m = o.material;
+        const maps = m ? [m.map, m.normalMap, m.roughnessMap, m.metalnessMap, m.emissiveMap, m.aoMap] : [];
+        for (const t of maps) { if (t && t.image) { const w = t.image.width || 0, h2 = t.image.height || 0; texBytes += w * h2 * 4; } }
+      }
+    });
+    const memMB = (geoBytes + texBytes) / (1024 * 1024);
+    return { group, mixer, actions, hasAnim, modelKey, fallback: false, memMB, geoBytes, texBytes };
   } catch (e) {
     console.warn('[portal] GLB 載入失敗，降級幾何人形：', e);
-    return { group: makePlayerModelFallback(), mixer: null, actions: {}, hasAnim: false, modelKey, fallback: true };
+    return { group: makePlayerModelFallback(), mixer: null, actions: {}, hasAnim: false, modelKey, fallback: true, memMB: 0 };
   }
 }
 

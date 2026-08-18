@@ -20,6 +20,10 @@
   #menu{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#101a2e,#05060a);z-index:20}
   .card{width:min(560px,92vw);background:rgba(10,16,28,.94);border:1px solid #22375c;border-radius:14px;padding:26px 30px;text-align:center}
   .card h1{font-size:26px;letter-spacing:3px;color:#7fe9ff}
+  #loadPanel{margin-top:20px;text-align:left;font-size:13px;color:#9fb8d4}
+  #loadBar{height:10px;background:#0c1626;border:1px solid #22375c;border-radius:6px;overflow:hidden;margin:8px 0}
+  #loadBarFill{height:100%;width:0%;background:linear-gradient(90deg,#1b6fb0,#7fe9ff);transition:width .15s}
+  #loadInfo{display:flex;justify-content:space-between;font-variant-numeric:tabular-nums}
   button{margin-top:18px;padding:12px 22px;border:1px solid #2b4570;border-radius:9px;background:linear-gradient(180deg,#16233c,#101a2e);color:#dbe8f7;font-size:15px;cursor:pointer}
   button:hover{border-color:#7fe9ff;color:#7fe9ff}
 </style>
@@ -55,6 +59,12 @@
     <h1>PORTAL GAME · 3D</h1>
     <p style="color:#9fb8d4;margin-top:10px">WebGPU + TSL 重建版（合併 portal-lab 3D 與 noether 3D 物理關卡）</p>
     <button id="startBtn">開始遊戲</button>
+    <div id="loadPanel" class="hidden">
+      <div>角色模型灌入中…</div>
+      <div id="loadBar"><div id="loadBarFill"></div></div>
+      <div id="loadInfo"><span id="loadBytes">0 / 0 KB</span><span id="loadEta">剩餘 — 秒</span></div>
+      <div id="loadMem" style="margin-top:6px;color:#7fe9ff">預計顯存佔用：—</div>
+    </div>
   </div>
 </div>
 <script type="module">
