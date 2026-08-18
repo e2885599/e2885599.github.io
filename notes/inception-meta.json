@@ -1,0 +1,11 @@
+{
+  "source_srt": "notes/inception-transcript.srt",
+  "source_sha256": "e9232a055dfae87a4781899f90ee30c61a2f57e2533a412c95e23b4d6b18c882",
+  "clean_sha256": "6aea0da45b22f513fd5a3ca4f5d6e37337b1f22263d69c7ff6fa1652ee174645",
+  "duration_sec": 2316.24,
+  "duration_hms": "00:38:36",
+  "cue_count": 900,
+  "sentence_count": 357,
+  "word_count": 5948,
+  "char_count": 33269
+}

@@ -99,6 +99,41 @@
 <section>
   <div class="wrap">
     <div class="sec-head reveal">
+      <div class="k">我們的設計語言 · Design System</div>
+      <h2>不是 prompt，是一套能被複製的系統</h2>
+      <p>影片裡點名「AI 爛貨」的根因：每個人都下同一類 prompt，模型吐出同一套結果（通用字、靛紫漸層、永遠三卡、毛玻璃）。我們的應對是——先有 codified 設計系統，再用「屬於自己的生成資產」填充。這一頁本身就是證明。</p>
+    </div>
+    <div class="why">
+      <div class="item reveal d1"><h4>① 特色字體</h4><p>拉丁與數字走 <b style="color:var(--cyan)">Space Grotesk</b>（工程幾何感），中文走 <b style="color:var(--cyan)">IBM Plex Sans TC</b>——擺脫「系統字主導」的 AI 味，建立可識別的字形簽名。</p></div>
+      <div class="item reveal d2"><h4>② 比例系統</h4><p>字階、間距、容器寬、圓角全以黃金比收斂成令牌，消除散彈魔法數字——告別「每次重下 prompt」的隨機感。</p></div>
+      <div class="item reveal d3"><h4>③ 獨特生成資產</h4><p>極光 canvas、滾動刷幀短片、可穿牆傳送門——都是「能玩能驗、屬於我們自己」的資產，而非模板套圖。</p></div>
+      <div class="item reveal d4"><h4>④ 透明對帳</h4><p>每筆交付留不可竄改指紋、每個聲稱可被打臉——「不黑箱」在視覺與工程面統一。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 滾動驅動極光脈衝：滑鼠滾輪 scrub，證明「動態/滾動動畫」取向 -->
+<section class="scrub-hero">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">滾動驅動 · Scroll-Scrubbed Aurora</div>
+      <h2>滾一下，極光就聽你的</h2>
+      <p>這一塊完全由<b style="color:var(--cyan)">滑鼠滾輪</b>驅動：往上滾光絲收束、往下滾光絲擴散，中間的脈衝強度跟著你的滾動位置即時變化。不是自動播放的裝飾，而是你手上的操作介面——這正是「動態優先」的具體實踐。</p>
+    </div>
+  </div>
+  <div class="scrub-stage reveal d1">
+    <canvas id="scrubAurora" class="scrub-canvas"></canvas>
+    <div class="scrub-overlay">
+      <div class="scrub-pct"><span id="scrubPct">0</span><i>%</i></div>
+      <div class="scrub-hint"><span class="dot"></span> 滾動以驅動極光 · 0%→100% 對應收束→擴散</div>
+    </div>
+    <div class="scrub-progress" aria-hidden="true"><span id="scrubBar"></span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
       <div class="k">技術實驗場</div>
       <h2>連「圖形學」，我們都攤開給您玩</h2>
       <p>我們把平常藏在程式裡的電腦圖學與物理模擬，做成您滑鼠能玩的示範——從一張圖怎麼畫出來、到向《傳送門 2》致敬的可穿牆物理謎題。這些不是裝飾，而是「看得見、驗得過」這句承諾的實體證明。</p>
@@ -132,6 +167,36 @@
         <p>從幾何面積、反微分運算，到「累積機器」——如何一眼讀懂滿是積分號的式子。同樣自帶 KaTeX 公式與內聯 SVG 圖解，單檔可離線開啟。</p>
         <div class="mini"><span>幾何</span><span>反微分</span><span>累積</span></div>
         <a class="btn btn-ghost" href="notes/integrals-three-levels.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+      <div class="lab-card reveal d3">
+        <span class="badge">設計方法論 · 反 AI 爛貨</span>
+        <h3>反 AI Slop 設計方法論</h3>
+        <p>從一段 22 分鐘英文影片字幕提煉：四個「AI 爛貨」視覺信號、四層反制方法，以及本官網對每條信號的取捨對照表與可證偽反向提問。</p>
+        <div class="mini"><span>字體</span><span>設計系統</span><span>獨特資產</span><span>去 AI 味</span></div>
+        <a class="btn btn-ghost" href="notes/method-anti-ai-slop.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+      <div class="lab-card reveal d4">
+        <span class="badge">影評解剖 · 論點分析</span>
+        <h3>《全面啟動》影評 · 論點解剖</h3>
+        <p>把一篇 38 分鐘的英文影評獨白，解剖成 6 張核心論點卡與 7 章中文敘事：感覺勝於證明、拍電影的寓言、Mal＝創作者幽靈、我們就是 Cobb、劇本要的是人生。含原始字幕與清洗全文下載。</p>
+        <div class="mini"><span>論點卡</span><span>金句牆</span><span>scrollspy</span><span>可對帳</span></div>
+        <a class="btn btn-ghost" href="notes/inception-essay.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+    </div>
+
+    <!-- 備選區 · Drafts（雙人對決摘要，待主推評選） -->
+    <div class="sec-head reveal" style="margin-top:var(--sp-6)">
+      <div class="k" style="color:var(--muted2)">備選區 · Drafts</div>
+      <h2 style="font-size:var(--fs-3)">雙人對決摘要（待主推）</h2>
+      <p>這一篇是「遙遙 × 芳芳」雙人對決模式的拆解實驗，先把成稿掛在備選區，不與兩篇主推筆記並列，等你評選是否升格為正式筆記。</p>
+    </div>
+    <div class="lab-grid">
+      <div class="lab-card reveal d1">
+        <span class="badge" style="color:var(--muted2);border-color:rgba(108,128,158,.4)">備選 · 雙人對決</span>
+        <h3>《沙丘》視覺設計建構工程：遙遙×芳芳對決摘要</h3>
+        <p>把一份維勒紐瓦《沙丘》高領航船視覺設計影評逐字稿，以「正向工程資源剖析／逆向工程第一性原理／要項體系剖析」三軸拆解；芳芳過七層拒答棧後僅以第一性原理方法論錨定。含不可壓縮反向提問。</p>
+        <div class="mini"><span>第一性原理</span><span>不可約核心</span><span>邊界定義權</span><span>可證偽</span></div>
+        <a class="btn btn-ghost" href="notes/dune-visual-design-duel.html" target="_blank" rel="noopener">開來看 →</a>
       </div>
     </div>
   </div>
@@ -249,5 +314,6 @@
 
 <script src="assets/aurora.js"></script>
 <script src="assets/anim.js"></script>
+<script src="assets/scrub.js"></script>
 </body>
 </html>
