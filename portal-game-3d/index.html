@@ -27,8 +27,7 @@
   "imports": {
     "three": "./vendor/three.webgpu.js",
     "three/webgpu": "./vendor/three.webgpu.js",
-    "three/tsl": "./vendor/three.tsl.js",
-    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.185.1/examples/jsm/"
+    "three/tsl": "./vendor/three.tsl.js"
   }
 }
 </script>
@@ -43,7 +42,14 @@
     <div class="chip">模式 <b id="cMode">容易</b></div>
     <div class="chip" id="cTimer">∞</div>
   </div>
-  <div id="hint">WASD 移動 ｜ 點擊鎖定視角 ｜ 左鍵藍門 ｜ 右鍵橘門 ｜ R 重玩 ｜ H 切難度 ｜ ESC 解除</div>
+  <div id="hint">WASD 移動 ｜ 點擊畫面鎖定視角 ｜ 左鍵藍門 ｜ 右鍵橘門 ｜ R 重玩 ｜ H 切難度 ｜ ESC 回主選單</div>
+</div>
+<div id="win" class="hidden" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 50% 30%,#101a2e,#05060a);z-index:30">
+  <div class="card">
+    <h1 id="winTitle">過關了！</h1>
+    <p id="winText" style="color:#9fb8d4;margin-top:10px"></p>
+    <button id="winNext">下一關</button>
+  </div>
 </div>
 <div id="menu">
   <div class="card">

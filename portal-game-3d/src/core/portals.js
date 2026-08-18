@@ -11,6 +11,7 @@ import * as THREE from 'three';
 const UP = new THREE.Vector3(0, 1, 0);
 const PORTAL_RX = 34;   // 門橢圓半寬（水平）
 const PORTAL_RY = 46;   // 門橢圓半高（垂直）
+const PR = 16;          // 玩家半徑（對齊 engine.js 的 PR，用於穿越出口推出距離）
 const TELE_COOLDOWN = 0.12; // 秒，防止穿門後立即回穿
 
 export class PortalSystem {
@@ -115,12 +116,13 @@ export class PortalSystem {
           ct * t2.z - cn * n2.z
         );
 
-        // 新位置：在 to 門外側 offset（避免立即回穿），保留切向/垂直偏移
+        // 新位置：在 to 門外側 offset（避免立即回穿）。
+        // n2 指向場景內（門朝場景內開口），故「門外側」＝沿 -n2 推出 (PR+4)，
+        // 再保留切向/垂直偏移，使玩家從牆面外側出現、不會卡在牆裡穿不過。
         const newPos = to.position.clone()
-          .addScaledVector(n2, 1.5)            // 推出門外
-          .addScaledVector(t, tu)              // 切向偏移保持
-          .addScaledVector(UP, uu);            // 垂直偏移保持
-        // 修正高度：門中心在 walls 中間高度，玩家腳底貼地由物理層處理
+          .addScaledVector(n2, -(PR + 4))       // 沿 -法線 推出門外（PR=玩家半徑=16）
+          .addScaledVector(t, tu)               // 切向偏移保持
+          .addScaledVector(UP, uu);             // 垂直偏移保持
 
         this.cooldown = TELE_COOLDOWN;
         if (this._onTeleport) this._onTeleport({ from: from.color, to: to.color, vWorld });
