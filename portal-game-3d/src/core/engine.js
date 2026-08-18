@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { FirstPersonControls } from './controls.js';
 import { PortalSystem } from './portals.js';
-import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial } from '../render/materials.tsl.js';
+import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground } from '../render/materials.tsl.js';
 
 const WORLD_W = 900, WORLD_D = 600, WALL_H = 220;
 const PR = 16, PH = 34;               // 玩家半徑/身高
@@ -145,10 +145,14 @@ export class GameEngine {
       new THREE.MeshLambertMaterial({ color, ...opts })
     );
 
-    // 地板
-    const floor = mk(WORLD_W, 8, WORLD_D, COLORS.floor);
+    // 地板（Z：金屬 PBR 貼圖，取代扁平 Lambert）
+    const floor = new THREE.Mesh(new THREE.BoxGeometry(WORLD_W, 8, WORLD_D), makeMetalFloorMaterial());
     floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true;
     this.world.add(floor);
+
+    // X：splat 風背景層（程序化飄浮光點，高斯潑濺風塵埃）
+    this.splat = makeSplatBackground(2200, 900);
+    this.world.add(this.splat);
 
     // 牆（portalable → 可門化 TSL 微光材質）
     for (const w of L.walls) {
@@ -345,6 +349,13 @@ export class GameEngine {
 
     this.camera.position.copy(p);
 
+    // X：splat 背景層飄浮驅動（高斯潑濺風塵埃）
+    // 用物件級 transform（旋轉+整體微浮），避免 WebGPU 下 BufferAttribute array 即時更新坑
+    if (this.splat) {
+      const tt = performance.now() * 0.001;
+      this.splat.rotation.y = tt * 0.02;
+      this.splat.position.y = Math.sin(tt * 0.3) * 18;
+    }
     // 難度倒數
     if (this.difficulty === 'hard' && this._timeLeft > 0) {
       this._timeLeft = Math.max(0, this._timeLeft - dt);
@@ -480,7 +491,9 @@ export class GameEngine {
     const loop = () => {
       const dt = Math.min(0.033, this.clock.getDelta() || 0);
       this.update(dt);
-      this.renderer.renderAsync(this.scene, this.camera);
+      // renderAsync 失敗（極少數 headless/swiftshader 環境）不應殺死主迴圈
+      const pr = this.renderer.renderAsync(this.scene, this.camera);
+      if (pr && typeof pr.catch === 'function') pr.catch((e) => { if (window.__portalReady) console.warn('[portal] render 警告:', e && e.message); });
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
