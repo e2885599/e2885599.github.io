@@ -35,8 +35,16 @@ export class GameEngine {
   }
 
   async init() {
-    this.renderer = new THREE.WebGPURenderer({ canvas: this.canvas, antialias: true });
-    await this.renderer.init();
+    // WebGPU 優先；真機不支援時降級 WebGL2 backend（2026 版 WebGPURenderer 同時含 WebGL fallback，NodeMaterial 自動兼容）
+    const useWebGL = !navigator.gpu;
+    if (useWebGL) console.warn('[portal] WebGPU 不可用，降級 WebGL2 backend');
+    this.renderer = new THREE.WebGPURenderer({ canvas: this.canvas, antialias: true, forceWebGL: useWebGL });
+    try {
+      await this.renderer.init();
+    } catch (e) {
+      // 極端環境（連 WebGL2 都無）：明確報錯而非白屏
+      throw new Error('渲染器初始化失敗（WebGPU/WebGL 均不可用）：' + e);
+    }
     this.renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
     this.renderer.setSize(innerWidth, innerHeight);
     this.renderer.shadowMap.enabled = true;
