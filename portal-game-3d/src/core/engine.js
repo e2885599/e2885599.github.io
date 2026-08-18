@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { FreeOrbitControls } from './controls.js';
 import { PortalSystem } from './portals.js';
-import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem, makePlayerModel } from '../render/materials.tsl.js';
+import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem, loadPlayerModel } from '../render/materials.tsl.js';
 
 const WORLD_W = 900, WORLD_D = 600;
 // 垂直比例參照傳送門2（Portal 2）：以玩家身高 PH=34 為基準
@@ -120,10 +120,26 @@ export class GameEngine {
     this.levelIndex = index;
     this.levelData = this._levelDataAll[index];
     this._timeLeft = (this.difficulty === 'hard' && this.levelData.hardTimer) ? this.levelData.hardTimer : 0;
+    // 從 URL ?model=meshy|khronos 選擇玩家模型（預設 khronos：零成本+骨骼動畫；meshy 為高精真人備選）
+    const modelKey = (new URLSearchParams(location.search).get('model') === 'meshy') ? 'meshy' : 'khronos';
+    if (!this._playerAssets) this._playerAssets = {};
+    if (!this._playerAssets[modelKey]) {
+      this._showHint('載入角色模型中…');
+      this._playerAssets[modelKey] = await loadPlayerModel(modelKey);
+    }
+    this._playerModelKey = modelKey;
+    this._playerAsset = this._playerAssets[modelKey];
     this._buildLevel();
   }
 
   _totalLevels() { return this._levelDataAll ? this._levelDataAll.length : '?'; }
+
+  // 從已載入動作中挑第一個名稱符合的 clip（Meshy/Xbot 等命名不一）
+  _pickAction(names) {
+    if (!this.playerActions) return null;
+    for (const n of names) { for (const k in this.playerActions) { if (k.toLowerCase().includes(n.toLowerCase())) return this.playerActions[k]; } }
+    return null;
+  }
 
   setDifficulty(d) {
     this.difficulty = (d === 'hard') ? 'hard' : 'easy';
@@ -219,7 +235,18 @@ export class GameEngine {
 
     // 玩家角色模型（第三人稱可見身軀，非透明）
     if (this.playerModel) { this.world.remove(this.playerModel); }
-    this.playerModel = makePlayerModel();
+    // 玩家角色模型：復用預載的 GLB（真實人類）或降級幾何人形
+    this.playerModel = this._playerAsset.group;
+    this.playerMixer = this._playerAsset.mixer ? new THREE.AnimationMixer(this.playerModel) : null;
+    this.playerActions = {};
+    if (this.playerMixer && this._playerAsset.actions) {
+      for (const k in this._playerAsset.actions) {
+        this.playerActions[k] = this.playerMixer.clipAction(this._playerAsset.actions[k].getClip());
+      }
+      // 預設播第一個動畫（idle/walk 視移動切換）
+      const first = Object.values(this.playerActions)[0];
+      if (first) { first.play(); this._currentAction = first; }
+    }
     this.world.add(this.playerModel);
     this.dying = false;
     this.deadFlash = 0;
@@ -351,18 +378,18 @@ export class GameEngine {
     this.elapsed += dt;
     const p = this.playerPos;
 
-    // 水平移動：前向直接由 controls.yaw 計算（與 controls._apply 的 YXZ 歐拉一致），
-    // 不依賴 camera.getWorldDirection —— 第三人稱追隨相機會被 lookAt 覆寫朝向，導致移動反向
-    // 驗證：第一人稱 yaw=-π/2 看西射門成功 ⇒ fwd=(sin yaw, 0, cos yaw)
-    const yaw = this.controls.yaw;
-    const fwd = new THREE.Vector3(Math.sin(yaw), 0, Math.cos(yaw));
-    const right = new THREE.Vector3(-fwd.z, 0, fwd.x);
+    // 水平移動：世界軸向（W前/S後/A左/D右），玩家自主轉身朝向移動方向
+    // 視角（controls.yaw）僅用於 orbit 觀察，不綁定移動/朝向
     const move = new THREE.Vector3();
-    if (this.keys['KeyW'] || this.keys['ArrowUp']) move.add(fwd);
-    if (this.keys['KeyS'] || this.keys['ArrowDown']) move.sub(fwd);
-    if (this.keys['KeyD'] || this.keys['ArrowRight']) move.add(right);
-    if (this.keys['KeyA'] || this.keys['ArrowLeft']) move.sub(right);
-    if (move.lengthSq() > 0) move.normalize().multiplyScalar(MOVE);
+    if (this.keys['KeyW'] || this.keys['ArrowUp']) move.z -= 1;
+    if (this.keys['KeyS'] || this.keys['ArrowDown']) move.z += 1;
+    if (this.keys['KeyA'] || this.keys['ArrowLeft']) move.x -= 1;
+    if (this.keys['KeyD'] || this.keys['ArrowRight']) move.x += 1;
+    if (move.lengthSq() > 0) {
+      move.normalize().multiplyScalar(MOVE);
+      // 玩家自主轉身：平滑轉向移動方向
+      this._targetYaw = Math.atan2(move.x, -move.z);
+    }
     this.playerVel.x = move.x; this.playerVel.z = move.z;
 
     // 跳躍 / 重力
@@ -393,11 +420,24 @@ export class GameEngine {
     // 出口判定
     this._checkExit(p);
 
-    // 玩家角色模型每幀擺位（身軀跟隨 playerPos + 視線朝向，朝向由 yaw 計算）
+    // 玩家角色模型每幀擺位 + 自主轉身（朝移動方向）+ 骨骼動畫驅動
     if (this.playerModel) {
-      this.playerModel.position.set(p.x, p.y - 17, p.z);   // 模型腳底對齊玩家底部（p.y 是腳底）
-      const yaw = this.controls.yaw;
-      this.playerModel.rotation.y = Math.atan2(Math.sin(yaw), Math.cos(yaw));
+      this.playerModel.position.set(p.x, p.y - 17, p.z);   // 模型腳底對齊玩家底部
+      // 平滑轉向目標朝向（自主轉身）
+      if (this._targetYaw === undefined) this._targetYaw = Math.PI;
+      let cur = this.playerModel.rotation.y;
+      let diff = this._targetYaw - cur;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      this.playerModel.rotation.y = cur + diff * Math.min(1, dt * 12);
+      this._lastRotY = this.playerModel.rotation.y;   // 供驗證讀取轉身結果
+      // 骨骼動畫：移動播 walk、靜止播 idle（若模型有對應 clip）
+      if (this.playerMixer) {
+        this.playerMixer.update(dt);
+        const moving = (this.playerVel.x * this.playerVel.x + this.playerVel.z * this.playerVel.z) > 1;
+        const want = moving ? this._pickAction(['Walk', 'Run', 'walk', 'run']) : this._pickAction(['Idle', 'idle', 'Stand', 'stand']);
+        if (want && want !== this._currentAction) { this._currentAction.fadeOut(0.2); want.reset().fadeIn(0.2).play(); this._currentAction = want; }
+      }
     }
 
     // 自由觀察視角：每幀把 orbit 中心設到玩家，由 FreeOrbitControls 自行計算 camera 位置（旋轉/平移/縮放由使用者拖拽控制）

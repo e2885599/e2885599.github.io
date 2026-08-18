@@ -4,6 +4,7 @@
 // 注意：使用標準 MeshStandardMaterial / MeshBasicMaterial（非 Node 版），
 //       避免 TSL 節點（emissiveNode/colorNode）在部分 backend 下靜默編譯失敗。
 import * as THREE from 'three';
+import { GLTFLoader } from '../../vendor/GLTFLoader.js';
 
 const PORTAL_COLORS = { blue: 0x33aaff, orange: 0xff7700 };
 
@@ -105,34 +106,57 @@ export function makeLavaMaterial(phase = 0) {
   return mat;
 }
 
-// 玩家角色模型：高面數擬真人（5000–20000 面），一眼可辨是人形
-// 用細分基元（Capsule/Sphere/Cylinder）組成，含簡易臉部特徵提升辨識度。
-// 面數計算：軀幹 Capsule(8,24)=~ (24*8+... ) ≈ 480；頭 Sphere(32,24)=~1500；
-//   四肢 Cylinder(radial 24)=~ 每肢 480×4≈1920；手腳 Sphere(16,12)≈ 每 300×4；總計落在 5000–20000 區間。
-export function makePlayerModel() {
+// 玩家角色模型：從 GLB 載入真實人類角色（帶骨骼動畫）。
+// modelKey: 'khronos'（預設，CC0 免費、帶 walk/idle 骨骼動畫、成本最低）
+//           'meshy'（高精照片級真人，由 Meshy 生成；成本較高，作為可切換選項）
+// 回傳 { group, mixer, actions, hasAnim, modelKey }；GLB 載入失敗時降級為幾何拼裝人形（保證可開）。
+const PLAYER_MODELS = {
+  khronos: './vendor/models/khronos_CesiumMan.glb',   // 主力：零成本 + 骨骼動畫
+  meshy:   './vendor/models/meshy_human.glb',         // 高精：照片級真人（需 Meshy 生成）
+};
+export async function loadPlayerModel(modelKey = 'khronos') {
+  const url = PLAYER_MODELS[modelKey] || PLAYER_MODELS.khronos;
+  try {
+    const gltf = await new GLTFLoader().loadAsync(url);
+    const group = gltf.scene;
+    group.name = 'playerModel';
+    group.traverse(o => { if (o.isMesh) { o.castShadow = true; o.frustumCulled = false; } });
+    let mixer = null, actions = {}, hasAnim = false;
+    if (gltf.animations && gltf.animations.length) {
+      mixer = new THREE.AnimationMixer(group);
+      for (const clip of gltf.animations) actions[clip.name] = mixer.clipAction(clip);
+      hasAnim = true;
+    }
+    // 量測模型高度做等比縮放（對齊玩家身高 PH≈34）
+    const box = new THREE.Box3().setFromObject(group);
+    const h = box.max.y - box.min.y;
+    const scale = h > 0 ? 34 / h : 1;
+    group.scale.setScalar(scale);
+    return { group, mixer, actions, hasAnim, modelKey, fallback: false };
+  } catch (e) {
+    console.warn('[portal] GLB 載入失敗，降級幾何人形：', e);
+    return { group: makePlayerModelFallback(), mixer: null, actions: {}, hasAnim: false, modelKey, fallback: true };
+  }
+}
+
+// 降級：幾何拼裝擬真人（原 makePlayerModel，GLB 不可用時保底）
+function makePlayerModelFallback() {
   const g = new THREE.Group();
   const skin = new THREE.MeshStandardMaterial({ color: 0x3fa9ff, roughness: 0.55, metalness: 0.08 });
   const limb = new THREE.MeshStandardMaterial({ color: 0x2b6fb0, roughness: 0.65, metalness: 0.04 });
   const dark = new THREE.MeshStandardMaterial({ color: 0x10212f, roughness: 0.4, metalness: 0.1 });
   const mk = (geo, mat, x, y, z = 0) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; return m; };
-
-  // 軀幹：膠囊（圓角，細分提升面數）
   const torso = mk(new THREE.CapsuleGeometry(7, 14, 8, 16), skin, 0, 22); g.add(torso);
-  // 盆骨
   g.add(mk(new THREE.SphereGeometry(7, 16, 12), skin, 0, 13));
-  // 頭：高面球 + 簡易臉（眼/鼻）
   const head = mk(new THREE.SphereGeometry(8, 24, 18), skin, 0, 36); g.add(head);
-  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, -3, 37, 6.5));   // 左眼
-  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, 3, 37, 6.5));    // 右眼
-  g.add(mk(new THREE.SphereGeometry(1.1, 8, 6), dark, 0, 34.5, 7.2));  // 鼻
-  // 頸
+  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, -3, 37, 6.5));
+  g.add(mk(new THREE.SphereGeometry(1.6, 10, 8), dark, 3, 37, 6.5));
+  g.add(mk(new THREE.SphereGeometry(1.1, 8, 6), dark, 0, 34.5, 7.2));
   g.add(mk(new THREE.CylinderGeometry(3, 3, 4, 10), skin, 0, 31));
-  // 四肢：高面圓柱（手臂/腿）
   const la = mk(new THREE.CapsuleGeometry(3, 12, 6, 12), limb, -9, 22); g.add(la);
   const ra = mk(new THREE.CapsuleGeometry(3, 12, 6, 12), limb, 9, 22); g.add(ra);
   const ll = mk(new THREE.CapsuleGeometry(3.5, 14, 6, 14), limb, -4, 6); g.add(ll);
   const rl = mk(new THREE.CapsuleGeometry(3.5, 14, 6, 14), limb, 4, 6); g.add(rl);
-  // 手腳端：球（細分）
   for (const [x, y, z] of [[-9,13,0],[9,13,0],[-4,-3,0],[4,-3,0]]) g.add(mk(new THREE.SphereGeometry(3.2, 12, 10), limb, x, y, z));
   g.traverse(o => { if (o.isMesh) { o.castShadow = true; } });
   g.name = 'playerModel';
