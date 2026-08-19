@@ -1,9 +1,12 @@
-// 互動邏輯：章節導覽 / 模擬播放 / 時間軸同步高亮
-// 設計：無影片源 → 用 requestAnimationFrame 推進虛擬時鐘，依 currentChapter 高亮對應章節。
+// 互動邏輯：章節導覽 / 真音訊播放 / 時間軸同步高亮
+// 設計：有 TTS 英語配音（audio_manifest.json）→ 用 <audio> 真實播放，timeupdate 驅動字幕高亮。
+// 章節邊界依 manifest 的 start_sec/end_sec（語音實際長度，非原 SRT 時間碼）。
 (function () {
   "use strict";
   var CH = window.SUBTITLES.chapters;
-  var DUR = window.VIDEO_DURATION;
+  var MAN = window.AUDIO_MANIFEST;
+  var DUR = MAN.total_sec;
+  var audio = document.getElementById("audio");
   var nav = document.getElementById("nav");
   var card = document.getElementById("card");
   var cTitle = document.getElementById("cTitle");
@@ -18,12 +21,9 @@
   var nextBtn = document.getElementById("next");
   var rateSel = document.getElementById("rate");
 
-  var current = -1;     // 當前章節索引
-  var playing = false;
-  var rate = 2;
-  var virtualTime = 0;  // 秒
-  var lastTs = null;
-  var rafId = null;
+  var current = -1;        // 當前章節索引
+  var currentAudioIdx = -1; // 當前已載入的 audio src 章節
+  var rate = 1;            // 語音播放速率（HTML 預設 1×）
 
   function fmt(s) {
     s = Math.max(0, Math.floor(s));
@@ -31,16 +31,16 @@
     return (m < 10 ? "0" + m : m) + ":" + (sec < 10 ? "0" + sec : sec);
   }
 
-  // 建章節導覽
+  // 建章節導覽（用 manifest 的 start_sec/end_sec 顯示時間）
   CH.forEach(function (ch, i) {
+    var m = MAN.chapters[i];
     var el = document.createElement("div");
     el.className = "chap";
     el.dataset.idx = i;
-    // 用 textContent 建構，避免任何未來不可信來源導入 XSS（Codex 建議）
     var t = document.createElement("div"); t.className = "t"; t.textContent = ch.title_zh;
     var en = document.createElement("div"); en.className = "en"; en.textContent = ch.title_en;
     var ts = document.createElement("div"); ts.className = "ts";
-    ts.textContent = fmt(ch.start) + " – " + fmt(ch.end);
+    ts.textContent = fmt(m.start_sec) + " – " + fmt(m.end_sec);
     el.appendChild(t); el.appendChild(en); el.appendChild(ts);
     el.addEventListener("click", function () { goTo(i, true); });
     nav.appendChild(el);
@@ -53,84 +53,101 @@
     });
     if (current < 0) return;
     var ch = CH[current];
+    var m = MAN.chapters[current];
     cTitle.textContent = ch.title_zh;
-    cSub.textContent = ch.title_en + " · " + fmt(ch.start) + "–" + fmt(ch.end);
+    cSub.textContent = ch.title_en + " · " + fmt(m.start_sec) + "–" + fmt(m.end_sec);
     cEn.textContent = ch.en;
     cZh.textContent = ch.zh;
-    now.textContent = "當前章節：" + ch.title_zh + "（" + fmt(ch.start) + "–" + fmt(ch.end) + "）";
+    now.textContent = "當前章節：" + ch.title_zh + "（" + fmt(m.start_sec) + "–" + fmt(m.end_sec) + "）";
   }
 
   function syncScrub() {
-    scrub.value = String(Math.round((virtualTime / DUR) * 1000));
-    clock.textContent = fmt(virtualTime) + " / " + fmt(DUR);
+    var t = audio.currentTime || 0;
+    scrub.value = String(Math.round((t / DUR) * 1000));
+    clock.textContent = fmt(t) + " / " + fmt(DUR);
   }
 
-  // 依虛擬時間決定當前章節。
-  // 章節時間存在重疊（如 ch0 0–77.32 與 ch1 74.92 起），
-  // 若用「第一個符合區間」會在重疊時跳回前章（Codex 審計發現的實際缺陷）。
-  // 修正：取「最晚開始且 start ≤ t」的章節 → 重疊時後章優先，避免跳回。
+  // 章節邊界：用 manifest 的 start_sec/end_sec（無重疊，依序累加）
   function chapterAt(t) {
-    var best = -1;
-    for (var i = 0; i < CH.length; i++) {
-      if (t >= CH[i].start) best = i; // 持續更新為最晚符合者
+    for (var i = 0; i < MAN.chapters.length; i++) {
+      if (t >= MAN.chapters[i].start_sec && t < MAN.chapters[i].end_sec) return i;
     }
-    if (best === -1) return 0;          // t 早於所有 start
-    // 若 t 已超過最後章節 end，視為收尾
-    if (t >= DUR) return CH.length - 1;
-    return best;
+    if (t >= DUR) return MAN.chapters.length - 1;
+    return t < MAN.chapters[0].start_sec ? 0 : -1;
   }
 
-  function tick(ts) {
-    if (!playing) return;
-    if (lastTs === null) lastTs = ts;
-    var dt = (ts - lastTs) / 1000 * rate;
-    lastTs = ts;
-    virtualTime += dt;
-    if (virtualTime >= DUR) { virtualTime = DUR; stop(); }
-    var idx = chapterAt(virtualTime);
-    if (idx !== current && idx >= 0) { current = idx; renderActive(); }
-    // 平滑滾動到當前章節
-    if (current >= 0 && navEls[current]) {
-      navEls[current].scrollIntoView({ block: "nearest" });
+  // 載入指定章節音訊（避免重複設定 src）
+  function loadAudio(i) {
+    if (i === currentAudioIdx) return;
+    var m = MAN.chapters[i];
+    audio.src = m.file;
+    currentAudioIdx = i;
+  }
+
+  // 載入指定章節音訊；src 切換會清零 currentTime，故設 src 後於 loadedmetadata 才定位
+  function loadAudio(i, seekTo) {
+    if (i === currentAudioIdx) {
+      if (typeof seekTo === "number") audio.currentTime = seekTo;
+      return;
     }
-    syncScrub();
-    if (playing) rafId = requestAnimationFrame(tick);
+    var m = MAN.chapters[i];
+    audio.src = m.file;
+    currentAudioIdx = i;
+    if (typeof seekTo === "number") {
+      var handler = function () {
+        audio.currentTime = seekTo;
+        audio.removeEventListener("loadedmetadata", handler);
+      };
+      audio.addEventListener("loadedmetadata", handler);
+    }
   }
 
   function play() {
-    if (playing) return;
-    if (virtualTime >= DUR) virtualTime = 0;
-    playing = true;
-    lastTs = null;
+    if (current < 0) { current = 0; }
+    loadAudio(current); // 不強制 goTo(0)，尊重已選章節
+    audio.playbackRate = rate;
+    audio.play().catch(function (e) { console.warn("播放失敗:", e); });
     playBtn.textContent = "⏸ 暫停";
-    rafId = requestAnimationFrame(tick);
   }
   function stop() {
-    playing = false;
-    playBtn.textContent = "▶ 模擬播放";
-    if (rafId) cancelAnimationFrame(rafId);
+    audio.pause();
+    playBtn.textContent = "▶ 播放配音";
   }
-  function toggle() { playing ? stop() : play(); }
+  function toggle() {
+    if (audio.paused) play(); else stop();
+  }
 
   function goTo(i, user) {
     i = Math.max(0, Math.min(CH.length - 1, i));
     current = i;
-    virtualTime = CH[i].start + 0.001;
+    var seek = MAN.chapters[i].start_sec + 0.01;
+    loadAudio(i, seek); // 設 src 後於 loadedmetadata 才定位，避免被清零
     renderActive();
     syncScrub();
     if (user && navEls[i]) navEls[i].scrollIntoView({ block: "center" });
   }
 
   // 事件
+  audio.addEventListener("timeupdate", onTime);
+  audio.addEventListener("ended", function () {
+    // 自動續播下一章
+    if (current < CH.length - 1) { goTo(current + 1, false); play(); }
+    else { stop(); }
+  });
+  audio.addEventListener("play", function () { playBtn.textContent = "⏸ 暫停"; });
+  audio.addEventListener("pause", function () { playBtn.textContent = "▶ 播放配音"; });
   playBtn.addEventListener("click", toggle);
   prevBtn.addEventListener("click", function () { goTo(current - 1, true); });
   nextBtn.addEventListener("click", function () { goTo(current + 1, true); });
-  rateSel.addEventListener("change", function () { rate = parseFloat(rateSel.value); });
+  rateSel.addEventListener("change", function () {
+    rate = parseFloat(rateSel.value);
+    audio.playbackRate = rate;
+  });
   scrub.addEventListener("input", function () {
-    stop();
-    virtualTime = (parseFloat(scrub.value) / 1000) * DUR;
-    var idx = chapterAt(virtualTime);
-    if (idx >= 0) { current = idx; renderActive(); }
+    var t = (parseFloat(scrub.value) / 1000) * DUR;
+    var idx = chapterAt(t);
+    if (idx >= 0) { goTo(idx, false); }
+    audio.currentTime = t;
     syncScrub();
   });
 
