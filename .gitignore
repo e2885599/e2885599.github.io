@@ -47,8 +47,7 @@ verify_laplace.py
 "SOP-資訊專員工作手冊.md"
 
 # —— lab/ 下未上傳草稿（已追蹤的 lab/portal-2d.html 不受影響）——
-lab/cg-orchestration.html
-lab/engine-orchestration-blueprint.html
+# 註：cg-orchestration.html 與 engine-orchestration-blueprint.html 已於 2026-08-19 升格為正式頁並上線，排除規則移除。
 
 # —— notes/ 下未上傳草稿（已追蹤的 inception-* / integrals-* / physics-of-learning 不受影響）——
 notes/SOP-knowledge-extraction-template.md

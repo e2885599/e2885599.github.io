@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>電腦圖學技能調度 · cg-orchestration｜OODAV LAB 技術實驗場</title>
+<meta name="description" content="cg-orchestration：把電腦繪圖免費軟體排好順序，自動幫你跑完，並留下紀錄防止出錯。" />
+<link rel="stylesheet" href="../assets/style.css" />
+<style>
+  .bp-hero{padding:var(--sp-7) 0 var(--sp-5)}
+  .bp-hero h1{margin:var(--sp-2) 0 var(--sp-3)}
+  .bp-hero .lede{max-width:var(--w-prose-lg);color:var(--muted);font-size:var(--fs-lede)}
+  .bp-section{padding:var(--sp-6) 0;border-top:1px solid var(--line)}
+  .bp-section .sec-head{margin-bottom:var(--sp-4)}
+  .tool-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--sp-3)}
+  .tool-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3);transition:.25s}
+  .tool-card:hover{border-color:var(--cyan);box-shadow:var(--shadow-glow);transform:translateY(-3px)}
+  .tool-card h3{font-size:var(--fs-4);margin-bottom:6px}
+  .tool-card .st{display:inline-block;font-size:var(--fs-2xs);padding:2px 10px;border-radius:var(--r-pill);margin-bottom:var(--sp-1)}
+  .st.ok{background:rgba(54,224,212,.14);color:var(--cyan);border:1px solid rgba(54,224,212,.4)}
+  .st.missing{background:rgba(255,93,108,.12);color:var(--red);border:1px solid rgba(255,93,108,.35)}
+  .tool-card dl{font-size:var(--fs-xs);line-height:1.7;color:var(--muted)}
+  .tool-card dt{color:var(--violet);font-weight:700;margin-top:4px}
+  .tool-card dd{color:var(--muted)}
+  .fig{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3);margin:var(--sp-3) 0}
+  .fig svg{width:100%;height:auto;display:block}
+  .fig-cap{font-size:var(--fs-xs);color:var(--muted2);margin-top:var(--sp-2);text-align:center}
+  .maptable{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin-top:var(--sp-3)}
+  .maptable th,.maptable td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
+  .maptable th{background:var(--panel2);color:var(--cyan);font-weight:700}
+  .maptable td{color:var(--muted)}
+  .verify-box{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--cyan);border-radius:0 var(--r-lg) var(--r-lg) 0;padding:var(--sp-3) var(--sp-4);font-family:monospace;font-size:var(--fs-xs);color:var(--muted);margin-top:var(--sp-3);white-space:pre-wrap;line-height:1.6}
+  .backlink{margin-top:var(--sp-5);font-size:var(--fs-sm)}
+</style>
+</head>
+<body>
+<canvas id="aurora"></canvas>
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="../index.html">首頁</a>
+      <a href="../about.html">關於我們</a>
+      <a href="../services.html">服務項目</a>
+      <a href="../pricing.html">報價</a>
+      <a href="../lab.html">技術實驗場</a>
+      <a href="../demo.html">基礎圖學</a>
+      <a href="../contact.html">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<header class="bp-hero">
+  <div class="wrap">
+    <span class="tag">電腦圖學技能調度 · cg-orchestration</span>
+    <h1>把免費繪圖軟體排好順序，<span class="grad">自動幫你跑完</span></h1>
+    <p class="lede">這一頁在說一件事：你電腦裡有九套免費的繪圖、3D、遊戲軟體（像 Blender、FreeCAD 這類）。我們做了一個「調度小幫手」，你只要說想做什麼，它就幫你選對軟體、幫你跑、還幫你留下紀錄，證明每一步都真的做了。這套想法，是借鏡八款知名遊戲引擎的整理方法來的。</p>
+  </div>
+</header>
+
+<!-- 收錄工具盤點 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">第一步 · 盤點軟體</div>
+      <h2>我們收了 11 款軟體（9 款能用 + 2 款待補）</h2>
+      <p>每一款我們都實際打開確認過：檔案在不在、能不能跑。有兩款資料夾是空的，我們老實標「待補」，不假裝能用。</p>
+    </div>
+    <div class="tool-grid">
+      <div class="tool-card"><h3>Blender 5.2</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>3D 繪圖 / 轉檔 / 自動批次跑</dd><dt>位置</dt><dd>blender-5.2.0-windows-x64/blender.exe</dd></dl></div>
+      <div class="tool-card"><h3>FreeCAD 1.1.3</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>機械零件 / 工業設計圖</dd><dt>位置</dt><dd>freecadcmd.exe（可背景執行）</dd></dl></div>
+      <div class="tool-card"><h3>COLMAP 4.1.1</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>用照片做出 3D 模型</dd><dt>位置</dt><dd>bin/colmap.exe</dd></dl></div>
+      <div class="tool-card"><h3>MeshLab</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>修 3D 模型 / 縮小檔案</dd><dt>位置</dt><dd>meshlab.exe</dd></dl></div>
+      <div class="tool-card"><h3>OpenSCAD 2021.01</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>用數字參數畫 3D 物件</dd><dt>位置</dt><dd>openscad-2021.01/openscad.exe</dd></dl></div>
+      <div class="tool-card"><h3>MaterialMaker 1.7</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>做材質、貼圖</dd><dt>位置</dt><dd>material_maker.exe</dd></dl></div>
+      <div class="tool-card"><h3>PrusaSlicer 2.9.6</h3><span class="st ok">可用 · 已確認</span><dl><dt>能做</dt><dd>3D 列印切層</dd><dt>位置</dt><dd>prusa-slicer.exe</dd></dl></div>
+      <div class="tool-card"><h3>Godot 4.7.1</h3><span class="st ok">可用 · 新裝</span><dl><dt>能做</dt><dd>做遊戲 / 互動展示</dd><dt>來源</dt><dd>官方 GitHub 下載</dd></dl></div>
+      <div class="tool-card"><h3>GDevelop 5.6.279</h3><span class="st ok">可用 · 新裝</span><dl><dt>能做</dt><dd>不用寫程式做遊戲</dd><dt>來源</dt><dd>官方 GitHub 下載</dd></dl></div>
+      <div class="tool-card"><h3>makehuman</h3><span class="st missing">待補 · 空資料夾</span><dl><dt>狀態</dt><dd>資料夾是空的，還沒裝</dd><dt>處置</dt><dd>老實標待補，不假裝</dd></dl></div>
+      <div class="tool-card"><h3>wings3d</h3><span class="st missing">待補 · 空資料夾</span><dl><dt>狀態</dt><dd>資料夾是空的，還沒裝</dd><dt>處置</dt><dd>老實標待補，不假裝</dd></dl></div>
+    </div>
+  </div>
+</section>
+
+<!-- 架構圖 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">第二步 · 運作方式</div>
+      <h2>四層自動流程（借鏡遊戲引擎的做法）</h2>
+      <p>下面四格就是小幫手怎麼幫你跑完一件事的順序。</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 1000 440" role="img" aria-label="cg-orchestration 四層流程圖">
+        <defs><marker id="aC" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L8,3 L0,6 Z" fill="#36e0d4"/></marker></defs>
+        <rect x="60" y="24" width="880" height="66" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
+        <text x="80" y="50" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">① 你下指令（例如：做 3D 場景 / 畫圖 / 列印）</text>
+        <text x="80" y="74" fill="#92a6c4" font-size="12" font-family="monospace">小幫手收到任務</text>
+
+        <rect x="60" y="138" width="880" height="66" rx="12" fill="#0d1422" stroke="#8b6cff" stroke-width="1.5"/>
+        <text x="80" y="164" fill="#8b6cff" font-size="14" font-family="monospace" font-weight="700">② 查表選軟體（任務 → 該用哪套）</text>
+        <text x="80" y="188" fill="#92a6c4" font-size="12" font-family="monospace">做遊戲 → Godot 或 GDevelop；畫圖 → FreeCAD 或 OpenSCAD</text>
+
+        <rect x="60" y="252" width="880" height="66" rx="12" fill="#0d1422" stroke="#ffb347" stroke-width="1.5"/>
+        <text x="80" y="278" fill="#ffb347" font-size="14" font-family="monospace" font-weight="700">③ 檢查軟體在不在、能不能跑</text>
+        <text x="80" y="302" fill="#92a6c4" font-size="12" font-family="monospace">可用 / 待補 / 不能用 三種狀態（才不會選到壞的）</text>
+
+        <rect x="60" y="366" width="880" height="56" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
+        <text x="80" y="390" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">④ 自動執行 + 留紀錄（防出錯）</text>
+        <text x="80" y="410" fill="#92a6c4" font-size="12" font-family="monospace">每步都存檔留證，事後可查</text>
+
+        <g stroke="#36e0d4" stroke-width="1.5" marker-end="url(#aC)">
+          <line x1="500" y1="90" x2="500" y2="136"/>
+          <line x1="500" y1="204" x2="500" y2="250"/>
+          <line x1="500" y1="318" x2="500" y2="364"/>
+        </g>
+      </svg>
+      <div class="fig-cap">▲ 圖：小幫手的四步流程。①②學遊戲引擎的「先列清單再動手」；③④是既有的防錯機制。</div>
+    </div>
+  </div>
+</section>
+
+<!-- 雙樣本驗收證據 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">第三步 · 實測驗收</div>
+      <h2>我們真的跑過，不是說說</h2>
+      <p>下面是一段真實測試紀錄（符合「要測就連錯的也測」的原則）。</p>
+    </div>
+    <div class="verify-box">$ python verify.py
+[PASS] 做遊戲任務 → 選到 Godot → 成功跑完
+[PASS] 紀錄寫入 + 留證完成
+[PASS] 留的證明可重新核對，一模一樣
+[FAIL] 人體模型任務 → 軟體是空的 → 確實擋下並提示去裝
+[FAIL] 來源檔不存在 → 確實擋下
+[FAIL] 不認識的任務 → 確實擋下
+[PASS] 9 款免費軟體確認可用（含新裝 Godot/GDevelop）
+[PASS] 2 款空資料夾標待補
+結果：全部通過   (結束碼=0)</div>
+    <div class="backlink">
+      <a class="btn btn-pri" href="../lab.html">← 回到技術實驗場</a>
+      <a class="btn btn-ghost" href="engine-orchestration-blueprint.html">看 8 款引擎整理方法 →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="../index.html">首頁</a><a href="../about.html">關於我們</a>
+      <a href="../services.html">服務項目</a><a href="../pricing.html">報價</a>
+      <a href="../lab.html">技術實驗場</a><a href="../demo.html">基礎圖學</a>
+      <a href="../contact.html">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
+    <div class="backtop"><a href="#top">↑ 回到頂端</a></div>
+  </div>
+</footer>
+<script src="../assets/aurora.js"></script>
+<script src="../assets/anim.js"></script>
+</body>
+</html>

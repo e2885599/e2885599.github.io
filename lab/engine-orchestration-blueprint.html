@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>借鏡8大引擎 · 技能管線編排藍圖｜OODAV LAB 技術實驗場</title>
+<meta name="description" content="把 Unity/Unreal/Godot/Game Maker/Construct 3/GDevelop/RPG Maker/Scratch 八套遊戲引擎的編排智慧，借來優化工具編排技能管線：行為附加、事件表、宣告式積木、開源優先。" />
+<link rel="stylesheet" href="../assets/style.css" />
+<style>
+  /* ── 藍圖專頁補充樣式（沿用品牌色令牌）── */
+  .bp-hero{padding:var(--sp-7) 0 var(--sp-5)}
+  .bp-hero h1{margin:var(--sp-2) 0 var(--sp-3)}
+  .bp-hero .lede{max-width:var(--w-prose-lg);color:var(--muted);font-size:var(--fs-lede)}
+  .bp-section{padding:var(--sp-6) 0;border-top:1px solid var(--line)}
+  .bp-section .sec-head{margin-bottom:var(--sp-4)}
+  /* 引擎光譜卡片網格 */
+  .engine-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:var(--sp-3)}
+  .engine-card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3);transition:.25s}
+  .engine-card:hover{border-color:var(--cyan);box-shadow:var(--shadow-glow);transform:translateY(-3px)}
+  .engine-card h3{font-size:var(--fs-4);margin-bottom:var(--sp-1)}
+  .engine-card .lic{display:inline-block;font-size:var(--fs-2xs);padding:2px 10px;border-radius:var(--r-pill);margin-bottom:var(--sp-2)}
+  .lic.free{background:rgba(54,224,212,.14);color:var(--cyan);border:1px solid rgba(54,224,212,.4)}
+  .lic.paid{background:rgba(255,179,71,.12);color:var(--amber);border:1px solid rgba(255,179,71,.35)}
+  .engine-card dl{font-size:var(--fs-xs);line-height:1.7;color:var(--muted)}
+  .engine-card dt{color:var(--violet);font-weight:700;margin-top:6px}
+  .engine-card dd{color:var(--muted)}
+  /* 映射圖容器 */
+  .fig{background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3);margin:var(--sp-3) 0}
+  .fig svg{width:100%;height:auto;display:block}
+  .fig-cap{font-size:var(--fs-xs);color:var(--muted2);margin-top:var(--sp-2);text-align:center}
+  /* 映射表 */
+  .maptable{width:100%;border-collapse:collapse;font-size:var(--fs-sm);margin-top:var(--sp-3)}
+  .maptable th,.maptable td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
+  .maptable th{background:var(--panel2);color:var(--cyan);font-weight:700}
+  .maptable td{color:var(--muted)}
+  .maptable tr:hover td{background:rgba(54,224,212,.05)}
+  /* 原則清單 */
+  .principle{display:flex;gap:var(--sp-3);padding:var(--sp-3);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:var(--sp-2)}
+  .principle .pid{flex:0 0 54px;height:54px;border-radius:var(--r-md);background:var(--grad-soft);border:1px solid rgba(54,224,212,.3);display:flex;align-items:center;justify-content:center;font-size:var(--fs-stat);font-weight:800;color:var(--cyan)}
+  .principle .pbody h4{font-size:var(--fs-4);margin-bottom:6px;color:var(--txt)}
+  .principle .pbody p{font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px}
+  .principle .src{font-size:var(--fs-2xs);color:var(--violet)}
+  /* 路線圖 */
+  .phase{border-left:3px solid var(--cyan);padding:var(--sp-3) var(--sp-4);margin-bottom:var(--sp-3);background:var(--panel);border-radius:0 var(--r-lg) var(--r-lg) 0}
+  .phase.free-lane{border-left-color:var(--amber)}
+  .phase h3{font-size:var(--fs-3);margin-bottom:var(--sp-1)}
+  .phase .tag{font-size:var(--fs-2xs);color:var(--muted2)}
+  .phase ul{font-size:var(--fs-sm);color:var(--muted);margin:var(--sp-2) 0 0 1.1em}
+  .phase ul li{margin-bottom:6px}
+  .phase .done{color:var(--cyan);font-weight:700}
+  .backlink{margin-top:var(--sp-5);font-size:var(--fs-sm)}
+</style>
+</head>
+<body>
+<canvas id="aurora"></canvas>
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="../index.html">首頁</a>
+      <a href="../about.html">關於我們</a>
+      <a href="../services.html">服務項目</a>
+      <a href="../pricing.html">報價</a>
+      <a href="../lab.html">技術實驗場</a>
+      <a href="../demo.html">基礎圖學</a>
+      <a href="../contact.html">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="bp-hero">
+  <div class="wrap">
+    <span class="tag">技能管線編排 · Orchestration Blueprint</span>
+    <h1>把 8 款遊戲引擎的編排智慧，<span class="grad">借來調度我們的工具</span></h1>
+    <p class="lede">來源靈感：一支把「同一款接球小遊戲」用 <strong style="color:var(--cyan)">Unity / Unreal / Godot / Game Maker / Construct 3 / GDevelop / RPG Maker MZ / Scratch</strong> 八套引擎各做一遍的影片。八套引擎本質是八種「如何把物件、邏輯、事件組裝成系統」的編排哲學。我們的 <code>tool-orchestration-pipeline</code> 技能包已是成熟編排器，本藍圖把它與 8 引擎的組合模型對照，萃取可移植原則，並規劃三階段落地——<strong style="color:var(--amber)">免費引擎（Godot / GDevelop / Scratch / Construct）的無碼哲學優先挹注心力</strong>。</p>
+  </div>
+</header>
+
+<!-- SECTION 1：8 引擎編排模型光譜 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">階段 1 · 萃取</div>
+      <h2>8 引擎編排模型光譜</h2>
+      <p>同一款遊戲，八套引擎給出八種「組裝方式」。下方標註授權與學習曲線，並點出對我們技能管線調度的啟發。免費/開源引擎以 cyan 標記——這是我們優先借鏡的對象。</p>
+    </div>
+    <div class="engine-grid">
+      <div class="engine-card">
+        <h3>Unity</h3>
+        <span class="lic paid">商業（個人免費有營收上限）</span>
+        <dl>
+          <dt>編排模型</dt><dd>GameObject + Component，C# 腳本掛載到物件</dd>
+          <dt>關鍵機制</dt><dd>Asset Store 資產市集、事件驅動腳本</dd>
+          <dt>學習曲線</dt><dd>中等</dd>
+          <dt>對管線啟發</dt><dd>「技能」= 掛載到任務的腳本；資產市集 → 技能市集</dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>Unreal</h3>
+        <span class="lic paid">商業（royalty）</span>
+        <dl>
+          <dt>編排模型</dt><dd>物件 + C++ 腳本 / Blueprints 視覺拼圖</dd>
+          <dt>關鍵機制</dt><dd>預製代碼區塊拼接、內建物理引擎</dd>
+          <dt>學習曲線</dt><dd>陡峭</dd>
+          <dt>對管線啟發</dt><dd>常見管線模式做成「藍圖模板」可拼裝複用</dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>Godot</h3>
+        <span class="lic free">開源免費</span>
+        <dl>
+          <dt>編排模型</dt><dd>場景樹（Scene Tree）+ GDScript + 訊號(Signal)</dd>
+          <dt>關鍵機制</dt><dd>小場景組合成大遊戲、節點間訊號解耦</dd>
+          <dt>學習曲線</dt><dd>低（來自 Unity 易上手）</dd>
+          <dt>對管線啟發</dt><dd>子管線巢狀組合 = 場景樹；事件解耦 = 訊號</dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>Game Maker</h3>
+        <span class="lic paid">商業（買斷/訂閱）</span>
+        <dl>
+          <dt>編排模型</dt><dd>圖層系統 + GML 腳本</dd>
+          <dt>關鍵機制</dt><dd>前景/背景圖層、動畫設定簡易</dd>
+          <dt>學習曲線</dt><dd>低–中</dd>
+          <dt>對管線啟發</dt><dd>管線分層（輸入/探測/核心/後製）對齊圖層</dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>Construct 3</h3>
+          <span class="lic paid">訂閱（有免費層）</span>
+        <dl>
+          <dt>編排模型</dt><dd>無碼 Behaviors 附加 + Events 事件表</dd>
+          <dt>關鍵機制</dt><dd>「碰撞事件 → 加分」寫成事件→動作宣告</dd>
+          <dt>學習曲線</dt><dd>極低（瀏覽器編輯）</dd>
+          <dt>對管線啟發</dt><dd><strong style="color:var(--cyan)">事件表驅動優於程序式 if/else 寫死</strong></dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>GDevelop</h3>
+        <span class="lic free">開源免費</span>
+        <dl>
+          <dt>編排模型</dt><dd>無碼 Behaviors + Events（同 Construct）</dd>
+          <dt>關鍵機制</dt><dd>新手首推、行為附加到物件</dd>
+          <dt>學習曲線</dt><dd>極低</dd>
+          <dt>對管線啟發</dt><dd><strong style="color:var(--cyan)">低認知負擔編排：非工程師也能組裝</strong></dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>RPG Maker MZ</h3>
+        <span class="lic paid">商業（買斷）</span>
+        <dl>
+          <dt>編排模型</dt><dd>無碼事件系統（高度特化）</dd>
+          <dt>關鍵機制</dt><dd>內建標題/隊伍/圖塊框架，最不靈活</dd>
+          <dt>學習曲線</dt><dd>低（但僵化）</dd>
+          <dt>對管線啟發</dt><dd><strong style="color:var(--red)">反例：過度特化會失去通用性</strong></dd>
+        </dl>
+      </div>
+      <div class="engine-card">
+        <h3>Scratch</h3>
+        <span class="lic free">免費（MIT）</span>
+        <dl>
+          <dt>編排模型</dt><dd>積木拖拽（彩色 blocks）</dd>
+          <dt>關鍵機制</dt><dd>拖拉代碼積木到物件，極簡</dd>
+          <dt>學習曲線</dt><dd>極低（教育）</dd>
+          <dt>對管線啟發</dt><dd><strong style="color:var(--cyan)">宣告式積木：組裝即配置，非寫碼</strong></dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2：雙軌映射圖 + 映射表 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">階段 1 · 映射</div>
+      <h2>雙軌映射：引擎編排 → 技能管線組件</h2>
+      <p>左軌是八套引擎，中間是「10 條可移植原則」萃取層，右軌是我們技能管線的對應組件。多對一萃取、一再對多映射。</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 1000 560" role="img" aria-label="8引擎到技能管線組件的雙軌映射圖">
+        <defs>
+          <marker id="arrowC" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#36e0d4"/>
+          </marker>
+          <marker id="arrowV" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#8b6cff"/>
+          </marker>
+        </defs>
+        <!-- 左軌標題 -->
+        <text x="150" y="18" fill="#92a6c4" font-size="13" text-anchor="middle" font-family="monospace">8 引擎編排模型</text>
+        <!-- 左軌節點 -->
+        <g font-family="monospace" font-size="13" fill="#e7eefb">
+          <rect x="30" y="34" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <text x="150" y="61" text-anchor="middle">Unity（商業）</text>
+          <rect x="30" y="90" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <text x="150" y="117" text-anchor="middle">Unreal（商業）</text>
+          <rect x="30" y="146" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <text x="150" y="173" text-anchor="middle">Godot（開源免費）</text>
+          <rect x="30" y="202" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <text x="150" y="229" text-anchor="middle">Game Maker（商業）</text>
+          <rect x="30" y="258" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <text x="150" y="285" text-anchor="middle">Construct 3（訂閱）</text>
+          <rect x="30" y="258" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <rect x="30" y="314" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <text x="150" y="341" text-anchor="middle">GDevelop（開源免費）</text>
+          <rect x="30" y="370" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
+          <text x="150" y="397" text-anchor="middle">RPG Maker（商業）</text>
+          <rect x="30" y="426" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <text x="150" y="453" text-anchor="middle">Scratch（免費 MIT）</text>
+        </g>
+        <!-- 中央萃取框 -->
+        <rect x="400" y="200" width="200" height="150" rx="12" fill="#111c30" stroke="#8b6cff" stroke-width="1.5"/>
+        <text x="500" y="252" text-anchor="middle" fill="#8b6cff" font-size="13" font-family="monospace" font-weight="700">10 條可移植原則</text>
+        <text x="500" y="276" text-anchor="middle" fill="#92a6c4" font-size="10" font-family="monospace">（萃取層）</text>
+        <text x="500" y="300" text-anchor="middle" fill="#92a6c4" font-size="10" font-family="monospace">行為附加 · 事件表</text>
+        <text x="500" y="318" text-anchor="middle" fill="#92a6c4" font-size="10" font-family="monospace">宣告積木 · 開源優先</text>
+        <!-- 右軌標題 -->
+        <text x="850" y="18" fill="#92a6c4" font-size="13" text-anchor="middle" font-family="monospace">技能管線組件</text>
+        <!-- 右軌節點 -->
+        <g font-family="monospace" font-size="13" fill="#e7eefb">
+          <rect x="730" y="50" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <text x="850" y="77" text-anchor="middle">技能 Skill / 工具 Tool</text>
+          <rect x="730" y="130" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <text x="850" y="157" text-anchor="middle">行為宣告 Behavior</text>
+          <rect x="730" y="210" width="240" height="44" rx="8" fill="#0d1422" stroke="#8b6cff"/>
+          <text x="850" y="237" text-anchor="middle">事件表 EventSheet</text>
+          <rect x="730" y="290" width="240" height="44" rx="8" fill="#0d1422" stroke="#8b6cff"/>
+          <text x="850" y="317" text-anchor="middle">場景樹 SceneTree</text>
+          <rect x="730" y="370" width="240" height="44" rx="8" fill="#0d1422" stroke="#ffb347"/>
+          <text x="850" y="397" text-anchor="middle">資產市集 Market</text>
+        </g>
+        <!-- 左→中 連線（淡 cyan） -->
+        <g stroke="#36e0d4" stroke-width="1" opacity="0.5">
+          <line x1="270" y1="56" x2="400" y2="250"/>
+          <line x1="270" y1="112" x2="400" y2="255"/>
+          <line x1="270" y1="168" x2="400" y2="260"/>
+          <line x1="270" y1="224" x2="400" y2="265"/>
+          <line x1="270" y1="280" x2="400" y2="270"/>
+          <line x1="270" y1="336" x2="400" y2="275"/>
+          <line x1="270" y1="392" x2="400" y2="290"/>
+          <line x1="270" y1="448" x2="400" y2="300"/>
+        </g>
+        <!-- 中→右 連線（violet，標借鑑成果） -->
+        <g stroke="#8b6cff" stroke-width="1.5" marker-end="url(#arrowV)">
+          <line x1="600" y1="250" x2="730" y2="72"/>
+          <line x1="600" y1="262" x2="730" y2="152"/>
+          <line x1="600" y1="274" x2="730" y2="232"/>
+          <line x1="600" y1="286" x2="730" y2="312"/>
+          <line x1="600" y1="320" x2="730" y2="392"/>
+        </g>
+      </svg>
+      <div class="fig-cap">▲ 圖 A：8 引擎（左）→ 10 條原則萃取層（中）→ 技能管線組件（右）。免費引擎以 cyan 邊框標記，為優先借鏡對象。</div>
+    </div>
+
+    <h3 style="margin-top:var(--sp-4)">遊戲概念 → 技能管線對應物（精確對照表）</h3>
+    <table class="maptable">
+      <thead><tr><th>遊戲引擎概念</th><th>技能管線對應物</th><th>借鏡意義</th></tr></thead>
+      <tbody>
+        <tr><td>GameObject（遊戲物件）</td><td>Skill / Tool / Task（技能/工具/任務）</td><td>編排的基本單元</td></tr>
+        <tr><td>Script（掛載腳本）</td><td>技能實作（函式 / 腳本）</td><td>能力的具體載體</td></tr>
+        <tr><td>Component（組件）</td><td>可插拔行為模組</td><td>能力標籤化、可組合</td></tr>
+        <tr><td>Behavior（Construct/GDevelop 行為附加）</td><td>宣告式能力（「此技能能處理 X 類事件」）</td><td>能力宣告而非邏輯寫死</td></tr>
+        <tr><td>Event Sheet（事件表）</td><td>「事件 → 技能」綁定表</td><td>宣告式調度，取代程序式 if/else</td></tr>
+        <tr><td>Block（Scratch 積木）</td><td>宣告式組裝配置</td><td>非工程師也能拼裝管線</td></tr>
+        <tr><td>Scene Tree（Godot 場景樹）</td><td>管線拓撲 / 依賴 DAG</td><td>子管線巢狀組合、訊號解耦</td></tr>
+        <tr><td>Asset Store（資產市集）</td><td>技能市集 / 工具盤點</td><td>從市集拉取並自動名實核實</td></tr>
+        <tr><td>Physics Engine（Unreal 內建物理）</td><td>執行基礎設施（沙箱 / Merkle 對帳）</td><td>對帳/驗收隱形化、自動發生</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- SECTION 3：10 條可移植原則 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">階段 1 · 原則</div>
+      <h2>萃取 10 條可移植原則</h2>
+      <p>從八套引擎歸納、對齊「免費引擎優先」的編排智慧。每條標註引擎來源、對管線的啟發、與落地建議。</p>
+    </div>
+
+    <div class="principle">
+      <div class="pid">P1</div>
+      <div class="pbody">
+        <h4>行為附加優於腳本掛載</h4>
+        <p>把「能力」宣告式附加到物件（Construct/GDevelop 的 Behavior），而非把邏輯寫死在調度器。技能應宣告「我能處理哪些事件類型 / 我有什麼能力標籤」。</p>
+        <p class="src">來源：Construct 3 / GDevelop · 免費引擎優先</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P2</div>
+      <div class="pbody">
+        <h4>事件表優於程序式呼叫</h4>
+        <p>「如果 A 碰撞 B → 加分」寫成「事件→動作」宣告表，而非 if/else 散布。調度邏輯從程序式升級為「事件→技能綁定」宣告表。</p>
+        <p class="src">來源：Construct 3 / GDevelop / RPG Maker 事件系統</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P3</div>
+      <div class="pbody">
+        <h4>積木拖拽的極簡性</h4>
+        <p>Scratch 把邏輯降維到拖拉彩色積木。讓使用者 / agent 用宣告式配置組裝管線，而非寫 Python orchestrator——對齊 human-in-the-loop 非工程師也能組裝。</p>
+        <p class="src">來源：Scratch · 免費（MIT）</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P4</div>
+      <div class="pbody">
+        <h4>開源 / 免費優先</h4>
+        <p>Godot / GDevelop / Scratch 全免費。編排器優先採用免費開源工具、免 key 服務（如 Pollinations），避免商業授權綁定。對齊 studio-generate 成本路由哲學。</p>
+        <p class="src">來源：Godot / GDevelop / Scratch · 開源免費</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P5</div>
+      <div class="pbody">
+        <h4>場景組合（巢狀重用）</h4>
+        <p>Godot 場景樹讓複雜遊戲由小場景組合。管線應由子管線模組組合，支援巢狀 / 重用，對齊 entropy-dispatch 模組化與 tool-orchestration 子管線概念。</p>
+        <p class="src">來源：Godot · 開源免費</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P6</div>
+      <div class="pbody">
+        <h4>通用性勝於過度特化</h4>
+        <p>RPG Maker 最不靈活、只適合 JRPG。編排器應保持「通用編排方法論」定位，不退化成某專案專用寫死邏輯（反例警示）。</p>
+        <p class="src">來源：RPG Maker · 特化反例</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P7</div>
+      <div class="pbody">
+        <h4>降低認知負擔</h4>
+        <p>免費引擎（GDevelop/Construct/Scratch）上手極快。編排器應降低使用者認知負擔——宣告式配置 + 視覺化藍圖，而非要求人人寫 orchestrator 代碼。</p>
+        <p class="src">來源：GDevelop / Construct 3 / Scratch · 極低學習曲線</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P8</div>
+      <div class="pbody">
+        <h4>資產市集模式</h4>
+        <p>Unity/Unreal/Godot/Game Maker 都有資產市集。編排器應能「從市集拉取技能/工具」並自動盤點可用性——對齊 tool-orchestration 的名實核實三態。</p>
+        <p class="src">來源：Unity / Godot Asset Store · 市集盤查</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P9</div>
+      <div class="pbody">
+        <h4>藍圖模板可複用</h4>
+        <p>Unreal Blueprints 把常見模式做成預製拼圖。把常見管線模式（抓取→去重→對帳→推送）做成預製「藍圖模板」，使用者拼裝即可——對齊「先做藍圖再調配」原則。</p>
+        <p class="src">來源：Unreal Blueprints · 視覺拼圖</p>
+      </div>
+    </div>
+    <div class="principle">
+      <div class="pid">P10</div>
+      <div class="pbody">
+        <h4>基礎設施隱形化</h4>
+        <p>Unreal 用內建物理做掉落，執行時設施隱形。把「執行 / 沙箱 / Merkle 對帳」做成隱形基礎設施，編排者只需關注「事件→技能」，對帳/驗收自動發生。</p>
+        <p class="src">來源：Unreal 內建物理 · 對齊 Merkle 自動續鏈</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4：目標編排器架構 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">階段 1 · 目標架構</div>
+      <h2>宣告式「事件 → 技能」編排器（目標態）</h2>
+      <p>把現行 tool-orchestration-pipeline 的「程序式 5 步」重構為「事件驅動 + 宣告式綁定」四層架構。下層對帳/驗收隱形化（P10）。</p>
+    </div>
+    <div class="fig">
+      <svg viewBox="0 0 1000 500" role="img" aria-label="目標編排器四層架構圖">
+        <defs>
+          <marker id="arrowD" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+            <path d="M0,0 L8,3 L0,6 Z" fill="#36e0d4"/>
+          </marker>
+        </defs>
+        <!-- L1 事件入口層 -->
+        <rect x="60" y="24" width="880" height="74" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
+        <text x="80" y="52" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">① 事件入口層（Event Sources）</text>
+        <text x="80" y="76" fill="#92a6c4" font-size="12" font-family="monospace">檔案變更 · 排程觸發(cron) · API 呼叫 · 使用者指令 · 訊號(Signal)</text>
+        <!-- L2 宣告式綁定表 -->
+        <rect x="60" y="144" width="880" height="74" rx="12" fill="#0d1422" stroke="#8b6cff" stroke-width="1.5"/>
+        <text x="80" y="172" fill="#8b6cff" font-size="14" font-family="monospace" font-weight="700">② 宣告式綁定表（Event → Skill）</text>
+        <text x="80" y="196" fill="#92a6c4" font-size="12" font-family="monospace">若「抓取」事件 → 調用 skill X · 若「對帳」事件 → 調用 Merkle 模組（類 Construct/GDevelop 事件表，P2）</text>
+        <!-- L3 技能市集 + 路由 -->
+        <rect x="60" y="264" width="880" height="74" rx="12" fill="#0d1422" stroke="#ffb347" stroke-width="1.5"/>
+        <text x="80" y="292" fill="#ffb347" font-size="14" font-family="monospace" font-weight="700">③ 技能市集 + 三態路由（Market + Route）</text>
+        <text x="80" y="316" fill="#92a6c4" font-size="12" font-family="monospace">可用技能清單 · 名實核實三態(ok/missing/denied) · 路由三態(available/degraded/blocker)（P8 · 對齊既有能力）</text>
+        <!-- L4 執行基礎設施 -->
+        <rect x="60" y="384" width="880" height="74" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
+        <text x="80" y="412" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">④ 執行基礎設施（隱形化 · P10）</text>
+        <text x="80" y="436" fill="#92a6c4" font-size="12" font-family="monospace">沙箱執行 · Merkle 自動續鏈對帳 · 雙樣本驗收 · 嚴格定案門檻（繼承 tool-orchestration 既有的可證偽核心）</text>
+        <!-- 層間箭頭 -->
+        <g stroke="#36e0d4" stroke-width="1.5" marker-end="url(#arrowD)">
+          <line x1="500" y1="98" x2="500" y2="142"/>
+          <line x1="500" y1="218" x2="500" y2="262"/>
+          <line x1="500" y1="338" x2="500" y2="382"/>
+        </g>
+      </svg>
+      <div class="fig-cap">▲ 圖 B：目標四層架構。①②為新增的「宣告式事件驅動」層（借鏡免費引擎）；③④繼承並收斂既有 tool-orchestration-pipeline 的可證偽核心。</div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5：三階段整合路線圖 -->
+<section class="bp-section">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">階段 1 · 路線圖</div>
+      <h2>三階段整合落地計畫</h2>
+      <p>藍圖優先、逐步落地。本頁即階段 1 交付物；階段 2/3 待你確認後執行。每階段含里程碑與驗收標準（對齊雙樣本 / 可證偽鐵律）。</p>
+    </div>
+
+    <div class="phase">
+      <h3>階段 1 · 藍圖與計畫（本輪 ✅ 完成）</h3>
+      <div class="tag">交付物：本藍圖頁 + 整合計畫 MD + lab.html 入口</div>
+      <ul>
+        <li class="done">✅ 萃取 8 引擎編排模型 → 10 條可移植原則（P1–P10）</li>
+        <li class="done">✅ 雙軌映射圖（圖 A）+ 遊戲概念對照表</li>
+        <li class="done">✅ 目標編排器四層架構（圖 B）</li>
+        <li class="done">✅ 三階段路線圖（本節）</li>
+        <li><strong>驗收標準</strong>：原則可逐條追溯引擎來源；映射表雙向可查；架構圖標註哪些層是新增 / 哪些繼承既有。</li>
+      </ul>
+    </div>
+
+    <div class="phase free-lane">
+      <h3>階段 2 · 改造編排器（待確認）</h3>
+      <div class="tag">對象：tool-orchestration-pipeline 技能包 → 宣告式「事件→技能」編排器</div>
+      <ul>
+        <li><strong>里程碑 2.1</strong>：抽出「事件綁定表」宣告式 schema（YAML/JSON），讓技能自述能力標籤（P1/P2）。</li>
+        <li><strong>里程碑 2.2</strong>：把現行程序式 5 步重構為圖 B 四層；保留三態名實核實、三態路由、Merkle 續鏈（繼承，不重造）。</li>
+        <li><strong>里程碑 2.3</strong>：加「藍圖模板」預製層（P9），如抓取→去重→對帳→推送模板。</li>
+        <li><strong>里程碑 2.4</strong>：免費引擎優先清單（P4）——預設路由偏好免費/開源/免 key 工具。</li>
+        <li><strong>驗收標準（雙樣本）</strong>：PASS 樣本（可用技能真跑通 + ledger + sha256 可重算）；FAIL 樣本（無兜底缺失任務確實 exit≠0 + BLOCKER）；FAIL-INPUT 樣本（非法輸入被業務層攔下）。三者全過，且「宣告式綁定表」本身須有雙樣本驗收，不得假通過。</li>
+      </ul>
+    </div>
+
+    <div class="phase free-lane">
+      <h3>階段 3 · 實做互動 Demo（待確認）</h3>
+      <div class="tag">載體：studio-site 技術實驗場 · Three.js / Web 免費技術棧</div>
+      <ul>
+        <li><strong>里程碑 3.1</strong>：以「同一接球遊戲、多引擎思路」為題，做一個可切換「編排哲學視角」的互動 demo（如切到 Construct 視角=事件表驅動、切到 Godot 視角=場景樹組合）。</li>
+        <li><strong>里程碑 3.2</strong>：demo 自身即「技能管線編排」的活樣本——玩家操作 = 事件，物件行為 = 技能綁定，對帳 = 分數 Merkle。</li>
+        <li><strong>里程碑 3.3</strong>：headless Chrome 真實渲染驗證整鏈無錯（對齊 webgl-headless-verification）。</li>
+        <li><strong>驗收標準</strong>：無外部依賴可 file:// 開；切換視角後遊戲行為可觀察差異；控制台零錯誤。</li>
+      </ul>
+    </div>
+
+    <div class="backlink">
+      <a class="btn btn-pri" href="../lab.html">← 回到技術實驗場</a>
+      <a class="btn btn-ghost" href="cg-orchestration.html" style="margin-left:12px">看 CG 技能調度落地 →</a>
+      <a class="btn btn-ghost" href="#top" style="margin-left:12px">↑ 回到頂端</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="../index.html">首頁</a>
+      <a href="../about.html">關於我們</a>
+      <a href="../services.html">服務項目</a>
+      <a href="../pricing.html">報價</a>
+      <a href="../lab.html">技術實驗場</a>
+      <a href="../demo.html">基礎圖學</a>
+      <a href="../contact.html">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
+    <div class="backtop"><a href="#top">↑ 回到頂端</a></div>
+  </div>
+</footer>
+
+<script src="../assets/aurora.js"></script>
+<script src="../assets/anim.js"></script>
+</body>
+</html>
