@@ -65,6 +65,15 @@ export class FreeOrbitControls {
       this.distance * cp * cy
     );
     this.camera.position.copy(this.target).add(off);
+    // 鏡頭邊界防護：camera 不可移出地板渲染範圍（避免看到未渲染空白）
+    // bounds 由 engine 在建構後設定（地板 WORLD_W × WORLD_D）；未設定則用預設
+    const B = this.bounds || { w: 900, d: 600 };
+    const M = 40;   // 容許 camera 略超出地板邊緣的緩衝（觀察邊角用）
+    const minX = -M, maxX = B.w + M, minZ = -M, maxZ = B.d + M;
+    if (this.camera.position.x < minX) { this.camera.position.x = minX; }
+    else if (this.camera.position.x > maxX) { this.camera.position.x = maxX; }
+    if (this.camera.position.z < minZ) { this.camera.position.z = minZ; }
+    else if (this.camera.position.z > maxZ) { this.camera.position.z = maxZ; }
     this.camera.lookAt(this.target);
   }
 

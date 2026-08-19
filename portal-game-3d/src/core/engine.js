@@ -81,6 +81,7 @@ export class GameEngine {
     this.scene.add(dir);
 
     this.controls = new FreeOrbitControls(this.camera, this.canvas, this.playerPos);
+    this.controls.bounds = { w: WORLD_W, d: WORLD_D };   // 鏡頭邊界防護：camera 不超出地板渲染範圍
     this._portals = new PortalSystem(this.scene, PR);
 
     this._bindInput();
@@ -361,6 +362,12 @@ export class GameEngine {
     }
     // 地板（y=0）
     if (ent.y <= PH / 2) { ent.y = PH / 2; if (this.playerVel.y < 0) this.playerVel.y = 0; grounded = true; }
+    // 世界邊界限制：防止玩家走出地板看到未渲染的空白（無形牆）
+    const MINX = PR, MAXX = WORLD_W - PR, MINZ = PR, MAXZ = WORLD_D - PR;
+    if (ent.x < MINX) { ent.x = MINX; if (this.playerVel.x < 0) this.playerVel.x = 0; }
+    else if (ent.x > MAXX) { ent.x = MAXX; if (this.playerVel.x > 0) this.playerVel.x = 0; }
+    if (ent.z < MINZ) { ent.z = MINZ; if (this.playerVel.z < 0) this.playerVel.z = 0; }
+    else if (ent.z > MAXZ) { ent.z = MAXZ; if (this.playerVel.z > 0) this.playerVel.z = 0; }
     return grounded;
   }
 
