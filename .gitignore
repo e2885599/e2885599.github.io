@@ -66,3 +66,7 @@ scripts/verify_site_e2e.py
 
 # 防 agent 誤帶本地備份
 *.bak_agent_*
+
+# Python 快取/開發殘留
+__pycache__/
+*_probe.mp3

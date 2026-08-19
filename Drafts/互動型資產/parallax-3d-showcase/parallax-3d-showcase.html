@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<!--
+  parallax-3d-showcase.html — OODAV LAB 視差滾動＋3D 實體模板動畫（草稿區互動資產）
+  來源：ai-web-builder-course-method 技能原生調處 + game-asset-provisioning 免費 .glb 模板。
+  對齊：studio-site 主題色(cyan×violet×amber)、reveal 進場、reel 短片傳統。
+  狀態：Drafts/互動型資產（互動型預設草稿，不推送 GitHub、不動正式頁）。
+  用法：python -m http.server 後開 http://127.0.0.1:PORT/parallax-3d-showcase.html
+        加 ?auto=1 進入自動演出「類短片」模式。
+-->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OODAV LAB｜視差滾動 × 3D 實體模板（草稿）</title>
+<style>
+  :root{
+    --bg:#060912; --bg2:#0a1020; --panel:#0d1422; --panel2:#111c30;
+    --line:#1d2c45; --line2:#26395c;
+    --cyan:#36e0d4; --violet:#8b6cff; --amber:#ffb347;
+    --txt:#e7eefb; --muted:#92a6c4; --muted2:#6c809e;
+    --grad:linear-gradient(90deg,var(--cyan),var(--violet));
+    --grad-soft:linear-gradient(120deg,rgba(54,224,212,.16),rgba(139,108,255,.16));
+    --ease:cubic-bezier(.22,.61,.36,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:"Space Grotesk","IBM Plex Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+    background:var(--bg);color:var(--txt);line-height:1.8;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 24px}
+  a{color:var(--cyan);text-decoration:none}
+
+  /* 視差層（多層速率差） */
+  #auroraLayer{position:fixed;inset:-10% 0;z-index:-3;pointer-events:none;
+    background:
+      radial-gradient(1200px 700px at 82% -12%,#13233f 0%,transparent 56%),
+      radial-gradient(900px 600px at 10% 110%,#1a1340 0%,transparent 55%),
+      var(--bg);
+    will-change:transform}
+  #glowLayer{position:fixed;inset:0;z-index:-2;pointer-events:none;
+    background-image:
+      linear-gradient(rgba(54,224,212,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(139,108,255,.05) 1px,transparent 1px);
+    background-size:46px 46px;mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+    -webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
+    will-change:transform}
+
+  nav{position:sticky;top:0;z-index:60;backdrop-filter:blur(14px) saturate(140%);
+    background:rgba(6,9,18,.66);border-bottom:1px solid var(--line)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:800;letter-spacing:.6px}
+  .logo{width:32px;height:32px;border-radius:8px;background:conic-gradient(from 200deg,var(--cyan),var(--violet),var(--cyan));
+    box-shadow:0 0 18px rgba(54,224,212,.55);animation:logoSpin 9s linear infinite}
+  @keyframes logoSpin{to{transform:rotate(360deg)}}
+  .back{font-size:14px;color:var(--muted)}
+
+  /* Hero（視差：標題緩慢上移） */
+  .hero{position:relative;min-height:88vh;display:flex;flex-direction:column;justify-content:center;padding:96px 0 64px}
+  .tag{display:inline-block;font-size:12px;letter-spacing:3px;color:var(--cyan);
+    border:1px solid rgba(54,224,212,.5);border-radius:999px;padding:4px 24px;margin-bottom:24px;background:rgba(54,224,212,.06)}
+  h1{font-size:clamp(32px,5vw,56px);line-height:1.12;font-weight:800;letter-spacing:-.5px}
+  h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--muted);font-size:18px;max-width:640px;margin:24px 0}
+  .cta{display:flex;gap:16px;flex-wrap:wrap;margin-top:16px}
+  .btn{padding:16px 24px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;border:1px solid transparent;transition:.24s var(--ease);display:inline-block}
+  .btn-pri{background:var(--grad);color:#04121a;box-shadow:0 10px 30px rgba(54,224,212,.25)}
+  .btn-ghost{border-color:var(--line2);color:var(--txt);background:rgba(13,20,34,.5)}
+  .btn.on{color:#04121a;background:var(--grad)}
+
+  /* 3D 展品段 */
+  section{padding:96px 0;position:relative}
+  .sec-head{margin-bottom:48px;max-width:720px}
+  .sec-head .k{font-size:13px;letter-spacing:3px;color:var(--violet);font-weight:700}
+  .sec-head h2{margin:8px 0 16px;font-size:clamp(24px,4vw,38px);font-weight:800}
+  .sec-head p{color:var(--muted)}
+
+  .stage-wrap{position:relative;border-radius:24px;overflow:hidden;border:1px solid var(--line2);
+    box-shadow:0 20px 60px rgba(0,0,0,.5);background:#04070e;aspect-ratio:21/9;max-width:1160px}
+  #stage3d{width:100%;height:100%;display:block}
+  .stage-status{position:absolute;left:16px;bottom:16px;z-index:2;font-size:12px;color:var(--cyan);
+    background:rgba(6,9,18,.7);border:1px solid var(--line2);padding:8px 16px;border-radius:12px}
+  .stage-status.warn{color:var(--amber)}
+  .stage-legend{position:absolute;right:16px;top:16px;z-index:2;display:flex;gap:8px;flex-wrap:wrap}
+  .stage-legend span{font-size:11px;color:var(--muted);background:rgba(6,9,18,.6);border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+
+  /* 降級：靜態主題色漸層兜底 */
+  body.degraded #auroraLayer{opacity:.6}
+  .degraded-note{display:none}
+  body.degraded .degraded-note{display:block;color:var(--amber);font-size:14px;margin-top:16px}
+
+  .reveal{opacity:0;transform:translateY(58px);transition:opacity 1.1s var(--ease),transform 1.1s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .reveal.d1{transition-delay:.12s}.reveal.d2{transition-delay:.24s}.reveal.d3{transition-delay:.36s}
+
+  footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--muted);font-size:12px;text-align:center;
+    background:linear-gradient(180deg,transparent,rgba(10,16,32,.5))}
+  .note{font-size:13px;color:var(--muted);margin-top:16px;border-left:2px solid var(--violet);padding-left:16px;line-height:1.7}
+
+  @media(prefers-reduced-motion:reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    .logo{animation:none}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+  <div id="auroraLayer"></div>
+  <div id="glowLayer"></div>
+
+  <nav>
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+      <a class="back" href="../../index.html">← 回工作室首頁</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="wrap">
+      <span class="tag">草稿區 · 互動型資產</span>
+      <h1>視差滾動 × <span class="grad">3D 實體模板</span></h1>
+      <p class="lede">把 game-asset-provisioning 的免費 .glb 模板，安插進多層視差滾動的場景：極光網格緩移、主題色光暈中速、3D 展品最快——形成 depth parallax。資產自有、可對帳，不依賴外部 SaaS。</p>
+      <div class="cta">
+        <button class="btn btn-ghost" id="toggleAuto">▶ 自動演出（短片模式）</button>
+        <a class="btn btn-pri" href="#stage">看展品</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="stage">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <div class="k">EXHIBIT · 實體模板調用</div>
+        <h2>四類 .glb，自動旋轉＋漂浮</h2>
+        <p>取自 game-asset-provisioning 15 大類免費模板：humanoid / creature / prop / vehicle 各一，全部本地持有、可 sha256 對帳。</p>
+      </div>
+      <div class="stage-wrap reveal d1">
+        <canvas id="stage3d"></canvas>
+        <div class="stage-status" id="stageStatus">載入中…</div>
+        <div class="stage-legend">
+          <span>humanoid</span><span>creature</span><span>prop</span><span>vehicle</span>
+        </div>
+      </div>
+      <p class="degraded-note">⚠ 已降級為靜態主題色展示（WebGL/資產不可用時的兜底，非失敗）。</p>
+      <p class="note">加 <code>?auto=1</code> 於網址後方可進入「自動演出」模式：相機繞場緩慢推進，無需操作即演出，對齊 studio-site 既有的 reel/story 短片傳統。若要落地為實體 .webm 短片檔，可經 headless Chrome 錄製 canvas（參 video-edit-pipeline），本草稿未執行該步。</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">OODAV LAB · 視差滾動 × 3D 實體模板展示（Drafts 互動型資產）· 資產自有、可對帳</div>
+  </footer>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./vendor/three.module.js",
+      "three/addons/": "./vendor/addons/"
+    }
+  }
+  </script>
+  <script type="module" src="parallax-3d.js"></script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>少一點精準，多一點靈魂 — Hoyte van Hoytema 攝影哲學</title>
+<style>
+  /* 深色電影感基底：接近影院暗場，文字採暖白避免刺眼 */
+  :root{
+    --bg:#0a0a0f;
+    --bg2:#111118;
+    --ink:#e8e4da;
+    --muted:#9a948a;
+    --accent:#c8a24a;        /* 暖金：呼應菲林/燈光 */
+    --line:rgba(200,162,74,.25);
+    --card:rgba(255,255,255,.035);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:radial-gradient(1200px 800px at 50% -10%,#16161f 0%,var(--bg) 60%);
+    color:var(--ink);font-family:"Noto Serif CJK TC","Songti TC",Georgia,serif;
+    line-height:1.85;letter-spacing:.02em;
+  }
+  /* 頂部進度條：滾動驅動，給予「膠卷推進」感 */
+  #progress{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--accent),#fff);z-index:50;transition:width .1s}
+  header.hero{
+    min-height:78vh;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;padding:6vh 6vw;position:relative;overflow:hidden;
+  }
+  /* 極光式緩動光帶，純 CSS 程序化，無外部圖 */
+  header.hero::before{
+    content:"";position:absolute;inset:-20% -10% auto -10%;height:60%;
+    background:conic-gradient(from 0deg at 50% 50%,rgba(200,162,74,.10),rgba(120,160,220,.08),rgba(200,162,74,.10));
+    filter:blur(60px);animation:drift 18s linear infinite;z-index:0;
+  }
+  @keyframes drift{to{transform:rotate(360deg)}}
+  .hero h1{font-size:clamp(2.2rem,6vw,4.4rem);margin:0 0 .4em;z-index:1;font-weight:700;letter-spacing:.04em}
+  .hero .en{font-size:clamp(1rem,2.4vw,1.6rem);color:var(--accent);font-style:italic;z-index:1}
+  .hero .sub{color:var(--muted);margin-top:1.4em;max-width:42ch;z-index:1}
+  main{max-width:880px;margin:0 auto;padding:2vh 6vw 14vh}
+  section{margin:8vh 0;scroll-margin-top:70px}
+  h2{font-size:clamp(1.5rem,3.4vw,2.2rem);border-left:4px solid var(--accent);padding-left:.6em;margin-bottom:.8em}
+  h3{color:var(--accent);font-size:1.15rem;margin-top:1.8em}
+  p{color:var(--ink)}
+  .muted{color:var(--muted)}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:1.4em 1.6em;margin:1.2em 0;backdrop-filter:blur(4px)}
+  .card strong{color:var(--accent)}
+  ol.lessons{counter-reset:l;list-style:none;padding:0}
+  ol.lessons li{counter-increment:l;position:relative;padding:.8em 0 .8em 2.6em;border-bottom:1px dashed var(--line)}
+  ol.lessons li::before{content:counter(l);position:absolute;left:0;top:.7em;width:1.8em;height:1.8em;
+    display:grid;place-items:center;background:var(--accent);color:#111;border-radius:50%;font-weight:700;font-size:.85rem}
+  table.verify{width:100%;border-collapse:collapse;font-size:.86rem;margin-top:1em}
+  table.verify th,table.verify td{border:1px solid var(--line);padding:.7em .8em;text-align:left;vertical-align:top}
+  table.verify th{background:var(--bg2);color:var(--accent)}
+  .tag-ok{color:#7fd18a;font-weight:700}
+  .tag-part{color:var(--accent);font-weight:700}
+  .tag-claim{color:#d98a8a;font-weight:700}
+  .note{background:rgba(200,162,74,.07);border-left:4px solid var(--accent);padding:1em 1.2em;margin:1.4em 0;color:var(--muted)}
+  blockquote{margin:1.4em 0;padding:1em 1.4em;border-left:4px solid var(--accent);background:var(--card);font-style:italic;color:var(--ink)}
+  .reveal{opacity:0;transform:translateY(28px);transition:opacity .9s ease,transform .9s ease}
+  .reveal.in{opacity:1;transform:none}
+  footer{max-width:880px;margin:0 auto;padding:6vh 6vw 12vh;color:var(--muted);border-top:1px solid var(--line)}
+  footer .q{color:var(--ink);font-size:1.05rem;line-height:1.9}
+  a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+
+<header class="hero">
+  <h1 class="reveal">少一點精準，多一點靈魂</h1>
+  <div class="en reveal">Less precision, more soul</div>
+  <p class="sub reveal">Hoyte van Hoytema 的攝影哲學與可證偽技法清單 — 摘自其與諾蘭、Peele 等合作的紀實訪談，並經獨立來源（Wikipedia）交叉查證。</p>
+</header>
+
+<main>
+  <section class="reveal">
+    <h2>一、核心信條</h2>
+    <blockquote>「Great cinematography is not about perfect focus or clear compositions, it's about shorthand, trust, and the sincere chemistry of your crew.」</blockquote>
+    <p class="muted">偉大攝影不在完美對焦或精確構圖，而在「速記般的默契、信任、與 crew 的真誠化學反應」。這句話是 Hoyte 全部創作觀的錨點。</p>
+  </section>
+
+  <section class="reveal">
+    <h2>二、攝影哲學（靈魂層）</h2>
+    <div class="card">
+      <h3>不要掉進「太乾淨」的陷阱</h3>
+      <p>過度對齊黃金比例、清掉每個陰影、把畫面打掃得像「清潔工做的」，會把場景的生命與自發性吸乾。他稱之為 <strong>「silent killer of cinema（電影的沉默殺手）」</strong>。</p>
+    </div>
+    <div class="card">
+      <h3>從古典規訓「解學」</h3>
+      <p>波蘭電影學院訓他黃金比例與正規構圖，後來他刻意 <strong>中心構圖（center punching）</strong>、讓畫面邊緣溢出視野，暗示故事世界比銀幕邊界更廣、更亂、更真。</p>
+    </div>
+    <div class="card">
+      <h3>「面孔即地景」</h3>
+      <p>IMAX 最大的特寫戲劇——臉是自己的風景，觀眾在演員眼中投射自己的同理與想像，攝影機成為直達角色潛意識的閘門。</p>
+    </div>
+    <div class="card">
+      <h3>謙卑於主體</h3>
+      <p>完全控制反而常得到「毫無生命的精確」；他學著對主題謙卑，讓演員/場景自己說話，攝影師的工作有時只是 <strong>「紀錄他人放在鏡頭前的偉大」</strong>。</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>三、具體技法（工程層）</h2>
+    <div class="card">
+      <h3>手持 IMAX</h3>
+      <p>把原本鎖三腳架拍風景/太空的笨重 65mm IMAX 拆輕、上肩手持，開創大格式「親密手持」語言（他笑稱 IMAX 像「飯店迷你吧」）。</p>
+    </div>
+    <div class="card">
+      <h3>特製靜音機身 + 隔音 blimp</h3>
+      <p>標準 IMAX 太吵無法收對白，諾蘭與 Hoyte 催生更輕更靜的機身，近攝對白時用隔音「棺材」罩住相機、鏡子系統維持演員眼神接觸。</p>
+    </div>
+    <div class="card">
+      <h3>整組無線燈光網（Odyssey / Troy 夜襲）</h3>
+      <p>棄用笨重 HMI，改用數百顆可程式化電池 LED（Cineo 410、Nanlux Evoke 5000B）模擬火光色溫，相機 360° 任意轉向不穿幫；燈光程式師 Noah Shane 建 AirMax 無線系統（聲稱可管單一網路線 65,000 個 DMX universe）。</p>
+    </div>
+    <div class="card">
+      <h3>日拍夜（Nope）</h3>
+      <p>紅外線拍攝沙漠白晝→濾掉可見光留下黑天空，再用退役 3D 鏡陣把 Panavision System 65（彩色 65mm 底片）與改造 Alexa 65（純紅外）併機，後製把彩色映射到紅外對比上，得到「人眼瞳孔放大才看見山脊」的真實暗夜感。</p>
+    </div>
+    <div class="card">
+      <h3>黑白 65mm IMAX（Oppenheimer「fusion」段）</h3>
+      <p>史上第一次 15 perf 黑白 IMAX，因黑白底片薄、光穿過打在金屬片門反彈造成 halation 光暈，與 Panavision/IMAX 重做非反射黑片門；FotoKem 也重排管線（8000L 槽體排色藥換黑白藥）。</p>
+    </div>
+    <div class="card">
+      <h3>實體時間逆轉（Tenet）</h3>
+      <p>不靠數位光學，改裝機械齒輪箱讓 IMAX 實體倒片拍攝，演員倒著演動作，後製正放即「世界倒流、人前進」；特技車方向盤裝在車尾讓司機能倒開 70mph。</p>
+    </div>
+    <div class="card">
+      <h3>物理特效優先於 CGI</h3>
+      <p>Dunkirk 真噴火戰機、Oppenheimer 用玻璃球+旋轉金屬針+乒乓球盤模擬電子軌道、牆面即時投影震顫演繹 Oppenheimer 偏執——皆 in-camera 實體解。</p>
+    </div>
+  </section>
+
+  <section class="reveal">
+    <h2>四、可複用教訓（跨域）</h2>
+    <ol class="lessons">
+      <li><strong>技術限制不該決定你的創作語言</strong>——需要的環境不存在，就自己造（靜音機身、無線燈網、倒轉齒輪、黑白片門皆然）。</li>
+      <li><strong>讓導演成為你最大的擁護者</strong>——任何異想天開的計畫，先讓導演著迷，他會替你擋住片廠與預算干擾（Nope 先讓 Peele 興奮，Universal 自然買單）。</li>
+      <li><strong>信任與默契勝過繁文縟節</strong>——與對焦員 Keith Davis「像結婚夫妻般無言感知」，才能在大格式極淺景深下靠直覺跟焦。</li>
+      <li><strong>擁抱混亂、讓故事呼吸</strong>——不要在每個 close-up 上過度珍視/控制，粗糙一點、少控制一點，反而更真。</li>
+      <li><strong>熱情可動員產業巨頭</strong>——Kodak/Panavision/IMAX 願為單部電影花數十萬造不存在的產品，關鍵是「問對問題 + 工程意願」，不全是錢。</li>
+    </ol>
+  </section>
+
+  <section class="reveal">
+    <h2>五、可證偽事實查證表</h2>
+    <p class="muted">獨立交叉源＝Wikipedia raw/wikitext API（HTTP 200 通）。受管 web_search 因 Firecrawl 額度歸零失效，本地 14 源亦全掛，故未能觸達 American Cinematographer 等產業專刊第二源。判定欄嚴守「影片自述」與「已獨立確認」之分。</p>
+    <table class="verify">
+      <thead>
+        <tr><th>#</th><th>片中聲稱</th><th>獨立查證</th><th>判定</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C1</td><td>《奧德賽》全片用 15 perf 65mm IMAX，特製更輕更靜機身</td><td>維基奧德賽條目：「first feature film shot entirely with IMAX film cameras, primarily using a newly manufactured lighter and quieter camera body」</td><td><span class="tag-ok">確證</span></td></tr>
+        <tr><td>C2</td><td>為收對白特製隔音 blimp 罩 IMAX</td><td>維基同段：「a soundproof blimp … specially constructed to mute the camera's sound」</td><td><span class="tag-ok">確證</span></td></tr>
+        <tr><td>C3</td><td>200 萬呎 15 perf 65mm 底片在 FotoKem 沖印</td><td>維基同段：「Over 2 million feet of 15-perf 65mm negative … developed and processed at FotoKem」</td><td><span class="tag-ok">確證</span></td></tr>
+        <tr><td>C4</td><td>《奧本海默》用 IMAX 65mm + 65mm large-format（Hasselblad 鏡頭），Kodak/Panavision/FotoKem 參與</td><td>維基奧本海默攝影段明載上述規格與廠商</td><td><span class="tag-ok">確證（規格層）</span></td></tr>
+        <tr><td>C5</td><td>黑白 65mm IMAX 史上第一次 + 為解 halation 重做非反射黑片門 + FotoKem 重排管線</td><td>維基確證用 65mm 大格式與 FotoKem，但「第一次 15 perf 黑白」「re-engineer 片門解 halation」維基未明言</td><td><span class="tag-part">部分旁證</span></td></tr>
+        <tr><td>C6</td><td>Nope 紅外線日拍夜 + Panavision System 65 與 Alexa 65 雙機鏡陣併機</td><td>維基 Nope 條目未提及紅外線/雙機技法</td><td><span class="tag-claim">影片聲稱</span></td></tr>
+        <tr><td>C7</td><td>AirMax 無線系統單一網路線管 65,000 個 DMX universe（Noah Shane 自述）</td><td>維基未載此技術細節</td><td><span class="tag-claim">影片聲稱</span></td></tr>
+        <tr><td>C8</td><td>Dunkirk IMAX 裝 Spitfire 墜海、底片泡鹽水數小時後撈回送美沖印成功</td><td>維基確證 IMAX 65mm + System 65 + 相機裝戰機；「墜海撈回泡淡水」細節維基未載</td><td><span class="tag-part">部分旁證</span></td></tr>
+        <tr><td>C9</td><td>Tenet IMAX 實體倒片拍攝（reverse-running camera）</td><td>維基 Tenet raw 未回 reverse 關鍵字；此為知名事實但本輪獨立源未交叉</td><td><span class="tag-claim">影片聲稱</span></td></tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>誠實聲明：</strong>C5–C9 的細節層（尤其 C6/C7/C9 這類產業內幕技法）在本輪可用工具下只能到「影片自述」層級，未能經專刊第二源核實。若需坐實，待 Firecrawl 額度恢復或提供可連網搜尋憑證後再補抓專刊交叉驗證——<strong>不會把片中所說直接當成「已查證事實」交付</strong>。
+    </div>
+  </section>
+</main>
+
+<footer>
+  <h2>反向提問（可證偽）</h2>
+  <p class="q">若「Less precision, more soul」在 Hoyte 的語境是指「放棄過度控制以換取真實生命感」，而你的工程鐵律要求「agent 錯誤率趨近 0、寫缺失須歸責」——那麼當你的自動化系統「為了靈魂而故意容許某類錯誤」時，你能否給出一個<strong>可量化、可對帳的閾值</strong>，使得「容許的靈魂」與「不可接受的缺陷」在 Merkle 台帳上是可區分的，而非事後以「那是藝術選擇」掩蓋實際的程式 bug？</p>
+  <p class="muted">本頁由 OODAV LAB / 遙遙 製作，置於 studio-site 備選區（Drafts），未推送 GitHub Pages。來源：影片逐字稿自述 + Wikipedia 獨立交叉（en.wikipedia.org）。</p>
+</footer>
+
+<script>
+  // 滾動淡入：IntersectionObserver 偵測 .reveal 進入視窗即加 .in
+  (function(){
+    var els = document.querySelectorAll('.reveal');
+    if(!('IntersectionObserver' in window)){
+      els.forEach(function(e){e.classList.add('in')}); return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, {threshold:0.12});
+    els.forEach(function(e){io.observe(e)});
+
+    // 頂部進度條：監聽 scroll 計算滾動比例
+    var bar = document.getElementById('progress');
+    function onScroll(){
+      var h = document.documentElement;
+      var max = h.scrollHeight - h.clientHeight;
+      var p = max>0 ? (h.scrollTop || document.body.scrollTop)/max*100 : 0;
+      bar.style.width = p + '%';
+    }
+    window.addEventListener('scroll', onScroll, {passive:true});
+    onScroll();
+  })();
+</script>
+</body>
+</html>

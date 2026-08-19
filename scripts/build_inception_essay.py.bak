@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
 建構 notes/inception-essay.html ——
 《全面啟動》影評 · 論點解剖（B 網頁 + C 論點分析）。
@@ -7,13 +8,10 @@
 內容：從原始 SRT 精準翻譯金句 + 中文策展敘事 + 6 張核心論點卡。
 作者：遙遙（Hermes agent）｜2026-08-18
 """
-import json
-import os
-from html import escape as html_escape
+import os, json
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-with open(os.path.join(ROOT, "notes", "inception-meta.json"), encoding="utf-8") as f:
-    META = json.load(f)
+META = json.load(open(os.path.join(ROOT, "notes", "inception-meta.json"), encoding="utf-8"))
 OUT = os.path.join(ROOT, "notes", "inception-essay.html")
 
 # ───────────── 核心論點（C）─────────────
@@ -170,15 +168,12 @@ QUOTES = [
 ]
 
 def esc(s):
-    return html_escape(str(s), quote=False)
-
-def esc_attr(s):
-    return html_escape(str(s), quote=True)
+    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 # ── 章節導覽（scrollspy 用）──
 def render_toc():
     items = "".join(
-        f'<a href="#{esc_attr(c["id"])}" class="ch-link" data-target="{esc_attr(c["id"])}">'
+        f'<a href="#{c["id"]}" class="ch-link" data-target="{c["id"]}">'
         f'<span class="ch-no">{esc(c["no"])}</span>{esc(c["title"])}</a>'
         for c in CHAPTERS
     )
@@ -187,9 +182,9 @@ def render_toc():
 # ── 論點卡（C）──
 def render_thesis():
     out = []
-    for i, t in enumerate(THESIS):
+    for t in THESIS:
         out.append(f'''
-        <div class="thesis reveal d{i%4 + 1}">
+        <div class="thesis reveal d{THESIS.index(t)%4 + 1}">
           <div class="thesis-no">{esc(t["n"])}</div>
           <div class="thesis-tag">{esc(t["tag"])}</div>
           <h3>{esc(t["title"])}</h3>
@@ -213,7 +208,7 @@ def render_chapters():
               <footer>— {esc(q["who"])}</footer>
             </blockquote>'''
         out.append(f'''
-        <section class="chapter" id="{esc_attr(c["id"])}">
+        <section class="chapter" id="{c["id"]}">
           <div class="wrap chapter-inner">
             <div class="chapter-head reveal">
               <span class="chapter-no">{esc(c["no"])}</span>
@@ -244,7 +239,7 @@ HTML = f'''<!DOCTYPE html>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>《全面啟動》影評 · 論點解剖 — OODAV LAB 技術筆記</title>
-<meta name="description" content="把一篇 38 分鐘的《全面啟動》英文影評獨白，解剖成 6 張核心論點卡與 {len(CHAPTERS)} 章中文敘事：感覺勝於證明、拍電影的寓言、Mal＝創作者幽靈、我們就是 Cobb、劇本要的是人生、它對你做了什麼。" />
+<meta name="description" content="把一篇 38 分鐘的《全面啟動》英文影評獨白，解剖成 6 張核心論點卡與 7 章中文敘事：感覺勝於證明、拍電影的寓言、Mal＝創作者幽靈、我們就是 Cobb、劇本要的是人生、它對你做了什麼。" />
 <link rel="stylesheet" href="../assets/style.css" />
 <style>
   /* 頁面級樣式：論點解剖（沿用全站令牌，不另起爐灶） */
@@ -351,7 +346,7 @@ HTML = f'''<!DOCTYPE html>
     <div class="reveal in">
       <span class="tag">影評解剖 · Film Essay</span>
       <h1>《全面啟動》<br><span class="grad">不只是電影</span></h1>
-      <p class="lede">一篇 38 分鐘的英文影評獨白，被解剖成 6 張核心論點卡與 {len(CHAPTERS)} 章中文敘事。它談的從來不是「陀螺倒不倒」，而是一個創作者與「說不盡的愛」之間的十六年拉鋸。</p>
+      <p class="lede">一篇 38 分鐘的英文影評獨白，被解剖成 6 張核心論點卡與 7 章中文敘事。它談的從來不是「陀螺倒不倒」，而是一個創作者與「說不盡的愛」之間的十六年拉鋸。</p>
       <div class="essay-meta">
         <span>片長約 <b>{META['duration_hms']}</b></span>
         <span>原文 <b>{META['word_count']:,}</b> 字</span>
