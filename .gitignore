@@ -70,3 +70,8 @@ scripts/verify_site_e2e.py
 # Python 快取/開發殘留
 __pycache__/
 *_probe.mp3
+
+# === 備選區 · Drafts：絕不上傳（Sam 2026-08-18 硬規）===
+Drafts/
+*.bak
+__pycache__/
