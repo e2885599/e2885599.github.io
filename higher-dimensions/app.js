@@ -3,6 +3,25 @@
 // 章節邊界依 manifest 的 start_sec/end_sec（語音實際長度，非原 SRT 時間碼）。
 (function () {
   "use strict";
+  // 全域錯誤自報：任何錯誤直接顯示在頁面頂部紅字（免開 DevTools 也能看到）
+  function reportErr(msg) {
+    var box = document.getElementById("errbox");
+    if (!box) {
+      box = document.createElement("div");
+      box.id = "errbox";
+      box.style.cssText = "background:#4a1212;border:1px solid #f56565;color:#ffd2d2;padding:8px 12px;font-size:12px;font-family:monospace;white-space:pre-wrap;margin:8px 0;";
+      var main = document.querySelector("main");
+      if (main) main.insertBefore(box, main.firstChild);
+    }
+    box.textContent += "[ERR] " + msg + "\n";
+  }
+  window.addEventListener("error", function (e) {
+    reportErr((e.message || "unknown") + (e.filename ? " @ " + e.filename + ":" + e.lineno : ""));
+  });
+  window.addEventListener("unhandledrejection", function (e) {
+    reportErr("promise: " + (e.reason && (e.reason.stack || e.reason.message || e.reason)));
+  });
+
   var CH = window.SUBTITLES.chapters;
   var MAN = window.AUDIO_MANIFEST;
   var DUR = MAN.total_sec;
@@ -65,6 +84,15 @@
     var t = audio.currentTime || 0;
     scrub.value = String(Math.round((t / DUR) * 1000));
     clock.textContent = fmt(t) + " / " + fmt(DUR);
+  }
+
+  // 依音訊播放時間決定當前章節並同步高亮（timeupdate 事件驅動）
+  function onTime() {
+    var t = audio.currentTime || 0;
+    var idx = chapterAt(t);
+    if (idx !== current && idx >= 0) { current = idx; renderActive(); }
+    if (current >= 0 && navEls[current]) navEls[current].scrollIntoView({ block: "nearest" });
+    syncScrub();
   }
 
   // 章節邊界：用 manifest 的 start_sec/end_sec（無重疊，依序累加）
