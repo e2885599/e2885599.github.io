@@ -1,0 +1,1943 @@
+1
+00:00:00,000 --> 00:00:03,880
+It may come as no surprise to you that
+
+2
+00:00:02,040 --> 00:00:06,280
+one of the topics I find endlessly
+
+3
+00:00:03,880 --> 00:00:09,200
+fascinating is the concept of higher
+
+4
+00:00:06,280 --> 00:00:11,360
+dimensions of space and in particular
+
+5
+00:00:09,200 --> 00:00:12,920
+wondering what four-dimensional shapes
+
+6
+00:00:11,360 --> 00:00:15,399
+might look like. I've got a bunch of
+
+7
+00:00:12,920 --> 00:00:16,360
+videos on the topic and an entire book,
+
+8
+00:00:15,400 --> 00:00:18,840
+too.
+
+9
+00:00:16,360 --> 00:00:20,919
+But in talking about higher dimensions
+
+10
+00:00:18,840 --> 00:00:22,720
+on the internet, I've come to realize
+
+11
+00:00:20,920 --> 00:00:24,560
+that that phrase means a lot of
+
+12
+00:00:22,720 --> 00:00:26,439
+different things to different people.
+
+13
+00:00:24,560 --> 00:00:28,880
+I've been tagged in videos about
+
+14
+00:00:26,440 --> 00:00:30,800
+paranormal phenomena claiming that
+
+15
+00:00:28,880 --> 00:00:33,760
+something I've said in one of my videos
+
+16
+00:00:30,800 --> 00:00:36,400
+proves the existence of ghosts. But I've
+
+17
+00:00:33,760 --> 00:00:39,080
+never wanted to say anything more than
+
+18
+00:00:36,400 --> 00:00:41,560
+this is a fun geometry puzzle. Studying
+
+19
+00:00:39,080 --> 00:00:44,120
+higher dimensions is actually a legit
+
+20
+00:00:41,560 --> 00:00:46,520
+mathematical pursuit and honestly sounds
+
+21
+00:00:44,120 --> 00:00:48,239
+really awesome to do as a job. People
+
+22
+00:00:46,520 --> 00:00:50,480
+with such jobs might work at
+
+23
+00:00:48,240 --> 00:00:52,920
+universities doing research or in a
+
+24
+00:00:50,480 --> 00:00:55,319
+variety of industries. Dimensions pop up
+
+25
+00:00:52,920 --> 00:00:58,200
+in so many different fields including
+
+26
+00:00:55,320 --> 00:01:00,760
+neuroscience, AI, statistics,
+
+27
+00:00:58,200 --> 00:01:03,840
+cybersecurity, quantum mechanics,
+
+28
+00:01:00,760 --> 00:01:06,120
+topology, algebra, physics, cosmology,
+
+29
+00:01:03,840 --> 00:01:08,240
+and even dressmaking. So I spoke with
+
+30
+00:01:06,120 --> 00:01:11,240
+three people whose jobs involve higher
+
+31
+00:01:08,240 --> 00:01:12,759
+dimensions to find out how they use them
+
+32
+00:01:11,240 --> 00:01:14,920
+and what they think about some of the
+
+33
+00:01:12,760 --> 00:01:17,320
+stranger interpretations.
+
+34
+00:01:14,920 --> 00:01:19,400
+>> I'm Aidan Sims. I'm a mathematician who
+
+35
+00:01:17,320 --> 00:01:21,919
+works on I guess I would describe it as
+
+36
+00:01:19,400 --> 00:01:24,120
+quantum mathematics. So the way that
+
+37
+00:01:21,920 --> 00:01:27,160
+that operates is that when you're
+
+38
+00:01:24,120 --> 00:01:28,680
+modeling a quantum system, for every
+
+39
+00:01:27,160 --> 00:01:31,080
+variable that you have to model, you
+
+40
+00:01:28,680 --> 00:01:32,920
+need a different dimension. So if you're
+
+41
+00:01:31,080 --> 00:01:34,960
+modeling arbitrarily complex systems,
+
+42
+00:01:32,920 --> 00:01:37,200
+you need arbitrarily many dimensions.
+
+43
+00:01:34,960 --> 00:01:40,039
+And so I work on how you [music]
+
+44
+00:01:37,200 --> 00:01:41,200
+transform spaces of arbitrarily large
+
+45
+00:01:40,040 --> 00:01:43,640
+dimension, basically.
+
+46
+00:01:41,200 --> 00:01:45,560
+>> The thing that I do study are
+
+47
+00:01:43,640 --> 00:01:47,960
+four-dimensional spaces. As as you know
+
+48
+00:01:45,560 --> 00:01:49,800
+in mathematics, there's like a like a
+
+49
+00:01:47,960 --> 00:01:52,559
+sort of division between pure maths and
+
+50
+00:01:49,800 --> 00:01:54,720
+applied maths. And I'm in pure maths and
+
+51
+00:01:52,560 --> 00:01:56,200
+we just sort of study these objects and
+
+52
+00:01:54,720 --> 00:01:58,360
+shapes without necessarily thinking
+
+53
+00:01:56,200 --> 00:02:00,560
+about whether they exist or what they're
+
+54
+00:01:58,360 --> 00:02:02,120
+useful for and we're just sort of to us
+
+55
+00:02:00,560 --> 00:02:04,680
+it's sort of like a fun puzzle and we're
+
+56
+00:02:02,120 --> 00:02:07,040
+trying to figure out what could possibly
+
+57
+00:02:04,680 --> 00:02:08,520
+be the properties of shapes like this.
+
+58
+00:02:07,040 --> 00:02:10,399
+>> So in statistics we think of
+
+59
+00:02:08,520 --> 00:02:12,200
+high-dimensional data and we think of
+
+60
+00:02:10,399 --> 00:02:13,920
+the case where because we're able to
+
+61
+00:02:12,200 --> 00:02:16,079
+collect so much data about everything
+
+62
+00:02:13,920 --> 00:02:17,559
+around us nowadays that basically every
+
+63
+00:02:16,080 --> 00:02:19,560
+piece of information you collect is
+
+64
+00:02:17,560 --> 00:02:21,400
+basically a new dimension. So the idea
+
+65
+00:02:19,560 --> 00:02:23,680
+how you take very large dimensional data
+
+66
+00:02:21,400 --> 00:02:25,000
+we're collecting and sort of understand
+
+67
+00:02:23,680 --> 00:02:25,880
+what the sort of lower dimensional thing
+
+68
+00:02:25,000 --> 00:02:28,640
+is.
+
+69
+00:02:25,880 --> 00:02:30,200
+It's which truly underlying our data.
+
+70
+00:02:28,640 --> 00:02:32,119
+>> These three experts are all
+
+71
+00:02:30,200 --> 00:02:34,320
+mathematicians but in three very
+
+72
+00:02:32,120 --> 00:02:36,600
+different fields and I was surprised to
+
+73
+00:02:34,320 --> 00:02:38,799
+see just how different their use cases
+
+74
+00:02:36,600 --> 00:02:41,600
+for dimensions were across quantum
+
+75
+00:02:38,800 --> 00:02:43,640
+mechanics, not theory and statistics.
+
+76
+00:02:41,600 --> 00:02:45,840
+>> When you say spaces, are you talking
+
+77
+00:02:43,640 --> 00:02:47,119
+about like spatial dimensions like
+
+78
+00:02:45,840 --> 00:02:49,040
+forwards and backwards?
+
+79
+00:02:47,120 --> 00:02:51,000
+>> Yeah, so this is this is interesting. It
+
+80
+00:02:49,040 --> 00:02:52,880
+is like spatial dimensions forwards and
+
+81
+00:02:51,000 --> 00:02:55,040
+backwards but the spaces that I'm
+
+82
+00:02:52,880 --> 00:02:57,720
+talking about are not the space that we
+
+83
+00:02:55,040 --> 00:03:01,040
+see around us. So the space that we see
+
+84
+00:02:57,720 --> 00:03:03,040
+around us is arguably either
+
+85
+00:02:59,320 --> 00:03:04,959
+three-dimensional or four-dimensional
+
+86
+00:03:01,040 --> 00:03:09,000
+depending on whether you count time.
+
+87
+00:03:03,040 --> 00:03:10,880
+But the mathematical model that
+
+88
+00:03:04,959 --> 00:03:12,519
+describes quantum systems involves I
+
+89
+00:03:09,000 --> 00:03:14,600
+mean the spaces are a mathematical
+
+90
+00:03:10,880 --> 00:03:17,400
+construction
+
+91
+00:03:12,519 --> 00:03:19,440
+that models how the quantum mechanics
+
+92
+00:03:14,600 --> 00:03:21,160
+works.
+
+93
+00:03:15,160 --> 00:03:22,680
+>> Is the space you're describing now
+
+94
+00:03:17,400 --> 00:03:25,600
+what's known as Hilbert space?
+
+95
+00:03:19,440 --> 00:03:28,360
+>> That's exactly right. Yeah, so a Hilbert
+
+96
+00:03:21,160 --> 00:03:29,880
+space um
+
+97
+00:03:22,680 --> 00:03:31,519
+is uh is a higher well, it doesn't have
+
+98
+00:03:25,600 --> 00:03:32,920
+to be high-dimensional but it's a it's a
+
+99
+00:03:28,360 --> 00:03:34,239
+space of arbitrary dimension where
+
+100
+00:03:29,880 --> 00:03:35,640
+there's a notion of angle. So we can
+
+101
+00:03:31,519 --> 00:03:37,920
+still make sense of what things are at
+
+102
+00:03:32,920 --> 00:03:40,880
+right angles to each other. That's what
+
+103
+00:03:34,239 --> 00:03:44,200
+distinguishes a Hilbert space.
+
+104
+00:03:35,640 --> 00:03:46,200
+>> If someone's talking about Hilbert space
+
+105
+00:03:37,920 --> 00:03:50,320
+and using it mathematically,
+
+106
+00:03:40,880 --> 00:03:53,440
+is it useful at all to think of it
+
+107
+00:03:44,200 --> 00:03:56,200
+geometrically? Like I guess like asking
+
+108
+00:03:46,200 --> 00:03:59,600
+yourself what is this infinite
+
+109
+00:03:47,840 --> 00:04:00,880
+dimensional shape I'm working with? Does
+
+110
+00:03:50,320 --> 00:04:04,440
+that sort of come up?
+
+111
+00:03:51,600 --> 00:04:05,880
+>> It does, a lot, and it's quite
+
+112
+00:03:53,440 --> 00:04:07,320
+interesting um
+
+113
+00:03:54,880 --> 00:04:09,120
+because
+
+114
+00:03:56,200 --> 00:04:10,560
+what we a lot of the theory a lot of the
+
+115
+00:03:58,880 --> 00:04:13,360
+starting point of Hilbert spaces is
+
+116
+00:04:00,880 --> 00:04:15,080
+figuring out exactly which of the things
+
+117
+00:04:04,440 --> 00:04:17,600
+we picture when we think of three
+
+118
+00:04:05,880 --> 00:04:19,160
+dimensions
+
+119
+00:04:07,320 --> 00:04:21,640
+still work no matter how many dimensions
+
+120
+00:04:09,120 --> 00:04:23,640
+there are and which ones you have to be
+
+121
+00:04:10,560 --> 00:04:25,000
+careful about and and instead use the
+
+122
+00:04:13,360 --> 00:04:26,919
+formal mathematics to understand what's
+
+123
+00:04:15,080 --> 00:04:29,080
+going on. Yeah, so it is very helpful
+
+124
+00:04:17,600 --> 00:04:30,760
+even though the space
+
+125
+00:04:19,160 --> 00:04:32,480
+may have 20 or 100 or infinitely many
+
+126
+00:04:21,640 --> 00:04:34,320
+dimensions, it's useful to picture it
+
+127
+00:04:23,640 --> 00:04:36,360
+like three dimensions.
+
+128
+00:04:25,000 --> 00:04:39,280
+>> There's no way for you to draw a an
+
+129
+00:04:26,919 --> 00:04:41,720
+interesting sphere in three dimensions
+
+130
+00:04:29,080 --> 00:04:44,440
+without having it
+
+131
+00:04:30,760 --> 00:04:46,440
+hit itself, intersecting itself.
+
+132
+00:04:32,480 --> 00:04:49,840
+>> knot a sphere in three dimensions.
+
+133
+00:04:34,320 --> 00:04:52,440
+>> Exactly. And the co-dimension is very
+
+134
+00:04:36,360 --> 00:04:53,840
+important because 3 - 2 is 1, and that's
+
+135
+00:04:39,280 --> 00:04:56,040
+not enough, basically. But
+
+136
+00:04:41,720 --> 00:04:57,440
+4 - 2, well, that's 2. And so it turns
+
+137
+00:04:44,440 --> 00:04:59,960
+out that you can take a two-dimensional
+
+138
+00:04:46,440 --> 00:05:00,320
+sphere and knot it in four-dimensional
+
+139
+00:04:49,840 --> 00:05:01,840
+space. So that's the sort of thing um
+
+140
+00:04:52,440 --> 00:05:03,320
+that that I study.
+
+141
+00:04:53,840 --> 00:05:05,919
+>> So one one word I've heard that might
+
+142
+00:04:56,040 --> 00:05:07,480
+relate to what you're saying there is
+
+143
+00:04:57,440 --> 00:05:08,880
+the phrase dimensional reduction. What
+
+144
+00:05:00,320 --> 00:05:11,440
+on earth is that?
+
+145
+00:05:01,840 --> 00:05:13,440
+>> So it's the idea that we have a very
+
+146
+00:05:03,320 --> 00:05:15,200
+large amount of data, but again, we're
+
+147
+00:05:05,919 --> 00:05:16,840
+only interested in a very sort of small
+
+148
+00:05:07,480 --> 00:05:18,800
+subset of that. So you see, you may
+
+149
+00:05:08,880 --> 00:05:21,000
+have, for example, a very basic example,
+
+150
+00:05:11,440 --> 00:05:22,400
+you may have like our 3D world here, but
+
+151
+00:05:13,440 --> 00:05:24,240
+actually our data lies on the surface of
+
+152
+00:05:15,200 --> 00:05:25,280
+a piece of paper, and maybe you sort of
+
+153
+00:05:16,840 --> 00:05:27,800
+bend and sort of distort that paper in
+
+154
+00:05:18,800 --> 00:05:29,200
+sort of funny ways, but it still really
+
+155
+00:05:21,000 --> 00:05:31,680
+only lives in two dimensions even though
+
+156
+00:05:22,400 --> 00:05:33,719
+it's in a three-dimensional space.
+
+157
+00:05:24,240 --> 00:05:34,680
+Here we're sort of thinking on a much
+
+158
+00:05:25,280 --> 00:05:36,720
+larger scale, so we have uh million
+
+159
+00:05:27,800 --> 00:05:38,080
+dimensions,
+
+160
+00:05:29,200 --> 00:05:40,440
+but really our data lives in maybe 100
+
+161
+00:05:31,680 --> 00:05:42,359
+dimensions or maybe sort of much much
+
+162
+00:05:33,720 --> 00:05:43,960
+lower.
+
+163
+00:05:34,680 --> 00:05:46,280
+So reducing these very large things down
+
+164
+00:05:36,720 --> 00:05:48,919
+to just two or three dimensions where we
+
+165
+00:05:38,080 --> 00:05:50,799
+can have some sort of human intuitive
+
+166
+00:05:40,440 --> 00:05:53,120
+understanding is a is a big step.
+
+167
+00:05:42,360 --> 00:05:55,560
+>> So far, this was sounding pretty
+
+168
+00:05:43,960 --> 00:05:57,440
+theoretical, but behind some of this
+
+169
+00:05:46,280 --> 00:05:58,200
+research, were larger applications in
+
+170
+00:05:48,920 --> 00:06:01,560
+building technology or other
+
+171
+00:05:50,800 --> 00:06:03,400
+interdisciplinary projects. Some of
+
+172
+00:05:53,120 --> 00:06:04,360
+these ideas do leave the research paper
+
+173
+00:05:55,560 --> 00:06:05,760
+and impact the world we experience
+
+174
+00:05:57,440 --> 00:06:07,960
+daily.
+
+175
+00:05:58,200 --> 00:06:09,680
+>> So the idea is you have a bunch of
+
+176
+00:05:59,960 --> 00:06:12,239
+computers that are nodes and you sort of
+
+177
+00:06:01,560 --> 00:06:14,680
+draw sort of links between them if they
+
+178
+00:06:03,400 --> 00:06:15,840
+communicate or if they share
+
+179
+00:06:04,360 --> 00:06:17,919
+information. You have these sort of
+
+180
+00:06:05,760 --> 00:06:19,560
+rings and sort of patterns that appear
+
+181
+00:06:07,960 --> 00:06:21,880
+and it's when these sort of rings and
+
+182
+00:06:09,680 --> 00:06:23,040
+networks disappear, this can be evidence
+
+183
+00:06:12,240 --> 00:06:25,000
+of a cyberattack.
+
+184
+00:06:14,680 --> 00:06:27,240
+So maybe an intruder has come into your
+
+185
+00:06:15,840 --> 00:06:29,320
+system and suddenly he's pinging lots of
+
+186
+00:06:17,919 --> 00:06:31,520
+messages around all the computers he can
+
+187
+00:06:19,560 --> 00:06:33,080
+find and and that sort of breaks all the
+
+188
+00:06:21,880 --> 00:06:33,919
+other structure that you would see in
+
+189
+00:06:23,040 --> 00:06:35,680
+your network. So you're using these sort
+
+190
+00:06:25,000 --> 00:06:37,760
+of shapes to try to spot and when they
+
+191
+00:06:27,240 --> 00:06:39,200
+sort of appear and disappear as evidence
+
+192
+00:06:29,320 --> 00:06:40,200
+of something's either going
+
+193
+00:06:31,520 --> 00:06:42,280
+anomalously wrong in your network. So
+
+194
+00:06:33,080 --> 00:06:44,479
+these are the sort of ideas that we're
+
+195
+00:06:33,919 --> 00:06:46,960
+trying to use in sort of cybersecurity.
+
+196
+00:06:35,680 --> 00:06:48,400
+>> Say, let's take something topical. Say,
+
+197
+00:06:37,760 --> 00:06:50,960
+quantum computers, all right? So if I
+
+198
+00:06:40,200 --> 00:06:52,799
+want a quantum computer that has just
+
+199
+00:06:42,280 --> 00:06:54,479
+two bits.
+
+200
+00:06:44,480 --> 00:06:56,080
+Um
+
+201
+00:06:45,480 --> 00:06:58,200
+you know, so in a in a normal computer
+
+202
+00:06:46,960 --> 00:07:01,599
+that wouldn't be enough to do much, but
+
+203
+00:06:48,400 --> 00:07:03,359
+just as a starting point. So
+
+204
+00:06:50,960 --> 00:07:06,960
+in a quantum computer you have qubits
+
+205
+00:06:52,800 --> 00:07:08,480
+and they have two possible states. They
+
+206
+00:06:54,480 --> 00:07:10,440
+could be a zero or a they could be a one
+
+207
+00:06:56,080 --> 00:07:12,200
+and each of those states
+
+208
+00:06:58,200 --> 00:07:13,360
+has to be modeled by a different and
+
+209
+00:07:01,600 --> 00:07:15,720
+orthogonal dimension, like another
+
+210
+00:07:03,360 --> 00:07:17,799
+dimension in the underlying abstract
+
+211
+00:07:06,960 --> 00:07:20,240
+space. So even to model two qubits,
+
+212
+00:07:08,480 --> 00:07:22,360
+they've each got two dimensions, so
+
+213
+00:07:10,440 --> 00:07:24,880
+that's four dimensions. So just for the
+
+214
+00:07:12,200 --> 00:07:27,560
+most basic quantum computer, you already
+
+215
+00:07:13,360 --> 00:07:30,360
+need more dimensions than we can
+
+216
+00:07:13,960 --> 00:07:32,119
+picture.
+
+217
+00:07:15,720 --> 00:07:33,960
+>> Now, just because something might have
+
+218
+00:07:17,800 --> 00:07:37,280
+practical applications, doesn't mean
+
+219
+00:07:20,240 --> 00:07:39,039
+that it always has to. Maths doesn't
+
+220
+00:07:22,360 --> 00:07:40,040
+need to be motivated by commercial
+
+221
+00:07:24,880 --> 00:07:41,680
+applications and most mathematicians I
+
+222
+00:07:27,560 --> 00:07:43,720
+know are really motivated by the joy of
+
+223
+00:07:29,400 --> 00:07:45,120
+puzzle solving and the magic of
+
+224
+00:07:30,360 --> 00:07:47,240
+discovery.
+
+225
+00:07:32,200 --> 00:07:48,760
+>> One of the things I really love about
+
+226
+00:07:33,960 --> 00:07:50,680
+topology, and this is something I
+
+227
+00:07:37,280 --> 00:07:52,640
+learned a lot later, is that um
+
+228
+00:07:40,040 --> 00:07:54,920
+it brings mathematics into
+
+229
+00:07:41,680 --> 00:07:56,360
+concepts that I'd never really thought
+
+230
+00:07:43,720 --> 00:07:57,840
+of as mathematics before. And so, for
+
+231
+00:07:45,120 --> 00:07:59,920
+example, when I think of something like
+
+232
+00:07:47,240 --> 00:08:02,119
+knot theory, which I do study, it just
+
+233
+00:07:48,760 --> 00:08:03,960
+blows my mind that you can use
+
+234
+00:07:50,680 --> 00:08:05,920
+mathematics [music] to study if two
+
+235
+00:07:52,640 --> 00:08:06,880
+knots are different. As As a child, if
+
+236
+00:07:53,880 --> 00:08:09,160
+someone had told that to me, I would
+
+237
+00:07:54,920 --> 00:08:10,719
+just
+
+238
+00:07:56,360 --> 00:08:12,720
+would probably wouldn't even believe
+
+239
+00:07:57,840 --> 00:08:14,280
+them. You know, I study four-dimensional
+
+240
+00:07:59,920 --> 00:08:16,880
+spaces, so they're not that concrete.
+
+241
+00:08:02,120 --> 00:08:18,599
+But, [snorts] I study them using my
+
+242
+00:08:03,960 --> 00:08:20,680
+intuition, and I think about them very
+
+243
+00:08:05,920 --> 00:08:23,040
+geometrically, and
+
+244
+00:08:06,880 --> 00:08:24,720
+um
+
+245
+00:08:09,160 --> 00:08:27,680
+that appeals to me more than like I've
+
+246
+00:08:10,720 --> 00:08:31,000
+spent some amount of time, you know,
+
+247
+00:08:12,720 --> 00:08:33,479
+working with equations and inequalities
+
+248
+00:08:14,280 --> 00:08:35,760
+and so forth, and those things can be
+
+249
+00:08:16,880 --> 00:08:37,640
+very precise, and I like that aspect.
+
+250
+00:08:18,599 --> 00:08:39,039
+But, to be able to draw pictures and
+
+251
+00:08:20,680 --> 00:08:40,640
+just sort of, you know, my preferred
+
+252
+00:08:23,040 --> 00:08:42,718
+type of mathematics is when you like,
+
+253
+00:08:24,720 --> 00:08:44,520
+you know, move things around with your
+
+254
+00:08:27,680 --> 00:08:45,240
+bare hands. I do feel like my job is,
+
+255
+00:08:31,000 --> 00:08:47,160
+you know, I solve puzzles all day, and I
+
+256
+00:08:33,479 --> 00:08:49,040
+think having these very visual problems
+
+257
+00:08:35,760 --> 00:08:50,480
+really brings a sense of play into it in
+
+258
+00:08:37,640 --> 00:08:52,800
+some sense, where you really feel like,
+
+259
+00:08:39,039 --> 00:08:54,120
+you know, as a child, you moved blocks
+
+260
+00:08:40,640 --> 00:08:55,640
+around, and that's really what I'm
+
+261
+00:08:42,718 --> 00:08:56,360
+doing. They're 4D blocks.
+
+262
+00:08:44,520 --> 00:08:57,840
+But,
+
+263
+00:08:43,320 --> 00:08:59,040
+>> But, they're That's a good analogy.
+
+264
+00:08:45,240 --> 00:09:01,080
+Exactly.
+
+265
+00:08:47,160 --> 00:09:03,680
+>> To understand why the maths of higher
+
+266
+00:08:49,040 --> 00:09:06,280
+dimensions is relevant to so many
+
+267
+00:08:51,480 --> 00:09:08,640
+topics, it's useful to know that the
+
+268
+00:08:54,120 --> 00:09:12,320
+word dimension doesn't always refer to
+
+269
+00:08:57,040 --> 00:09:14,880
+space, and really any parameter can be
+
+270
+00:08:58,600 --> 00:09:16,440
+considered a dimension.
+
+271
+00:09:01,080 --> 00:09:20,360
+>> Actually, a friend of mine who makes her
+
+272
+00:09:03,680 --> 00:09:22,920
+own clothes, she had a very nice analogy
+
+273
+00:09:04,640 --> 00:09:24,640
+of this.
+
+274
+00:09:06,280 --> 00:09:26,319
+So, she was talking about if she has a
+
+275
+00:09:08,640 --> 00:09:28,240
+pattern for a dress she's making, it has
+
+276
+00:09:09,880 --> 00:09:31,040
+some number of measurements that you
+
+277
+00:09:12,320 --> 00:09:33,280
+have to make. And then, this is a set of
+
+278
+00:09:14,880 --> 00:09:35,480
+numbers that corresponds to, you know,
+
+279
+00:09:16,440 --> 00:09:37,079
+your dress or my dress or someone else's
+
+280
+00:09:20,360 --> 00:09:39,080
+dress. Like, that collection of data
+
+281
+00:09:22,920 --> 00:09:40,760
+or potential data, that forms some
+
+282
+00:09:24,640 --> 00:09:42,160
+dimensional space. So, maybe you have a
+
+283
+00:09:26,319 --> 00:09:43,400
+simple dress that has just four
+
+284
+00:09:28,240 --> 00:09:45,520
+measurements, or a really complicated
+
+285
+00:09:31,040 --> 00:09:47,800
+one that has 12. So, you know, that
+
+286
+00:09:33,280 --> 00:09:49,439
+really complicated dress, that's a point
+
+287
+00:09:35,480 --> 00:09:51,640
+in a 12-dimensional space, versus the
+
+288
+00:09:37,079 --> 00:09:53,240
+simple one is a point in a
+
+289
+00:09:39,080 --> 00:09:55,040
+four-dimensional space. Maybe another
+
+290
+00:09:40,760 --> 00:09:56,280
+example that's
+
+291
+00:09:42,160 --> 00:09:58,199
+I don't know, closer to mathematics in
+
+292
+00:09:43,400 --> 00:10:00,680
+some sense
+
+293
+00:09:45,520 --> 00:10:02,840
+would be to think about like a matrix.
+
+294
+00:09:47,800 --> 00:10:03,920
+Suppose you have a 2 by 2 matrix.
+
+295
+00:09:49,440 --> 00:10:05,720
+And so if I just think of a single
+
+296
+00:09:51,640 --> 00:10:07,800
+matrix, it has four numbers in it. Let's
+
+297
+00:09:53,240 --> 00:10:09,800
+say four real numbers. That's just a
+
+298
+00:09:55,040 --> 00:10:12,839
+single item.
+
+299
+00:09:55,040 --> 00:10:14,719
+But you could try to think about, well,
+
+300
+00:09:56,280 --> 00:10:16,200
+what are the other matrices that are
+
+301
+00:09:58,200 --> 00:10:18,800
+close to this one? And you can imagine,
+
+302
+00:10:00,680 --> 00:10:21,440
+all right, if I just keep all four of
+
+303
+00:10:02,840 --> 00:10:23,520
+them
+
+304
+00:10:03,920 --> 00:10:25,760
+more or less the same and just slightly
+
+305
+00:10:05,720 --> 00:10:28,280
+change each number by just a little bit,
+
+306
+00:10:07,800 --> 00:10:30,720
+that's like a matrix that's close to my
+
+307
+00:10:09,800 --> 00:10:33,120
+original one. But I have four different
+
+308
+00:10:12,840 --> 00:10:35,680
+coordinates that I get to change and I
+
+309
+00:10:14,720 --> 00:10:37,920
+get to change them
+
+310
+00:10:16,200 --> 00:10:40,400
+independently of each other, right? And
+
+311
+00:10:18,800 --> 00:10:42,959
+so if I now think about the set of 2 by
+
+312
+00:10:21,440 --> 00:10:44,160
+2 matrices, if I just think of it as a
+
+313
+00:10:23,520 --> 00:10:46,960
+set, that's like just thinking about
+
+314
+00:10:25,760 --> 00:10:48,920
+infinitely many discrete points that are
+
+315
+00:10:28,280 --> 00:10:50,160
+not necessarily arranged in any way.
+
+316
+00:10:30,720 --> 00:10:52,439
+What is it that makes something a space
+
+317
+00:10:33,120 --> 00:10:53,800
+rather than just a set? Well, to me as a
+
+318
+00:10:35,680 --> 00:10:55,360
+topologist, the thing that distinguishes
+
+319
+00:10:37,920 --> 00:10:57,640
+those two items, those two types of
+
+320
+00:10:40,400 --> 00:10:59,280
+objects is this notion of closeness.
+
+321
+00:10:42,960 --> 00:11:01,000
+So
+
+322
+00:10:44,160 --> 00:11:03,280
+I get to decide like, okay, two matrices
+
+323
+00:10:46,960 --> 00:11:04,920
+are close or they have distance,
+
+324
+00:10:48,920 --> 00:11:07,040
+whatever,
+
+325
+00:10:50,160 --> 00:11:09,680
+if all of the, you know, I could like
+
+326
+00:10:52,440 --> 00:11:11,560
+add up the differences between all of
+
+327
+00:10:53,800 --> 00:11:13,239
+the numbers or something or I could take
+
+328
+00:10:55,360 --> 00:11:15,160
+the square root of the
+
+329
+00:10:57,640 --> 00:11:16,720
+square root of the sums of the squares
+
+330
+00:10:59,280 --> 00:11:18,040
+or whatever notion of distance you might
+
+331
+00:11:01,000 --> 00:11:19,960
+like. And so that additional notion of
+
+332
+00:11:03,280 --> 00:11:22,640
+like um
+
+333
+00:11:04,920 --> 00:11:24,400
+closeness is what would make the set of
+
+334
+00:11:07,040 --> 00:11:26,880
+matrices, 2 by 2 matrices, into a space.
+
+335
+00:11:09,680 --> 00:11:29,120
+Okay. And then 2 by 2 matrices, that's
+
+336
+00:11:11,560 --> 00:11:31,560
+something that, you know, we've been
+
+337
+00:11:13,240 --> 00:11:33,880
+thinking about for a long time.
+
+338
+00:11:15,160 --> 00:11:36,920
+And that is in fact a four-dimensional
+
+339
+00:11:16,720 --> 00:11:39,000
+space.
+
+340
+00:11:18,040 --> 00:11:41,400
+Not one that you necessarily live in
+
+341
+00:11:19,960 --> 00:11:43,680
+unless you're a 2 by 2 matrix, I guess.
+
+342
+00:11:22,640 --> 00:11:47,480
+>> In my videos, I often talk about
+
+343
+00:11:24,400 --> 00:11:49,520
+specific shapes, like a tesseract, which
+
+344
+00:11:26,880 --> 00:11:51,080
+is a four-dimensional cube. And some of
+
+345
+00:11:29,120 --> 00:11:53,880
+you have commented and asked, "What's
+
+346
+00:11:31,560 --> 00:11:56,920
+the point of this?" Or wondered if it
+
+347
+00:11:33,880 --> 00:11:59,000
+has any use beyond being a mind teaser.
+
+348
+00:11:36,920 --> 00:12:01,480
+>> Has thinking about a tesseract or
+
+349
+00:11:39,000 --> 00:12:04,840
+understanding one ever been useful to
+
+350
+00:11:41,240 --> 00:12:07,840
+you?
+
+351
+00:11:41,960 --> 00:12:09,520
+>> Um okay, so yes. Uh I can think of a
+
+352
+00:11:45,280 --> 00:12:11,800
+specific instance where I was doing some
+
+353
+00:11:47,480 --> 00:12:15,319
+research and and a tesseract was exactly
+
+354
+00:11:49,520 --> 00:12:17,520
+something that I needed to be able to
+
+355
+00:11:51,080 --> 00:12:19,920
+describe. The research really had
+
+356
+00:11:53,360 --> 00:12:22,280
+nothing to do with shapes or geometry.
+
+357
+00:11:56,160 --> 00:12:24,280
+It was actually to do with
+
+358
+00:11:57,080 --> 00:12:26,320
+combinatorics. It was just trying to
+
+359
+00:11:58,600 --> 00:12:28,600
+count how many ways I could build a a
+
+360
+00:12:01,480 --> 00:12:30,440
+system of a certain type. Um but the
+
+361
+00:12:04,840 --> 00:12:34,280
+mental picture or the mental model that
+
+362
+00:12:07,840 --> 00:12:36,560
+helped me to do the counting was a
+
+363
+00:12:09,520 --> 00:12:38,560
+tesseract. So it was nice to know that
+
+364
+00:12:11,800 --> 00:12:40,880
+thinking about 4D
+
+365
+00:12:12,880 --> 00:12:42,280
+>> shapes can sometimes be mathematically
+
+366
+00:12:15,320 --> 00:12:44,280
+relevant. I also wanted to broach the
+
+367
+00:12:17,520 --> 00:12:47,480
+topic of the paranormal. I wondered if
+
+368
+00:12:19,920 --> 00:12:50,120
+these experts were ever troubled by the
+
+369
+00:12:22,280 --> 00:12:53,040
+way that people sometimes talk about
+
+370
+00:12:24,280 --> 00:12:54,839
+higher dimensions and the use of
+
+371
+00:12:26,320 --> 00:12:56,839
+mathematical vocabulary to support
+
+372
+00:12:29,000 --> 00:12:58,200
+spiritual claims.
+
+373
+00:12:30,440 --> 00:13:00,720
+>> I love the um the richness of language.
+
+374
+00:12:34,280 --> 00:13:03,080
+And I it's a feature of all languages
+
+375
+00:12:36,280 --> 00:13:06,880
+and particularly English that the same
+
+376
+00:12:38,560 --> 00:13:08,320
+word means different things in different
+
+377
+00:12:40,320 --> 00:13:10,440
+contexts all the time. And we use a word
+
+378
+00:12:43,360 --> 00:13:14,640
+because it it conveys the the right
+
+379
+00:12:47,480 --> 00:13:17,680
+sort of notion to us or something or you
+
+380
+00:12:50,120 --> 00:13:19,240
+know what I mean. So
+
+381
+00:12:51,640 --> 00:13:21,680
+I guess
+
+382
+00:12:53,040 --> 00:13:23,000
+I I think that mathematicians use the
+
+383
+00:12:54,839 --> 00:13:25,400
+word dimension in a very technical sense
+
+384
+00:12:56,839 --> 00:13:26,760
+and that's fine because that's what
+
+385
+00:12:58,200 --> 00:13:30,520
+we're doing with it. And for us it's it
+
+386
+00:13:00,720 --> 00:13:32,760
+really is just a a way of counting how
+
+387
+00:13:03,080 --> 00:13:35,920
+many different variables are independent
+
+388
+00:13:04,720 --> 00:13:39,000
+from each other a lot of the time. Um
+
+389
+00:13:06,880 --> 00:13:41,400
+and that's how that's the way that we're
+
+390
+00:13:08,080 --> 00:13:43,680
+using the word dimension. If you watch,
+
+391
+00:13:10,440 --> 00:13:46,520
+I don't know, Avengers, they they're
+
+392
+00:13:12,040 --> 00:13:48,040
+using the word dimension when they talk
+
+393
+00:13:13,480 --> 00:13:50,200
+about multiverses and different
+
+394
+00:13:14,640 --> 00:13:51,760
+dimensions in a completely different
+
+395
+00:13:15,920 --> 00:13:53,720
+sense. And I can see where it's a good
+
+396
+00:13:19,240 --> 00:13:55,320
+way to indicate that it's not something
+
+397
+00:13:21,680 --> 00:13:57,200
+that we can see, it's something
+
+398
+00:13:23,000 --> 00:13:58,720
+completely, you know, orthogonal to the
+
+399
+00:13:25,400 --> 00:14:01,520
+way that we,
+
+400
+00:13:26,760 --> 00:14:03,960
+you know, um experience the universe or
+
+401
+00:13:28,720 --> 00:14:06,400
+whatever. I I think it's just a matter
+
+402
+00:13:30,520 --> 00:14:09,720
+of like all English words it's being
+
+403
+00:13:32,760 --> 00:14:11,880
+used differently and that's fine. And I
+
+404
+00:13:35,920 --> 00:14:13,080
+yeah, I guess for a mathematician we
+
+405
+00:13:39,000 --> 00:14:15,600
+spend a lot of our time
+
+406
+00:13:41,400 --> 00:14:18,160
+giving very very precise mathematical
+
+407
+00:13:43,680 --> 00:14:20,400
+definitions to words that already exist
+
+408
+00:13:46,520 --> 00:14:22,480
+to help us to communicate to each other
+
+409
+00:13:48,040 --> 00:14:24,520
+effectively and efficiently. So I guess
+
+410
+00:13:50,200 --> 00:14:26,280
+I can't really object to other people
+
+411
+00:13:51,760 --> 00:14:28,200
+also taking a word and and giving it the
+
+412
+00:13:53,720 --> 00:14:29,280
+meaning that that that helps them to
+
+413
+00:13:55,320 --> 00:14:31,600
+think about what they're working on. So
+
+414
+00:13:56,800 --> 00:14:34,680
+yeah.
+
+415
+00:13:57,200 --> 00:14:36,360
+>> To me to me dimensions really do mean a
+
+416
+00:13:59,280 --> 00:14:38,560
+like a degree of freedom. As a pure
+
+417
+00:14:01,520 --> 00:14:41,400
+scientist we we aren't really thinking
+
+418
+00:14:03,960 --> 00:14:43,480
+about what these
+
+419
+00:14:06,400 --> 00:14:45,160
+notions
+
+420
+00:14:07,880 --> 00:14:47,080
+correspond to in the real world if
+
+421
+00:14:09,720 --> 00:14:49,320
+anything. The most general thing that I
+
+422
+00:14:11,880 --> 00:14:50,320
+could do
+
+423
+00:14:13,080 --> 00:14:52,640
+uh there's something there.
+
+424
+00:14:15,600 --> 00:14:54,520
+And then someone else could come and
+
+425
+00:14:16,760 --> 00:14:56,360
+think about all right, what this is
+
+426
+00:14:18,160 --> 00:14:58,280
+actually a good model for something
+
+427
+00:14:20,400 --> 00:15:00,320
+else. And then now because I've done
+
+428
+00:14:22,480 --> 00:15:02,560
+this background work your life is a
+
+429
+00:14:24,520 --> 00:15:04,560
+little bit easier because you can just
+
+430
+00:14:26,280 --> 00:15:06,520
+use what I've used what I figured out
+
+431
+00:14:28,200 --> 00:15:08,560
+for you
+
+432
+00:14:29,280 --> 00:15:11,080
+but then specialize it in your in your
+
+433
+00:14:31,600 --> 00:15:13,920
+own realm. And so right? Spacetime seems
+
+434
+00:14:34,680 --> 00:15:16,720
+like a four-dimensional thing that's
+
+435
+00:14:36,120 --> 00:15:18,880
+wonderful. Uh I'm not going to be
+
+436
+00:14:38,120 --> 00:15:21,240
+thinking about it. There's you know,
+
+437
+00:14:39,960 --> 00:15:22,760
+people may well think about the fourth
+
+438
+00:14:41,760 --> 00:15:24,160
+dimension as some sort of
+
+439
+00:14:43,480 --> 00:15:25,440
+spiritual other world breathing but
+
+440
+00:14:45,160 --> 00:15:27,800
+that's for me in the notion of like what
+
+441
+00:14:47,080 --> 00:15:29,280
+does it mean in the real world?
+
+442
+00:14:49,320 --> 00:15:30,320
+Um
+
+443
+00:14:50,320 --> 00:15:32,640
+that's all that I'm doing at all. Um
+
+444
+00:14:52,640 --> 00:15:34,520
+It's very interesting.
+
+445
+00:14:54,520 --> 00:15:36,360
+I not what I'm doing.
+
+446
+00:14:56,360 --> 00:15:38,280
+>> Yeah, I love their perspectives and I
+
+447
+00:15:00,320 --> 00:15:40,560
+feel like I did get a better sense for
+
+448
+00:15:02,560 --> 00:15:42,560
+how mathematicians really think about
+
+449
+00:15:04,560 --> 00:15:44,920
+the fourth dimension. Everyone I spoke
+
+450
+00:15:06,520 --> 00:15:48,880
+to had a confidence that comes with
+
+451
+00:15:08,560 --> 00:15:51,079
+thinking about these abstract ideas
+
+452
+00:15:11,080 --> 00:15:53,920
+every day. They weren't intimidated by
+
+453
+00:15:13,920 --> 00:15:56,360
+them and instead showed how embracing
+
+454
+00:15:16,720 --> 00:15:58,200
+the rather simple foundations can lead
+
+455
+00:15:18,880 --> 00:16:00,800
+to a lifelong curiosity.
+
+456
+00:15:21,240 --> 00:16:02,760
+>> You talked about in one of your videos
+
+457
+00:15:22,760 --> 00:16:04,719
+being able to take something out of a
+
+458
+00:15:24,160 --> 00:16:06,040
+safe. Like there's a safe and it's
+
+459
+00:15:25,440 --> 00:16:08,120
+locked in two dimensions, but if you're
+
+460
+00:15:26,440 --> 00:16:09,560
+a three-dimensional creature, you can
+
+461
+00:15:28,280 --> 00:16:11,080
+just pick it up out of the safe and and
+
+462
+00:15:29,560 --> 00:16:12,680
+somebody in the two-dimensional universe
+
+463
+00:15:32,200 --> 00:16:14,079
+couldn't see it. A lot of what we do is
+
+464
+00:15:34,080 --> 00:16:15,760
+really exactly what you did in that
+
+465
+00:15:36,320 --> 00:16:17,760
+video, where we say
+
+466
+00:15:37,760 --> 00:16:19,080
+well, let's just imagine that all of
+
+467
+00:15:39,080 --> 00:16:21,560
+these dimensions are really just two
+
+468
+00:15:40,560 --> 00:16:24,199
+dimensions. And then what could we do in
+
+469
+00:15:42,160 --> 00:16:25,640
+the third dimension? And we we're still
+
+470
+00:15:44,200 --> 00:16:26,959
+restricted to we can only picture three
+
+471
+00:15:46,960 --> 00:16:28,920
+dimensions as well. And really a lot of
+
+472
+00:15:48,920 --> 00:16:30,600
+being a mathematician is learning
+
+473
+00:15:50,600 --> 00:16:32,120
+what things you have to be careful about
+
+474
+00:15:52,120 --> 00:16:33,480
+that might not be quite the same when
+
+475
+00:15:53,480 --> 00:16:34,960
+you do that analogy and where you have
+
+476
+00:15:54,960 --> 00:16:35,640
+to just go to the formal mathematics
+
+477
+00:15:55,640 --> 00:16:37,520
+instead.
+
+478
+00:15:58,000 --> 00:16:39,520
+>> I I'm glad to know that my video yeah,
+
+479
+00:15:59,520 --> 00:16:40,800
+has some grounding in what what
+
+480
+00:16:00,800 --> 00:16:42,119
+mathematicians are thinking about as
+
+481
+00:16:01,680 --> 00:16:43,200
+well.
+
+482
+00:16:03,200 --> 00:16:44,720
+>> Thanks for watching this video and
+
+483
+00:16:04,720 --> 00:16:46,040
+thanks to my Patreon supporters for
+
+484
+00:16:06,040 --> 00:16:48,120
+making it possible. [music]
+
+485
+00:16:08,120 --> 00:16:52,680
+A special shout out to today's Patreon
+
+486
+00:16:12,680 --> 00:16:52,680
+cats of the day, Hermes and Apollo.

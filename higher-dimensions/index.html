@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>高維度空間 · 互動字幕與章節導覽（OODAV LAB 草稿）</title>
+<style>
+  :root{
+    --bg:#0a0e17; --panel:#111824; --panel2:#0d1320; --line:#1e2a3d;
+    --ink:#e8eef7; --muted:#8aa0bd; --accent:#4fd1c5; --accent2:#f6ad55;
+    --zh:#cfe8ff; --en:#9fb3c8; --ok:#48bb78;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);
+    font-family:"Segoe UI","Microsoft JhengHei","PingFang TC",system-ui,sans-serif;}
+  header{padding:14px 20px;border-bottom:1px solid var(--line);
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;background:var(--panel2);}
+  header h1{font-size:18px;margin:0;letter-spacing:.5px;}
+  header .tag{font-size:12px;color:var(--accent);border:1px solid var(--accent);
+    padding:2px 8px;border-radius:999px;}
+  header .note{font-size:12px;color:var(--muted);}
+  .wrap{display:grid;grid-template-columns:300px 1fr;height:calc(100% - 56px);}
+  /* 側欄：章節導覽 */
+  nav{border-right:1px solid var(--line);overflow:auto;background:var(--panel2);padding:10px;}
+  nav .chap{padding:9px 11px;border-radius:8px;cursor:pointer;margin-bottom:6px;
+    border:1px solid transparent;transition:.15s;}
+  nav .chap:hover{background:var(--panel);}
+  nav .chap.active{background:var(--panel);border-color:var(--accent);}
+  nav .chap .t{font-size:13px;color:var(--ink);}
+  nav .chap .en{font-size:11px;color:var(--muted);margin-top:2px;}
+  nav .chap .ts{font-size:11px;color:var(--accent2);font-variant-numeric:tabular-nums;margin-top:2px;}
+  /* 主面板 */
+  main{overflow:auto;padding:20px 26px;}
+  .stage{position:sticky;top:0;background:var(--bg);padding-bottom:12px;z-index:2;}
+  .now{font-size:12px;color:var(--muted);margin-bottom:8px;}
+  .ctrls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  button{background:var(--panel);color:var(--ink);border:1px solid var(--line);
+    padding:7px 14px;border-radius:8px;cursor:pointer;font-size:13px;}
+  button:hover{border-color:var(--accent);}
+  button.primary{background:var(--accent);color:#04121a;border-color:var(--accent);font-weight:600;}
+  .scrub{flex:1;min-width:200px;accent-color:var(--accent);}
+  .clock{font-variant-numeric:tabular-nums;font-size:13px;color:var(--accent2);min-width:96px;}
+  .speed{font-size:12px;color:var(--muted);}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px;margin-top:14px;}
+  .card h2{margin:0 0 4px;font-size:17px;}
+  .card .sub{font-size:12px;color:var(--muted);margin-bottom:14px;}
+  .block{margin-bottom:16px;}
+  .block .lbl{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:6px;}
+  .block.zh .lbl{color:var(--zh);}
+  .block .txt{font-size:15px;line-height:1.75;}
+  .block.en .txt{color:var(--en);}
+  .block.zh .txt{color:var(--zh);}
+  footer{padding:10px 20px;border-top:1px solid var(--line);font-size:11px;color:var(--muted);background:var(--panel2);}
+  .legend{display:inline-flex;gap:14px;margin-left:8px;}
+  .legend span{display:inline-flex;align-items:center;gap:5px;}
+  .dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
+</style>
+</head>
+<body>
+<header>
+  <h1>高維度空間 · 互動字幕與章節導覽</h1>
+  <span class="tag">正式 · 待推送確認</span>
+  <span class="note">原始轉錄：高維度空間訪談（英文原聲）。本頁無影片源 → 採「模擬播放」同步高亮，時間碼精確源自 SRT。已升格至正式目錄，尚未推送 GitHub Pages。</span>
+</header>
+<div class="wrap">
+  <nav id="nav" aria-label="章節導覽"></nav>
+  <main>
+    <div class="stage">
+      <div class="now" id="now">— 點擊左側章節或使用播放鈕 —</div>
+      <div class="ctrls">
+        <button class="primary" id="play">▶ 模擬播放</button>
+        <button id="prev">⏮ 上一章</button>
+        <button id="next">下一章 ⏭</button>
+        <input type="range" class="scrub" id="scrub" min="0" max="1000" value="0" step="1" />
+        <span class="clock" id="clock">00:00 / 00:00</span>
+        <span class="speed">速度
+          <select id="rate">
+            <option value="1">1×</option>
+            <option value="2" selected>2×</option>
+            <option value="4">4×</option>
+            <option value="8">8×</option>
+          </select>
+        </span>
+      </div>
+    </div>
+    <div class="card" id="card">
+      <h2 id="cTitle">請選擇章節</h2>
+      <div class="sub" id="cSub"></div>
+      <div class="block en"><div class="lbl">English（原文 · 可查證）</div><div class="txt" id="cEn"></div></div>
+      <div class="block zh"><div class="lbl">繁體中文（對照翻譯）</div><div class="txt" id="cZh"></div></div>
+    </div>
+  </main>
+</div>
+<footer>
+  來源：訪談轉錄稿（486 條 SRT cue，0–1012.68s）。章節劃分依發言者切換點精確對齊。
+  <span class="legend">
+    <span><i class="dot" style="background:var(--en)"></i>英文原文</span>
+    <span><i class="dot" style="background:var(--zh)"></i>中文翻譯</span>
+    <span><i class="dot" style="background:var(--accent)"></i>當前章節</span>
+  </span>
+</footer>
+<script src="subtitles.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
