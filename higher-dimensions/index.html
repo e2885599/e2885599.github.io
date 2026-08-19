@@ -61,7 +61,7 @@
 <header>
   <h1>高維度空間 · 互動字幕與章節導覽</h1>
   <span class="tag">正式 · 待推送確認</span>
-  <span class="note">原始轉錄：高維度空間訪談（英文原聲）。本頁無影片源 → 採「模擬播放」同步高亮，時間碼精確源自 SRT。已升格至正式目錄，尚未推送 GitHub Pages。</span>
+  <span class="note">原始轉錄：高維度空間訪談（英文）。本頁已接 TTS 英語配音（en-NZ-MollyNeural，13 章／約 18:32），真實播放同步高亮，章節邊界依語音實際長度對齊。已升格至正式目錄，尚未推送 GitHub Pages。</span>
 </header>
 <div class="wrap">
   <nav id="nav" aria-label="章節導覽"></nav>
@@ -69,15 +69,15 @@
     <div class="stage">
       <div class="now" id="now">— 點擊左側章節或使用播放鈕 —</div>
       <div class="ctrls">
-        <button class="primary" id="play">▶ 模擬播放</button>
+        <button class="primary" id="play">▶ 播放配音</button>
         <button id="prev">⏮ 上一章</button>
         <button id="next">下一章 ⏭</button>
         <input type="range" class="scrub" id="scrub" min="0" max="1000" value="0" step="1" />
         <span class="clock" id="clock">00:00 / 00:00</span>
         <span class="speed">速度
           <select id="rate">
-            <option value="1">1×</option>
-            <option value="2" selected>2×</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×</option>
             <option value="4">4×</option>
             <option value="8">8×</option>
           </select>
