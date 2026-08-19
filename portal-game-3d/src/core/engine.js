@@ -94,6 +94,8 @@ export class GameEngine {
       if (e.key === 'r' && this.mode === 'playing') this.resetLevel();
       if (e.key === 'h' && this.mode !== 'playing') this.setDifficulty(this.difficulty === 'hard' ? 'easy' : 'hard');
       if (e.key === 'Escape') this._backToMenu();
+      // 首次有效操作即撤除操作說明
+      if (this._controlsHelpActive && ['w','a','s','d','h','r',' ','arrowup','arrowdown','arrowleft','arrowright'].includes(e.key.toLowerCase())) this._hideControlsHelp();
     });
     addEventListener('keyup', (e) => { this.keys[e.code] = false; });
     addEventListener('mousedown', (e) => {
@@ -101,6 +103,8 @@ export class GameEngine {
       // 自由視角：左鍵射藍門、右鍵射橘門（camera 前向即瞄準方向）
       if (e.button === 0) this._firePortal('blue');
       else if (e.button === 2) this._firePortal('orange');
+      // 首次操作（射門/點擊）即撤除操作說明
+      if (this._controlsHelpActive) this._hideControlsHelp();
     });
     addEventListener('resize', () => this.renderer.setSize(innerWidth, innerHeight));
   }
@@ -685,6 +689,29 @@ export class GameEngine {
     };
     requestAnimationFrame(loop);
     window.__portalReady = true;
+    // 進遊戲後顯示詳細操作說明；第一次有效操作或 6 秒後自動撤除
+    this._showControlsHelp();
+  }
+
+  // 顯示詳細操作說明覆蓋層（進遊戲後），首次有效操作/超時自動撤除
+  _showControlsHelp() {
+    const el = document.getElementById('controlsHelp');
+    if (!el) return;
+    el.classList.remove('hidden');
+    el.style.opacity = '1';
+    this._controlsHelpActive = true;
+    // 超時自動撤除（備援：玩家沒操作也會消失）
+    clearTimeout(this._controlsHelpTimer);
+    this._controlsHelpTimer = setTimeout(() => this._hideControlsHelp(), 6000);
+  }
+
+  _hideControlsHelp() {
+    const el = document.getElementById('controlsHelp');
+    if (!el || !this._controlsHelpActive) return;
+    this._controlsHelpActive = false;
+    clearTimeout(this._controlsHelpTimer);
+    el.style.opacity = '0';
+    setTimeout(() => el.classList.add('hidden'), 500);   // 淡出後移除
   }
 }
 
