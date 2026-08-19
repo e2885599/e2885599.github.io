@@ -76,14 +76,6 @@
     return t < MAN.chapters[0].start_sec ? 0 : -1;
   }
 
-  // 載入指定章節音訊（避免重複設定 src）
-  function loadAudio(i) {
-    if (i === currentAudioIdx) return;
-    var m = MAN.chapters[i];
-    audio.src = m.file;
-    currentAudioIdx = i;
-  }
-
   // 載入指定章節音訊；src 切換會清零 currentTime，故設 src 後於 loadedmetadata 才定位
   function loadAudio(i, seekTo) {
     if (i === currentAudioIdx) {
@@ -104,7 +96,7 @@
 
   function play() {
     if (current < 0) { current = 0; }
-    loadAudio(current); // 不強制 goTo(0)，尊重已選章節
+    loadAudio(current, MAN.chapters[current].start_sec + 0.01); // 設 src 後定位到章首
     audio.playbackRate = rate;
     audio.play().catch(function (e) { console.warn("播放失敗:", e); });
     playBtn.textContent = "⏸ 暫停";
@@ -143,13 +135,20 @@
     rate = parseFloat(rateSel.value);
     audio.playbackRate = rate;
   });
-  scrub.addEventListener("input", function () {
+  // scrub 拖曳：抽出共用處理，input 與 change 都觸發（增 headless 環境穩健性）
+  function onScrub() {
     var t = (parseFloat(scrub.value) / 1000) * DUR;
     var idx = chapterAt(t);
-    if (idx >= 0) { goTo(idx, false); }
-    audio.currentTime = t;
+    if (idx >= 0) {
+      if (idx !== current) { current = idx; loadAudio(idx, t); } // 切章後於 loadedmetadata 定位
+      else { audio.currentTime = t; }                            // 同章直接定位
+      renderActive();
+      if (navEls[idx]) navEls[idx].scrollIntoView({ block: "nearest" });
+    }
     syncScrub();
-  });
+  }
+  scrub.addEventListener("input", onScrub);
+  scrub.addEventListener("change", onScrub);
 
   // 初始：選第一章
   goTo(0, false);
