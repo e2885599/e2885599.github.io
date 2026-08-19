@@ -98,7 +98,14 @@
     if (current < 0) { current = 0; }
     loadAudio(current, MAN.chapters[current].start_sec + 0.01); // 設 src 後定位到章首
     audio.playbackRate = rate;
-    audio.play().catch(function (e) { console.warn("播放失敗:", e); });
+    var p = audio.play();
+    if (p && p.catch) {
+      p.catch(function (e) {
+        // autoplay 被擋或 file:// 限制：明確回饋，不靜默
+        playBtn.textContent = "▶ 播放配音（被瀏覽器擋，請改用 http 開啟）";
+        console.warn("播放被拒:", e.name, e.message);
+      });
+    }
     playBtn.textContent = "⏸ 暫停";
   }
   function stop() {
@@ -153,4 +160,10 @@
   // 初始：選第一章
   goTo(0, false);
   syncScrub();
+
+  // file:// 警示：直接雙擊開啟會靜默擋音訊，提示改用 http
+  if (location.protocol === "file:") {
+    var fw = document.getElementById("filewarn");
+    if (fw) fw.style.display = "block";
+  }
 })();
