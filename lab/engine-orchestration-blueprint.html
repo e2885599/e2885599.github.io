@@ -19,7 +19,7 @@
   .engine-card:hover{border-color:var(--cyan);box-shadow:var(--shadow-glow);transform:translateY(-3px)}
   .engine-card h3{font-size:var(--fs-4);margin-bottom:var(--sp-1)}
   .engine-card .lic{display:inline-block;font-size:var(--fs-2xs);padding:2px 10px;border-radius:var(--r-pill);margin-bottom:var(--sp-2)}
-  .lic.free{background:rgba(54,224,212,.14);color:var(--cyan);border:1px solid rgba(54,224,212,.4)}
+  .lic.free{background:rgba(245,201,112,.14);color:var(--cyan);border:1px solid rgba(245,201,112,.4)}
   .lic.paid{background:rgba(255,179,71,.12);color:var(--amber);border:1px solid rgba(255,179,71,.35)}
   .engine-card dl{font-size:var(--fs-xs);line-height:1.7;color:var(--muted)}
   .engine-card dt{color:var(--violet);font-weight:700;margin-top:6px}
@@ -33,10 +33,10 @@
   .maptable th,.maptable td{border:1px solid var(--line);padding:10px 14px;text-align:left;vertical-align:top}
   .maptable th{background:var(--panel2);color:var(--cyan);font-weight:700}
   .maptable td{color:var(--muted)}
-  .maptable tr:hover td{background:rgba(54,224,212,.05)}
+  .maptable tr:hover td{background:rgba(245,201,112,.05)}
   /* 原則清單 */
   .principle{display:flex;gap:var(--sp-3);padding:var(--sp-3);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);margin-bottom:var(--sp-2)}
-  .principle .pid{flex:0 0 54px;height:54px;border-radius:var(--r-md);background:var(--grad-soft);border:1px solid rgba(54,224,212,.3);display:flex;align-items:center;justify-content:center;font-size:var(--fs-stat);font-weight:800;color:var(--cyan)}
+  .principle .pid{flex:0 0 54px;height:54px;border-radius:var(--r-md);background:var(--grad-soft);border:1px solid rgba(245,201,112,.3);display:flex;align-items:center;justify-content:center;font-size:var(--fs-stat);font-weight:800;color:var(--cyan)}
   .principle .pbody h4{font-size:var(--fs-4);margin-bottom:6px;color:var(--txt)}
   .principle .pbody p{font-size:var(--fs-sm);color:var(--muted);margin-bottom:4px}
   .principle .src{font-size:var(--fs-2xs);color:var(--violet)}
@@ -182,7 +182,7 @@
       <svg viewBox="0 0 1000 560" role="img" aria-label="8引擎到技能管線組件的雙軌映射圖">
         <defs>
           <marker id="arrowC" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L8,3 L0,6 Z" fill="#36e0d4"/>
+            <path d="M0,0 L8,3 L0,6 Z" fill="#f5c970"/>
           </marker>
           <marker id="arrowV" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
             <path d="M0,0 L8,3 L0,6 Z" fill="#8b6cff"/>
@@ -196,18 +196,18 @@
           <text x="150" y="61" text-anchor="middle">Unity（商業）</text>
           <rect x="30" y="90" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
           <text x="150" y="117" text-anchor="middle">Unreal（商業）</text>
-          <rect x="30" y="146" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <rect x="30" y="146" width="240" height="44" rx="8" fill="#0d1422" stroke="#f5c970"/>
           <text x="150" y="173" text-anchor="middle">Godot（開源免費）</text>
           <rect x="30" y="202" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
           <text x="150" y="229" text-anchor="middle">Game Maker（商業）</text>
           <rect x="30" y="258" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
           <text x="150" y="285" text-anchor="middle">Construct 3（訂閱）</text>
           <rect x="30" y="258" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
-          <rect x="30" y="314" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <rect x="30" y="314" width="240" height="44" rx="8" fill="#0d1422" stroke="#f5c970"/>
           <text x="150" y="341" text-anchor="middle">GDevelop（開源免費）</text>
           <rect x="30" y="370" width="240" height="44" rx="8" fill="#0d1422" stroke="#1d2c45"/>
           <text x="150" y="397" text-anchor="middle">RPG Maker（商業）</text>
-          <rect x="30" y="426" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <rect x="30" y="426" width="240" height="44" rx="8" fill="#0d1422" stroke="#f5c970"/>
           <text x="150" y="453" text-anchor="middle">Scratch（免費 MIT）</text>
         </g>
         <!-- 中央萃取框 -->
@@ -220,9 +220,9 @@
         <text x="850" y="18" fill="#92a6c4" font-size="13" text-anchor="middle" font-family="monospace">技能管線組件</text>
         <!-- 右軌節點 -->
         <g font-family="monospace" font-size="13" fill="#e7eefb">
-          <rect x="730" y="50" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <rect x="730" y="50" width="240" height="44" rx="8" fill="#0d1422" stroke="#f5c970"/>
           <text x="850" y="77" text-anchor="middle">技能 Skill / 工具 Tool</text>
-          <rect x="730" y="130" width="240" height="44" rx="8" fill="#0d1422" stroke="#36e0d4"/>
+          <rect x="730" y="130" width="240" height="44" rx="8" fill="#0d1422" stroke="#f5c970"/>
           <text x="850" y="157" text-anchor="middle">行為宣告 Behavior</text>
           <rect x="730" y="210" width="240" height="44" rx="8" fill="#0d1422" stroke="#8b6cff"/>
           <text x="850" y="237" text-anchor="middle">事件表 EventSheet</text>
@@ -232,7 +232,7 @@
           <text x="850" y="397" text-anchor="middle">資產市集 Market</text>
         </g>
         <!-- 左→中 連線（淡 cyan） -->
-        <g stroke="#36e0d4" stroke-width="1" opacity="0.5">
+        <g stroke="#f5c970" stroke-width="1" opacity="0.5">
           <line x1="270" y1="56" x2="400" y2="250"/>
           <line x1="270" y1="112" x2="400" y2="255"/>
           <line x1="270" y1="168" x2="400" y2="260"/>
@@ -376,12 +376,12 @@
       <svg viewBox="0 0 1000 500" role="img" aria-label="目標編排器四層架構圖">
         <defs>
           <marker id="arrowD" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
-            <path d="M0,0 L8,3 L0,6 Z" fill="#36e0d4"/>
+            <path d="M0,0 L8,3 L0,6 Z" fill="#f5c970"/>
           </marker>
         </defs>
         <!-- L1 事件入口層 -->
-        <rect x="60" y="24" width="880" height="74" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
-        <text x="80" y="52" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">① 事件入口層（Event Sources）</text>
+        <rect x="60" y="24" width="880" height="74" rx="12" fill="#0d1422" stroke="#f5c970" stroke-width="1.5"/>
+        <text x="80" y="52" fill="#f5c970" font-size="14" font-family="monospace" font-weight="700">① 事件入口層（Event Sources）</text>
         <text x="80" y="76" fill="#92a6c4" font-size="12" font-family="monospace">檔案變更 · 排程觸發(cron) · API 呼叫 · 使用者指令 · 訊號(Signal)</text>
         <!-- L2 宣告式綁定表 -->
         <rect x="60" y="144" width="880" height="74" rx="12" fill="#0d1422" stroke="#8b6cff" stroke-width="1.5"/>
@@ -392,11 +392,11 @@
         <text x="80" y="292" fill="#ffb347" font-size="14" font-family="monospace" font-weight="700">③ 技能市集 + 三態路由（Market + Route）</text>
         <text x="80" y="316" fill="#92a6c4" font-size="12" font-family="monospace">可用技能清單 · 名實核實三態(ok/missing/denied) · 路由三態(available/degraded/blocker)（P8 · 對齊既有能力）</text>
         <!-- L4 執行基礎設施 -->
-        <rect x="60" y="384" width="880" height="74" rx="12" fill="#0d1422" stroke="#36e0d4" stroke-width="1.5"/>
-        <text x="80" y="412" fill="#36e0d4" font-size="14" font-family="monospace" font-weight="700">④ 執行基礎設施（隱形化 · P10）</text>
+        <rect x="60" y="384" width="880" height="74" rx="12" fill="#0d1422" stroke="#f5c970" stroke-width="1.5"/>
+        <text x="80" y="412" fill="#f5c970" font-size="14" font-family="monospace" font-weight="700">④ 執行基礎設施（隱形化 · P10）</text>
         <text x="80" y="436" fill="#92a6c4" font-size="12" font-family="monospace">沙箱執行 · Merkle 自動續鏈對帳 · 雙樣本驗收 · 嚴格定案門檻（繼承 tool-orchestration 既有的可證偽核心）</text>
         <!-- 層間箭頭 -->
-        <g stroke="#36e0d4" stroke-width="1.5" marker-end="url(#arrowD)">
+        <g stroke="#f5c970" stroke-width="1.5" marker-end="url(#arrowD)">
           <line x1="500" y1="98" x2="500" y2="142"/>
           <line x1="500" y1="218" x2="500" y2="262"/>
           <line x1="500" y1="338" x2="500" y2="382"/>

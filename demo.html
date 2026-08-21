@@ -182,10 +182,10 @@
     warn.textContent='此裝置不支援進階繪圖，已改用基本方式顯示。';
     const ctx=cv.getContext('2d');
     function draw2(t){const a=t*0.6,c=Math.cos(a),s=Math.sin(a);
-      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
+      ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#160a2e';ctx.fillRect(0,0,cv.width,cv.height);
       const cx=cv.width/2,cy=cv.height/2;
       const pts=[[0,-150],[-130,110],[130,110]].map(([x,y])=>[cx+x*c-y*s,cy+x*s+y*c]);
-      const g=ctx.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#36e0d4');g.addColorStop(1,'#8b6cff');
+      const g=ctx.createLinearGradient(0,0,cv.width,cv.height);g.addColorStop(0,'#f5c970');g.addColorStop(1,'#8b6cff');
       ctx.fillStyle=g;ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);ctx.lineTo(pts[1][0],pts[1][1]);ctx.lineTo(pts[2][0],pts[2][1]);ctx.closePath();ctx.fill();
       ctx.strokeStyle='#dfe9f5';ctx.lineWidth=2;ctx.stroke();requestAnimationFrame(draw2);}
     requestAnimationFrame(draw2);
@@ -201,14 +201,14 @@
     const T=+tx.value,Y=+ty.value,R=+rot.value*Math.PI/180,S=+sc.value/100;
     const c=Math.cos(R),s=Math.sin(R);const a=S*c,b=S*s,c2=-S*s,d=S*c,e=T,f=Y;
     ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,cv.width,cv.height);
-    ctx.fillStyle='#04070e';ctx.fillRect(0,0,cv.width,cv.height);
+    ctx.fillStyle='#160a2e';ctx.fillRect(0,0,cv.width,cv.height);
     ctx.strokeStyle='rgba(29,44,69,.7)';ctx.lineWidth=1;
     for(let i=0;i<=cv.width;i+=40){ctx.beginPath();ctx.moveTo(i,0);ctx.lineTo(i,cv.height);ctx.stroke();}
     for(let j=0;j<=cv.height;j+=40){ctx.beginPath();ctx.moveTo(0,j);ctx.lineTo(cv.width,j);ctx.stroke();}
     ctx.setTransform(1,0,0,1,0,0);ctx.fillStyle='#ff5d6c';ctx.beginPath();ctx.arc(cv.width/2,cv.height/2,4,0,7);ctx.fill();
     ctx.setTransform(a,b,c2,d,e+cv.width/2,f+cv.height/2);
-    ctx.strokeStyle='#36e0d4';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-60,-50);ctx.lineTo(60,-50);ctx.lineTo(0,70);ctx.closePath();ctx.stroke();
-    ctx.fillStyle='rgba(54,224,212,.15)';ctx.fill();
+    ctx.strokeStyle='#f5c970';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-60,-50);ctx.lineTo(60,-50);ctx.lineTo(0,70);ctx.closePath();ctx.stroke();
+    ctx.fillStyle='rgba(245,201,112,.15)';ctx.fill();
     vTx.textContent=T;vTy.textContent=Y;vRot.textContent=rot.value+'°';vS.textContent=S.toFixed(2);
     mat.textContent=`[ ${fmt(a)}  ${fmt(c2)}  ${fmt(e)} ]\n[ ${fmt(b)}  ${fmt(d)}  ${fmt(f)} ]\n[ 0.00  0.00  1.00 ]`;
   }

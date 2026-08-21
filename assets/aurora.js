@@ -19,18 +19,19 @@
 
   var N = 5;
   var strands = [];
+  // 金紫交融調色盤（活躍版）：金 #f5c970 / 紫 #8b6cff / 暖金 #ffd27a
   var palette = [
-    [54, 224, 212], [139, 108, 255], [255, 179, 71], [54, 224, 212], [139, 108, 255]
+    [245, 201, 112], [139, 108, 255], [255, 210, 122], [245, 201, 112], [139, 108, 255]
   ];
   for (var i = 0; i < N; i++) {
     strands.push({
       x: Math.random() * (innerWidth * DPR),
       y: Math.random() * (innerHeight * DPR),
-      vx: (Math.random() - 0.5) * 0.16,
-      vy: (Math.random() - 0.5) * 0.16,
+      vx: (Math.random() - 0.5) * 0.34,
+      vy: (Math.random() - 0.5) * 0.34,
       r: (120 + Math.random() * 220) * DPR,
       c: palette[i % palette.length],
-      a: 0.06 + Math.random() * 0.05
+      a: 0.12 + Math.random() * 0.08
     });
   }
 

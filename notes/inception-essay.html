@@ -11,7 +11,7 @@
   .essay-root{max-width:var(--w-page);margin:0 auto}
   /* 閱讀進度條（scroll-scrub） */
   .read-bar{position:fixed;top:0;left:0;right:0;height:3px;z-index:80;background:transparent}
-  .read-bar span{display:block;height:100%;width:0;background:var(--grad);box-shadow:0 0 12px rgba(54,224,212,.6);transition:width .08s linear}
+  .read-bar span{display:block;height:100%;width:0;background:var(--grad);box-shadow:0 0 12px rgba(245,201,112,.6);transition:width .08s linear}
 
   /* 章節 scrollspy 側欄 */
   .layout{display:grid;grid-template-columns:240px 1fr;gap:var(--sp-5);align-items:start}
@@ -23,7 +23,7 @@
     color:var(--muted);font-size:var(--fs-sm);text-decoration:none;transition:.2s var(--ease)}
   .ch-link .ch-no{font-family:"Space Grotesk",sans-serif;color:var(--muted2);font-weight:700;font-size:var(--fs-xs)}
   .ch-link:hover{color:var(--txt);border-left-color:var(--line2)}
-  .ch-link.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(54,224,212,.06)}
+  .ch-link.active{color:var(--cyan);border-left-color:var(--cyan);background:rgba(245,201,112,.06)}
 
   /* Hero */
   .essay-hero{position:relative;padding:var(--sp-6) 0 var(--sp-4);overflow:hidden}
@@ -59,7 +59,7 @@
 
   /* 金句 pull quote */
   .pull{margin:var(--sp-4) 0;padding:var(--sp-3) var(--sp-4);border-left:3px solid var(--cyan);
-    background:linear-gradient(120deg,rgba(54,224,212,.08),rgba(139,108,255,.05));border-radius:0 var(--r-lg) var(--r-lg) 0}
+    background:linear-gradient(120deg,rgba(245,201,112,.08),rgba(139,108,255,.05));border-radius:0 var(--r-lg) var(--r-lg) 0}
   .pull-zh{font-size:var(--fs-lede);color:var(--txt);line-height:1.7;font-weight:500;margin-bottom:var(--sp-1)}
   .pull-en{font-size:var(--fs-sm);color:var(--muted);font-style:italic;margin-bottom:var(--sp-1)}
   .pull footer{font-size:var(--fs-xs);color:var(--muted2);letter-spacing:1px}
@@ -73,7 +73,7 @@
   .qcard figcaption{font-size:var(--fs-xs);color:var(--muted2);font-style:italic;border-top:1px solid var(--line);padding-top:var(--sp-1)}
 
   /* 反向提問 */
-  .falsi-block{background:linear-gradient(135deg,rgba(255,93,108,.10),rgba(54,224,212,.06));
+  .falsi-block{background:linear-gradient(135deg,rgba(255,93,108,.10),rgba(245,201,112,.06));
     border:1px solid var(--line);border-left:4px solid var(--red);border-radius:0 var(--r-lg) var(--r-lg) 0;
     padding:var(--sp-4);margin-top:var(--sp-3)}
   .falsi-block .lbl{font-size:var(--fs-2xs);letter-spacing:2px;color:var(--red);font-weight:700;margin-bottom:var(--sp-1)}
