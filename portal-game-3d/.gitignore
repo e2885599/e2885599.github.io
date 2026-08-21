@@ -1,1 +1,6 @@
 node_modules/
+# 本地驗收/臨時產物（非遊戲資產，不推上線）
+_verify_shots/
+scripts/_scan_check.py
+scripts/_measure_frame.py
+.codex_audit/

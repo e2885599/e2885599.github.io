@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { FreeOrbitControls } from './controls.js';
 import { PortalSystem } from './portals.js';
 import { makePortalMaterial, makeLavaMaterial, makePortalableWallMaterial, makeExitMaterial, makeMetalFloorMaterial, makeSplatBackground, makeSnowSystem, loadPlayerModel } from '../render/materials.tsl.js';
+import { BG_LIGHTING } from '../render/bg_lighting.js';   // C 路徑·背景光照（來自用戶雪地逆光照片實測）
 
 const WORLD_W = 900, WORLD_D = 600;
 // 垂直比例參照傳送門2（Portal 2）：以玩家身高 PH=34 為基準
@@ -57,6 +58,38 @@ export class GameEngine {
     this._carrying = null;
   }
 
+  // C 路徑·L3-uv2：BoxGeometry 預設只有 uv（channel0），lightMap 在 r160 強制走 uv2。
+  // 複製 uv → uv2，使靜態件可掛載烘焙的 lightMap（對齊 bake_level_lightmap.py 的 uv2 產出）。
+  _ensureUV2(geometry) {
+    if (!geometry.attributes.uv) return geometry;
+    if (!geometry.attributes.uv2) {
+      geometry.setAttribute('uv2', geometry.attributes.uv);
+    }
+    return geometry;
+  }
+
+  // C 路徑·L3-C：為靜態件載入並掛載 lightMap（真 GI 烘焙結果）。
+  // 路徑：lightmaps/level_<ID>_lightmap.png（由 bake_level_lightmap.py 產出，每關一張）。
+  // 失敗不編造：載入不到就只用即時陰影（動態件路徑），不假稱有 GI。
+  _applyLightMap(mesh, levelId) {
+    try {
+      const url = `./lightmaps/level_${levelId}_lightmap.png`;
+      const tex = new THREE.TextureLoader().load(url, (t) => {
+        t.flipY = false;            // lightMap UV 與 Blender bake 對齊（Blender UV 原點左下，three 預設 flipY）
+        t.colorSpace = THREE.NoColorSpace;   // lightMap 為非色彩資料（光照強度），不經 sRGB
+        if (mesh.material) {
+          mesh.material.lightMap = t;
+          mesh.material.lightMapIntensity = 1.0;
+          mesh.material.needsUpdate = true;
+        }
+      });
+      tex.flipY = false;
+      tex.colorSpace = THREE.NoColorSpace;
+    } catch (e) {
+      console.warn('[portal] lightMap 載入失敗，退回即時陰影：', e);
+    }
+  }
+
   async init() {
     // 標準 WebGLRenderer（WebGL2）——最廣相容、最穩定，不依賴 WebGPU 實驗性支援
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
@@ -66,18 +99,33 @@ export class GameEngine {
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color(0x05060a);
-    this.scene.fog = new THREE.Fog(0x05060a, 420, 1250);
+    // C 路徑·背景光照（來自用戶雪地逆光照片實測，見 bg_lighting.js）
+    this.scene.background = new THREE.Color(BG_LIGHTING.background);
+    this.scene.fog = new THREE.Fog(BG_LIGHTING.fog, 420, 1250);
 
     this.camera = new THREE.PerspectiveCamera(74, innerWidth / innerHeight, 0.6, 4200);
     this.camera.position.copy(this.playerPos);
 
-    this.scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x202830, 1.0));
-    this.scene.add(new THREE.AmbientLight(0xffffff, 0.6));   // 確保角色模型在無 envMap 下可見（防過暗/透明感）
-    const dir = new THREE.DirectionalLight(0xffffff, 2.0);
-    dir.position.set(5, 10, 5);
+    // 半球光：天空冷 / 地面暖（雪地反射）
+    const hemi = new THREE.HemisphereLight(BG_LIGHTING.hemisphere.sky, BG_LIGHTING.hemisphere.ground, BG_LIGHTING.hemisphere.intensity);
+    this.scene.add(hemi);
+    // 環境光：雪地高 albedo → 略升，但低於主光避免洗白
+    this.scene.add(new THREE.AmbientLight(BG_LIGHTING.ambient.color, BG_LIGHTING.ambient.intensity));
+    // C 路徑·L3-A：主光即時陰影修復 + 暖橘逆光色溫
+    const dir = new THREE.DirectionalLight(BG_LIGHTING.key.color, BG_LIGHTING.key.intensity);
+    dir.position.set(BG_LIGHTING.key.position[0], BG_LIGHTING.key.position[1], BG_LIGHTING.key.position[2]);
+    dir.target.position.set(WORLD_W / 2, 0, WORLD_D / 2);
+    this.scene.add(dir.target);   // target 必須加入場景才生效
     dir.castShadow = true;
     dir.shadow.mapSize.set(2048, 2048);
+    // 正交陰影相機視錐：覆蓋整個世界（含餘裕）
+    const sc = dir.shadow.camera;
+    sc.left = -WORLD_W * 0.65; sc.right = WORLD_W * 0.65;
+    sc.top = WORLD_D * 0.65;   sc.bottom = -WORLD_D * 0.65;
+    sc.near = 10; sc.far = WALL_H_TARGET * 14;
+    sc.updateProjectionMatrix();
+    dir.shadow.bias = -0.0006;        // 抑制陰影粉刺（peter-panning/acne 平衡）
+    dir.shadow.normalBias = 0.6;      // 沿法線偏移，進一步防 acne（Box 大面易踩）
     this.scene.add(dir);
 
     this.controls = new FreeOrbitControls(this.camera, this.canvas, this.playerPos);
@@ -171,6 +219,8 @@ export class GameEngine {
     // 地板（Z：金屬 PBR 貼圖，取代扁平 Lambert）
     const floor = new THREE.Mesh(new THREE.BoxGeometry(WORLD_W, 8, WORLD_D), makeMetalFloorMaterial());
     floor.position.set(WORLD_W / 2, 0, WORLD_D / 2); floor.receiveShadow = true;
+    this._ensureUV2(floor.geometry);          // L3-uv2：補 uv2 供 lightMap
+    this._applyLightMap(floor, L.id);          // L3-C：掛載烘焙 GI（失敗退回即時陰影）
     this.world.add(floor);
 
     // X：splat 風背景層（程序化飄浮光點，高斯潑濺風塵埃）
@@ -185,6 +235,8 @@ export class GameEngine {
         : mk(w.w, wh, w.d, COLORS.wall);
       mesh.position.set(w.x + w.w / 2, wh / 2, w.z + w.d / 2);
       mesh.castShadow = true; mesh.receiveShadow = true;
+      this._ensureUV2(mesh.geometry);          // L3-uv2
+      this._applyLightMap(mesh, L.id);          // L3-C：靜態牆掛 GI
       if (w.portalable) { mesh.userData.portalable = true; this.portalMeshes.push(mesh); }
       this.world.add(mesh);
     }
@@ -223,6 +275,8 @@ export class GameEngine {
       const dh = (dr.h || WALL_H_REF) * VSCALE;
       const m = mk(dr.w, dh, dr.d, COLORS.door);
       m.position.set(dr.x + dr.w / 2, dh / 2, dr.z + dr.d / 2); m.castShadow = true;
+      this._ensureUV2(m.geometry);          // L3-uv2
+      this._applyLightMap(m, L.id);          // L3-C：靜態門掛 GI
       this.world.add(m);
       this.doors.push({ x: dr.x, z: dr.z, w: dr.w, h: dr.h, d: dr.d, open: false, mesh: m });
     }
