@@ -13,5 +13,4 @@
 <polyline points="100,340 200,320 300,270 400,200 500,170 600,90 700,70" fill="none" stroke="#8b6cff" stroke-width="3" stroke-dasharray="6 6"/>
 <circle cx="100" cy="340" r="5" fill="#36e0d4"/><circle cx="700" cy="120" r="5" fill="#36e0d4"/>
 <circle cx="700" cy="70" r="5" fill="#8b6cff"/>
-<text x="380" y="420" fill="#92a6c4" font-family="sans-serif" font-size="14" text-anchor="middle">小型 / 中型 / 大型 — 一次報價，透明可證</text>
 </svg>
