@@ -148,7 +148,11 @@ h1 .grad{background:var(--grad);-webkit-background-clip:text;background-clip:tex
 @keyframes pulse{50%{opacity:.35}}
 
 /* 數字計數統計條 */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-2);margin:var(--sp-5) 0 var(--sp-1)}
+/* 注意：.stats 同時掛 .wrap class，.wrap 已設 margin:0 auto 居中。
+   原 margin:var(--sp-5) 0 var(--sp-1) 會把左右 auto 覆寫成 0，
+   導致容器貼視窗左邊（left=0），與上方 OODAV LAB 字樣（404px）未對齊。
+   改為上下間距 + 左右 auto，保持與 .wrap 內其他區塊同一居中豎線。 */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--sp-2);margin:var(--sp-5) auto var(--sp-1)}
 @media(max-width:720px){.stats{grid-template-columns:repeat(2,1fr)}}
 .stat{background:linear-gradient(180deg,var(--panel2),var(--panel));
   border:1px solid var(--line);border-radius:var(--r-lg);padding:var(--sp-3);transition:.3s var(--ease);position:relative;overflow:hidden}
