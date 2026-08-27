@@ -71,6 +71,8 @@
   function injectBand(theme) {
     var old = document.getElementById('theme-band');
     if (old) old.parentNode.removeChild(old);
+    // 全部頁面頂部主題色帶隱藏（用戶 2026-08-27 指示：首頁與所有文章頁的「主題 · …」欄位皆不顯示，保留各頁自有設計）。
+    return;
     var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#8b6cff';
     var accent2 = getComputedStyle(document.documentElement).getPropertyValue('--accent2').trim() || '#5b8cff';
     var bg = 'linear-gradient(90deg, ' + accent + ', ' + accent2 + ')';
