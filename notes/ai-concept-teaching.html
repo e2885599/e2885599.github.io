@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>從神經網路到 LLM — AI 基礎概念全鏈技術筆記</title>
+<meta name="description" content="OODAV LAB 技術筆記：神經網路→訓練/推論→Token→Embedding→Attention→Transformer→上下文視窗→縮放定律→預訓練/後訓練→LLM。含 5 幅內聯 SVG 架構圖、KaTeX 公式、可證偽查核。">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters:[{left:'\\(',right:'\\)',display:false},{left:'\\[',right:'\\]',display:true}]});"></script>
+<style>
+  :root{
+    --bg:#060912; --panel:#0d1422; --ink:#e7eefb; --muted:#92a6c4; --muted2:#6c809e;
+    --cyan:#36e0d4; --violet:#8b6cff; --amber:#ffb347; --red:#ff5d6c;
+    --accent:#36e0d4; --accent2:#8b6cff; --accent3:#ffb347; --line:#26395c;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans CJK TC","Microsoft JhengHei",-apple-system,Segoe UI,Roboto,sans-serif;
+    line-height:1.9;font-size:17px}
+  header{padding:48px 20px 28px;text-align:center;border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,#0a1426,#060912)}
+  header h1{margin:0 0 10px;font-size:30px;color:var(--cyan)}
+  header p{margin:4px 0;color:var(--muted)}
+  .src{font-size:13px;color:var(--muted2)}
+  .who{font-size:14px;color:var(--amber);margin-top:8px}
+  main{max-width:920px;margin:0 auto;padding:24px 18px 80px}
+  .toc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 22px;margin:26px 0}
+  .toc a{color:var(--accent2);text-decoration:none}
+  .toc a:hover{text-decoration:underline}
+  section{margin:40px 0;background:var(--panel);border:1px solid var(--line);
+    border-radius:14px;padding:26px 28px}
+  h2{color:var(--accent);border-left:4px solid var(--accent);padding-left:12px;margin-top:4px}
+  h3{color:var(--accent2);margin-top:26px}
+  .tag{display:inline-block;background:var(--accent);color:#06222a;font-weight:700;
+    border-radius:6px;padding:2px 10px;font-size:13px;margin-right:8px}
+  .formula{background:#0a1320;border:1px solid var(--line);border-radius:10px;
+    padding:14px 18px;margin:14px 0;overflow-x:auto}
+  .diagram{background:#0a1320; border:1px solid var(--line);border-radius:10px;
+    padding:14px;margin:16px 0;text-align:center}
+  .diagram svg{width:100%;max-width:640px;height:auto;background:#0e1a2e;border-radius:8px}
+  .cap{color:var(--muted);font-size:14px;margin-top:6px}
+  table{width:100%;border-collapse:collapse;margin:16px 0}
+  th,td{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top}
+  th{background:#0a1426;color:var(--accent)}
+  .note{background:#1c1408;border:1px solid #4d3a12;border-radius:10px;padding:12px 16px;color:#ffd9a0;font-size:15px}
+  .claim{background:#0d1b2a;border:1px solid #1f3a52;border-radius:10px;padding:12px 16px;margin:12px 0}
+  .claim b{color:var(--amber)}
+  .falsi{background:#0d1422;border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0}
+  .falsi b{color:var(--red)}
+  .verify{background:#0a1426;border-left:3px solid var(--cyan);border-radius:0 8px 8px 0;
+    padding:12px 16px;margin:14px 0}
+  .verify b{color:var(--cyan)}
+  .boss{background:linear-gradient(135deg,rgba(139,108,255,.14),rgba(255,179,71,.12));
+    border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:18px 0}
+  .boss b{color:var(--amber)}
+  .boss .lbl{display:inline-block;font-size:12px;letter-spacing:2px;color:var(--violet);
+    border:1px solid rgba(139,108,255,.4);border-radius:999px;padding:2px 10px;margin-bottom:8px}
+  footer{text-align:center;color:var(--muted);font-size:13px;padding:30px 10px 50px;border-top:1px solid var(--line)}
+  code{background:#0a1320;padding:1px 6px;border-radius:4px;color:#ffb347}
+  .q{background:linear-gradient(135deg,rgba(139,108,255,.14),rgba(54,224,212,.14));
+    border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:26px 0;color:var(--ink)}
+  .q b{color:var(--violet)}
+</style>
+<script src="../assets/theme-map.js?v=20260827c"></script>
+<script src="../assets/theme-inject.js?v=20260827c"></script>
+</head>
+<body>
+<header>
+  <h1>從神經網路到 LLM：AI 基礎概念全鏈</h1>
+  <p>神經網路 → 訓練/推論 → Token → Embedding → Attention → Transformer → 上下文視窗 → 縮放定律 → 預訓練/後訓練 → LLM</p>
+  <p class="src">技術筆記 · 整理自 AI 基礎概念解說影片逐字稿（約 21:19）</p>
+  <p class="who">繁中 + 公式 + 5 幅架構圖 + 可證偽查核 · OODAV LAB 風格</p>
+</header>
+
+<main>
+
+<div class="toc">
+  <b style="color:var(--accent2)">目錄</b>
+  <ol>
+    <li><a href="#chain">總覽：概念依賴全鏈</a></li>
+    <li><a href="#nn">一、神經網路：模式學習機</a></li>
+    <li><a href="#train">二、訓練與推論：兩種模式</a></li>
+    <li><a href="#token">三、Token：語言的原子</a></li>
+    <li><a href="#embed">四、Embedding：從 ID 到意義</a></li>
+    <li><a href="#attn">五、Attention：上下文感知</a></li>
+    <li><a href="#tf">六、Transformer：重複架構</a></li>
+    <li><a href="#ctx">七、上下文視窗與 O(n²) 成本</a></li>
+    <li><a href="#scale">八、縮放定律</a></li>
+    <li><a href="#pretrain">九、預訓練與後訓練</a></li>
+    <li><a href="#llm">十、LLM 與產品分界</a></li>
+    <li><a href="#falsify">十一、可證偽性查核</a></li>
+    <li><a href="#qa">十二、反向提問</a></li>
+  </ol>
+</div>
+
+<section id="chain">
+  <h2>總覽：概念依賴全鏈</h2>
+  <p>影片的核心手法是<strong>嚴格依賴序</strong>：後項概念若依賴前項未定義詞，理解鏈斷裂。下圖為全鏈 DAG（葉節點為聽眾已知錨）。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arr" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker>
+      </defs>
+      <g fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.6" font-size="13" text-anchor="middle">
+        <rect x="20"  y="105" width="92" height="42" rx="8"/><rect x="138" y="105" width="92" height="42" rx="8"/>
+        <rect x="256" y="105" width="82" height="42" rx="8"/><rect x="364" y="105" width="92" height="42" rx="8"/>
+        <rect x="482" y="105" width="92" height="42" rx="8"/>
+      </g>
+      <text x="66"  y="131" fill="#e7eefb">神經網路</text><text x="184" y="131" fill="#e7eefb">訓練/推論</text>
+      <text x="297" y="131" fill="#e7eefb">Token</text><text x="410" y="131" fill="#e7eefb">Embedding</text>
+      <text x="528" y="131" fill="#e7eefb">Attention</text>
+      <g fill="#111c30" stroke="#8b6cff" stroke-width="1.6" font-size="13" text-anchor="middle">
+        <rect x="138" y="180" width="100" height="42" rx="8"/><rect x="300" y="180" width="100" height="42" rx="8"/>
+        <rect x="462" y="180" width="100" height="42" rx="8"/>
+      </g>
+      <text x="188" y="206" fill="#e7eefb">Transformer</text><text x="350" y="206" fill="#e7eefb">縮放定律</text>
+      <text x="512" y="206" fill="#e7eefb">預/後訓練</text>
+      <rect x="256" y="20" width="120" height="42" rx="8" fill="#1c1408" stroke="#ffb347" stroke-width="1.6"/>
+      <text x="316" y="46" fill="#ffd9a0" font-size="13" text-anchor="middle">上下文視窗</text>
+      <g stroke="#36e0d4" stroke-width="1.6" fill="none" marker-end="url(#arr)">
+        <path d="M112,126 L138,126"/><path d="M230,126 L256,126"/><path d="M338,126 L364,126"/>
+        <path d="M456,126 L482,126"/><path d="M574,126 L574,180 L562,180"/><path d="M528,147 L410,180"/>
+        <path d="M297,147 L188,180"/><path d="M297,147 L350,180"/>
+      </g>
+      <path d="M316,62 L316,105" stroke="#ffb347" stroke-width="1.6" fill="none" marker-end="url(#arr)"/>
+      <text x="320" y="250" fill="#92a6c4" font-size="12" text-anchor="middle">圖 0 · 概念依賴全鏈：後項必須接在前項已閉環之後</text>
+    </svg>
+    <div class="cap">底本 00:00 ~ 21:19 嚴格拓撲序；任何前向引用（如先講 Transformer 再補 Token）都會斷鏈。</div>
+  </div>
+</section>
+
+<section id="nn">
+  <h2>一、神經網路：模式學習機</h2>
+  <p>神經網路是<strong>由多層微小數學單元（神經元）組成的機器學習模型</strong>，鬆散受腦啟發，但<strong>不是數位大腦</strong>——它是一台模式學習機（底本 00:44 ~ 00:59）。</p>
+  <p>單一神經元的數學驚人地簡單：</p>
+  <div class="formula">
+    \[ y = \phi\!\left(\sum_i w_i x_i + b\right) \]
+  </div>
+  <p>其中 \(w_i\) 為權重（像音量旋鈕控制哪些訊號重要），\(b\) 為偏置（平移神經元的觸發門檻），\(\phi\) 為活化函數（決定結果向前傳遞的強度）。單一神經元幾乎無用，但堆疊數千到數百萬個跨多層，就湧現辨識能力（底本 01:33 ~ 01:54）。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a1" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker></defs>
+      <g fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.6">
+        <circle cx="90" cy="60" r="20"/><circle cx="90" cy="110" r="20"/><circle cx="90" cy="160" r="20"/>
+        <circle cx="310" cy="85" r="20"/><circle cx="310" cy="135" r="20"/>
+        <circle cx="530" cy="110" r="22"/>
+      </g>
+      <text x="90" y="64" fill="#e7eefb" font-size="11" text-anchor="middle">x₁</text>
+      <text x="90" y="114" fill="#e7eefb" font-size="11" text-anchor="middle">x₂</text>
+      <text x="90" y="164" fill="#e7eefb" font-size="11" text-anchor="middle">x₃</text>
+      <text x="310" y="89" fill="#e7eefb" font-size="11" text-anchor="middle">h₁</text>
+      <text x="310" y="139" fill="#e7eefb" font-size="11" text-anchor="middle">h₂</text>
+      <text x="530" y="114" fill="#e7eefb" font-size="11" text-anchor="middle">ŷ</text>
+      <g stroke="#8b6cff" stroke-width="1.2" fill="none" marker-end="url(#a1)">
+        <path d="M110,60 L290,85"/><path d="M110,60 L290,135"/><path d="M110,110 L290,85"/>
+        <path d="M110,110 L290,135"/><path d="M110,160 L290,85"/><path d="M110,160 L290,135"/>
+        <path d="M330,85 L508,110"/><path d="M330,135 L508,110"/>
+      </g>
+      <text x="90" y="200" fill="#92a6c4" font-size="12" text-anchor="middle">輸入層</text>
+      <text x="310" y="200" fill="#92a6c4" font-size="12" text-anchor="middle">隱藏層</text>
+      <text x="530" y="200" fill="#92a6c4" font-size="12" text-anchor="middle">輸出層</text>
+      <text x="310" y="30" fill="#e7eefb" font-size="12" text-anchor="middle">圖 1 · 三階段：輸入 → 隱藏層轉換 → 輸出預測</text>
+    </svg>
+    <div class="cap">影像網路：早期層偵測邊緣，中層組合成形狀，深層認出眼睛/耳朵/鬍鬚，最終層合成「貓」的概念（底本 01:49 ~ 02:09）。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 A：</b>網路從近乎隨機權重開始，從資料中學出有用權重；這些權重集體編碼模型發現的模式（底本 02:09 ~ 02:18）。</div>
+</section>
+
+<section id="train">
+  <h2>二、訓練與推論：兩種模式</h2>
+  <p>空網路是「空機器」，須經<strong>訓練</strong>發現正確權重，再用<strong>推論</strong>回答（底本 02:27 ~ 03:04）。學生類比：讀書做題＝訓練；考試作答＝推論（底本 03:06 ~ 03:11）。</p>
+  <ul>
+    <li><b>訓練</b>：展示數百萬例，模型預測；錯則懲罰，權重更新，略好一點；重複數十億次→真正「懂」（底本 03:28 ~ 03:46）。</li>
+    <li><b>推論</b>：學完後部署到伺服器，使用者打 API，模型瞬間回答，<strong>不再更新權重</strong>，只用既有知識預測下一個 token（底本 03:48 ~ 04:06）。</li>
+  </ul>
+  <div class="boss">
+    <span class="lbl">關鍵分界</span>
+    <p><b>訓練一次，推論服務數百萬使用者。</b>訓練是模型「學習」，推論是模型「回答」（底本 04:08 ~ 04:15）。混淆兩者會誤判成本結構。</p>
+  </div>
+  <div class="falsi"><b>可證偽條件：</b>若「推論階段模型權重仍持續更新」為真，則每次 API 呼叫後同一 prompt 行為應漂移；實測固定 prompt 行為穩定→反證推論不更新權重。</div>
+</section>
+
+<section id="token">
+  <h2>三、Token：語言的原子</h2>
+  <p>當你輸入「Write a story about a robot exploring Mars」，模型不是接收整句，而是<strong>分詞器先切成 token</strong>（底本 05:09 ~ 05:19）。Token <strong>不總是完整單字</strong>：</p>
+  <div class="formula">
+    \[ \text{unbelievable} \;\to\; \text{un}\;|\;\text{believe}\;|\;\text{able} \]
+  </div>
+  <p>常見字如 <code>the</code> 保持完整，罕見術語可能被切成多個 token；空格、標點、emoji 片段也可成 token（底本 05:24 ~ 05:50）。切分理由是<strong>可控詞彙表</strong>：模型無法預存人類可能發明的每個詞，改學可複用小片段（如後綴 <code>ing</code> 可跨千詞複用，底本 06:04 ~ 06:18）。</p>
+  <div class="claim"><b>可證偽聲稱 B：</b>分詞後每個 token 獲得數值 ID（如 cat=8241、kitten=17903），這些只是「條碼標籤」而非定義；模型對數值表示做數學以預測下一 token（底本 06:29 ~ 06:49）。</div>
+</section>
+
+<section id="embed">
+  <h2>四、Embedding：從 ID 到意義</h2>
+  <p>Token 只是標籤——<code>cat=8241</code> 並未告訴模型「貓與幼貓相關」。意義來自 <strong>Embedding</strong>（底本 06:55 ~ 07:04）。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 240" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a2" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker></defs>
+      <circle cx="310" cy="120" r="6" fill="#36e0d4"/>
+      <g fill="#0e1a2e" stroke="#8b6cff" stroke-width="1.5" font-size="12" text-anchor="middle">
+        <rect x="60"  y="100" width="90" height="36" rx="8"/><rect x="150" y="60"  width="90" height="36" rx="8"/>
+        <rect x="370" y="60"  width="90" height="36" rx="8"/><rect x="470" y="100" width="90" height="36" rx="8"/>
+      </g>
+      <text x="105" y="123" fill="#e7eefb">cat</text><text x="195" y="83" fill="#e7eefb">kitten</text>
+      <text x="415" y="83" fill="#e7eefb">dog</text><text x="515" y="123" fill="#e7eefb">airplane</text>
+      <g stroke="#36e0d4" stroke-width="1.4" fill="none" marker-end="url(#a2)">
+        <path d="M150,96 L300,118"/><path d="M240,78 L304,116"/><path d="M370,96 L320,118"/>
+        <path d="M470,118 L330,122"/>
+      </g>
+      <text x="310" y="210" fill="#92a6c4" font-size="12" text-anchor="middle">圖 2 · 語意地圖：相似概念靠近，airplane 遠離</text>
+      <text x="310" y="230" fill="#6c809e" font-size="11" text-anchor="middle">現代模型用數百到數千維向量；無法視覺化但數學仍成立</text>
+    </svg>
+    <div class="cap">訓練中模型調整向量，相似語境的 token 漸獲相近位置；意義＝座標距離（底本 07:40 ~ 07:54）。</div>
+  </div>
+  <div class="claim"><b>可證偽聲稱 C：</b>向量算術具示意性——king − man + woman ≈ queen；Paris − France + Italy ≈ Rome（底本 08:12 ~ 08:21）。影片明確標註「這是有用示意，非完美定律」（底本 08:18）。</div>
+  <div class="verify"><b>證據強度：★★☆</b> 經典詞嵌入確實呈現此結構，但現代上下文化嵌入（見下節）使固定向量算術不穩定；影片已標邊界，屬誠實外推。</div>
+</section>
+
+<section id="attn">
+  <h2>五、Attention：上下文感知</h2>
+  <p>傳統 embedding 給每個詞<strong>固定</strong>座標，但「bank」在「錢」與「河岸」語意不同。缺失的成分是<strong>上下文</strong>（底本 09:07 ~ 09:18）。</p>
+  <p>Self-attention 讓模型比較 <code>mouse</code> 與其他 token，問「哪些詞對解讀它有用以」：在「開檔案、我點擊 mouse」中，open/file/clicked 得高分；在「飢餓的貓追逐 mouse」中，cat/chased 得高分（底本 09:52 ~ 10:39）。</p>
+  <div class="diagram">
+    <svg viewBox="0 0 620 200" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a3" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ffb347"/></marker></defs>
+      <g fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.5" font-size="12" text-anchor="middle">
+        <rect x="40"  y="80" width="86" height="34" rx="8"/><rect x="150" y="80" width="86" height="34" rx="8"/>
+        <rect x="260" y="80" width="86" height="34" rx="8"/><rect x="400" y="80" width="86" height="34" rx="8"/>
+      </g>
+      <text x="83" y="102" fill="#e7eefb">The</text><text x="193" y="102" fill="#e7eefb">hungry</text>
+      <text x="303" y="102" fill="#ffb347" font-weight="700">cat</text><text x="443" y="102" fill="#e7eefb">chased</text>
+      <g fill="#1c1408" stroke="#ffb347" stroke-width="1.5" font-size="12" text-anchor="middle">
+        <rect x="540" y="80" width="60" height="34" rx="8"/>
+      </g>
+      <text x="570" y="102" fill="#ffd9a0">mouse</text>
+      <g stroke="#ffb347" stroke-width="1.6" fill="none" marker-end="url(#a3)">
+        <path d="M400,97 L538,90"/><path d="M346,97 L538,96"/>
+      </g>
+      <text x="310" y="170" fill="#92a6c4" font-size="12" text-anchor="middle">圖 3 · mouse 依上下文連向 cat/chased → 動物義；連向 open/file → 設備義</text>
+    </svg>
+    <div class="cap">多個 attention head 可同時捕捉不同關係（如名詞指代、動作指向，底本 10:45 ~ 10:57）。</div>
+  </div>
+  <div class="falsi"><b>歷史校正（可證偽聲稱 D）：</b>Attention <strong>不是 2017 發明</strong>，早已存在數年；2017 Google 論文《Attention Is All You Need》的突破是「把 self-attention 置於模型中心」提出 Transformer（底本 11:04 ~ 11:18）。</div>
+</section>
+
+<section id="tf">
+  <h2>六、Transformer：重複架構</h2>
+  <p>LLM 與 Transformer <strong>不是同一物</strong>：LLM 是訓練來處理/產生語言的模型；Transformer 是建造它的<strong>架構（藍圖）</strong>——像成品車 vs 引擎設計（底本 12:04 ~ 12:28）。</p>
+  <p>運作：prompt 分 token → 每 token 成 embedding 向量 → 加<strong>位置資訊</strong>（否則「狗咬人」與「人咬狗」同組件，底本 12:33 ~ 12:43）→ 進入堆疊的 Transformer 塊。每塊兩階段：</p>
+  <ul>
+    <li><b>Self-attention</b>：每 token 測量與早前 token 的相關性，連接代詞與名詞、消解歧義（底本 12:51 ~ 13:03）。</li>
+    <li><b>Feed-forward</b>：在每位置處理資訊，產生更豐富表示；殘差連接保留早前資訊、層歸一化維穩（底本 13:05 ~ 13:25）。</li>
+  </ul>
+  <div class="diagram">
+    <svg viewBox="0 0 620 180" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="a4" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#36e0d4"/></marker></defs>
+      <g fill="#0e1a2e" stroke="#36e0d4" stroke-width="1.6" font-size="12" text-anchor="middle">
+        <rect x="40" y="70" width="150" height="44" rx="8"/><rect x="235" y="70" width="150" height="44" rx="8"/>
+        <rect x="430" y="70" width="150" height="44" rx="8"/>
+      </g>
+      <text x="115" y="97" fill="#e7eefb">Self-Attention</text><text x="310" y="97" fill="#e7eefb">Feed-Forward</text>
+      <text x="505" y="97" fill="#e7eefb">+Residual/Norm</text>
+      <g stroke="#36e0d4" stroke-width="1.6" fill="none" marker-end="url(#a4)">
+        <path d="M190,92 L233,92"/><path d="M385,92 L428,92"/><path d="M580,92 L590,92"/>
+      </g>
+      <path d="M505,114 C505,150 115,150 115,114" stroke="#8b6cff" stroke-width="1.4" fill="none" stroke-dasharray="5,4" marker-end="url(#a4)"/>
+      <text x="310" y="165" fill="#92a6c4" font-size="12" text-anchor="middle">圖 4 · 區塊重複 N 層：Attention → FFN → 殘差/歸一化 → 再 Attention…</text>
+    </svg>
+    <div class="cap">最後層對每個可能下一 token 打分，選一個加入序列，如此反覆生成完整回應（底本 13:48 ~ 14:03）。</div>
+  </div>
+</section>
+
+<section id="ctx">
+  <h2>七、上下文視窗與 O(n²) 成本</h2>
+  <p>Attention 有邊界：標準 self-attention 中每 token 與允許範圍內<strong>每個</strong> token 比較。10 個 token ≈ 100 次比較；1000 個 ≈ 100 萬次；長度翻倍，注意力成本約增 4 倍（底本 14:35 ~ 14:59）。</p>
+  <div class="formula">
+    \[ \text{比較數} \approx n^2 \quad\Rightarrow\quad \text{成本} \propto \mathcal{O}(n^2) \]
+  </div>
+  <p>這就是<strong>上下文視窗</strong>：模型的「工作書桌」。prompt、對話史、參考資料、自身回應都須佔用桌面空間；桌面滿了就必須壓縮、丟棄舊 token（底本 15:08 ~ 15:33）。</p>
+  <div class="note">更大上下文視窗<strong>不保證完美召回</strong>：重要細節仍可能埋在數千頁中；處理無用 token 也耗時費錢（底本 15:33 ~ 15:47）。這是 RAG 的動機（底本 16:07 ~ 16:18）。</div>
+  <div class="claim"><b>可證偽聲稱 E：</b>標準 self-attention 的計算/記憶成本隨序列長度平方成長，是每個模型都有上下文視窗邊界的根因（底本 14:53 ~ 15:08）。</div>
+</section>
+
+<section id="scale">
+  <h2>八、縮放定律</h2>
+  <p>當以不同<strong>參數量、資料量、算力</strong>訓練 Transformer，其改善呈<strong>驚人平滑模式</strong>：三者在正確比例下放大，錯誤率可預測下降（底本 16:54 ~ 17:09）。這就是<strong>神經縮放定律</strong>，關鍵在「可預測」——用小型模型測試即可估算大型模型表現，免耗數百萬訓練（底本 17:13 ~ 17:21）。</p>
+  <div class="boss">
+    <span class="lbl">尺度與成本同體</span>
+    <p><b>縮放帶來能力也帶來成本。</b>資料品質、架構、優化仍重要；過大但資料不足的模型浪費算力，且邊際收益遞減（底本 17:23 ~ 17:41）。</p>
+  </div>
+  <div class="falsi"><b>可證偽條件：</b>若「參數量單獨決定智力」為真，則純堆參數應持續線性提升；實測資料/架構不匹配時增益飽和→反證單維假說（底本 20:35 ~ 20:44）。</div>
+</section>
+
+<section id="pretrain">
+  <h2>九、預訓練與後訓練</h2>
+  <p>現代 LLM 通常兩階段建造（底本 18:10 ~ 18:16）：</p>
+  <table>
+    <tr><th>階段</th><th>任務</th><th>學習信號</th></tr>
+    <tr><td><b>預訓練</b></td><td>隨機權重開始，在巨量文本/程式碼（可能數兆 token）上訓練，主任務＝預測下一 token</td><td>自監督：文本自身即標籤（底本 18:20 ~ 18:47）</td></tr>
+    <tr><td><b>後訓練</b></td><td>學會遵循指令、對話、產生更安全有用的回應</td><td>監督微調 / 偏好優化 / RLHF（底本 19:15 ~ 19:25）</td></tr>
+  </table>
+  <div class="claim"><b>可證偽聲稱 F：</b>基礎模型（base model）本身已是 LLM，但優化目標是「續寫文本」而非「遵循指令」；後訓練把它打磨成你實際互動的助理（底本 19:34 ~ 19:36）。</div>
+</section>
+
+<section id="llm">
+  <h2>十、LLM 與產品分界</h2>
+  <p>LLM 是<strong>在巨量文本/程式碼上訓練、學習語言模式</strong>的神經網路，多數生成式 LLM 用 Transformer 架構、以預測下一 token 為目標（底本 19:50 ~ 20:09）。</p>
+  <div class="formula">
+    \[ \text{參數} = \text{訓練中調整的學習數值} \quad (\text{GPT-3}: 175\times10^9) \]
+  </div>
+  <div class="boss">
+    <span class="lbl">產品 ≠ 模型</span>
+    <p><b>LLM 是模型；ChatGPT / Claude / Gemini 是「由語言模型驅動的助理產品」</b>，通常結合工具、安全系統、使用者介面（底本 20:46 ~ 21:02）。混淆兩者會誤判責任邊界。</p>
+  </div>
+  <div class="falsi"><b>可證偽條件：</b>若「參數量＝智力」為真，則 GPT-3（175B）應全面優於後訓練更小的模型；實測後訓練與資料品質主導實用表現→反證單維假說（底本 20:33 ~ 20:44）。</div>
+</section>
+
+<section id="falsify">
+  <h2>十一、可證偽性查核</h2>
+  <table>
+    <tr><th>標籤</th><th>聲稱</th><th>證偽條件</th><th>強度</th></tr>
+    <tr><td>A</td><td>網路從隨機權重學出模式</td><td>若權重初始化即為最優，則訓練應無損益→實測訓練損失下降</td><td>★★★</td></tr>
+    <tr><td>B</td><td>Token 獲數值 ID 標籤</td><td>若模型直讀字母，則分詞步驟可移除→實測移除後崩潰</td><td>★★★</td></tr>
+    <tr><td>C</td><td>向量算術示意性</td><td>king−man+woman≈queen；已標「示意非定律」</td><td>★★☆</td></tr>
+    <tr><td>D</td><td>Attention 非 2017 發明</td><td>若 2017 首創，則前此文獻無 attention→查證早於 2017 論文存在</td><td>★★★</td></tr>
+    <tr><td>E</td><td>Attention 成本 O(n²)</td><td>若線性，則 1000 token 應≈1000 次→實測≈10⁶ 次</td><td>★★★</td></tr>
+    <tr><td>F</td><td>基礎模型已是 LLM</td><td>若否，則預訓練產物無法續寫→實測可續寫文本</td><td>★★★</td></tr>
+  </table>
+</section>
+
+<section id="qa">
+  <h2>十二、反向提問</h2>
+  <div class="q">
+    <p><b>不可壓縮、可證偽反向提問：</b>若將本筆記的「概念依賴全鏈」打散為獨立條目（取消拓撲序），能否用試映實驗證明聽眾對「Token/Embedding/Attention」的<strong>正確遞進理解率</strong>不下降？若下降，則「依賴序不可縮編」即為真——請給可測量驗收實驗（如前測/後測錯誤率差異顯著性檢定）。</p>
+  </div>
+</section>
+
+</main>
+<footer>
+  OODAV LAB · 主動資運工程工作室 · 技術筆記（繁中 + 公式 + 圖解 + 可證偽查核）<br>
+  底本：AI 基礎概念解說影片逐字稿（約 21:19）· 所有聲稱綁 timecode 錨與證偽條件
+</footer>
+</body>
+</html>

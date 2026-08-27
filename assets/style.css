@@ -68,22 +68,47 @@ body{font-family:"Space Grotesk","IBM Plex Sans TC","PingFang TC","Microsoft Jhe
 }
 /* 特色字體：拉丁/數字走 Space Grotesk（工程幾何感），中文走 IBM Plex Sans TC（有設計意圖）
    —— 取代「系統字主導」的 AI slop 字體信號。作為反向可證偽錨點：部署後 document.fonts 應含此二族。 */
-/* 極光流動網格背景（canvas 置底，CSS 漸層兜底） */
+
+/* ============================================================
+   首頁多彩化 · 分區段情緒色板（色彩心理學 + Odoo 企業信任藍/創新紫靈感內化）
+   解決「首頁顏色太單調」：各區段用不同情緒色，但仍守金紫品牌基底。
+   色板依據：藍=信任/專業、紫=高端/創新、金=權威/價值、綠=安全/通過、橙=能量。
+   ============================================================ */
+:root{
+  /* 區段情緒色（覆寫級，供首頁各 section 使用） */
+  --mood-trust:#5b8cff;      /* 信任藍（Odoo 企業信任靈感） */
+  --mood-innovate:#b388ff;   /* 創新紫（Odoo 創新紫靈感） */
+  --mood-value:#f5c970;      /* 權威金 */
+  --mood-safe:#7ee787;       /* 安全綠 */
+  --mood-energy:#ffb347;     /* 能量橙 */
+  --mood-logic:#36e0d4;      /* 邏輯青 */
+}
+/* 首頁各區段：以情緒色做左上邊線 + 淡色光暈，拉開層次（非整頁換色，守品牌） */
+.sec-mood{position:relative;}
+.sec-mood::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px;background:var(--mood-accent,var(--gold));opacity:.9;}
+.sec-mood{background:linear-gradient(180deg, color-mix(in srgb, var(--mood-accent,var(--gold)) 7%, transparent), transparent 60%);}
+.mood-trust{--mood-accent:var(--mood-trust);}
+.mood-innovate{--mood-accent:var(--mood-innovate);}
+.mood-value{--mood-accent:var(--mood-value);}
+.mood-safe{--mood-accent:var(--mood-safe);}
+.mood-energy{--mood-accent:var(--mood-energy);}
+.mood-logic{--mood-accent:var(--mood-logic);}
+/* 區段標 k 字用情緒色，強化分類識別 */
+.sec-mood .sec-head .k{color:var(--mood-accent,var(--gold));}
+.sec-mood .k{color:var(--mood-accent,var(--gold));}
+.sec-mood .sec-head .k::before{content:"● ";font-size:.7em;vertical-align:middle;}
+/* 卡片頂部細線隨情緒色 */
+.sec-mood .card, .sec-mood .item{border-top:2px solid color-mix(in srgb, var(--mood-accent,var(--gold)) 60%, transparent);}
+
+/* 極光流動背景（canvas 置底，CSS 漸層兜底；每頁由 theme-inject 注入主題色，不共用固定金紫） */
 #aurora{position:fixed;inset:0;z-index:-2;width:100%;height:100%;display:block;
   background:
-    radial-gradient(1200px 700px at 82% -12%,#3a215e 0%,transparent 56%),
-    radial-gradient(900px 600px at 10% 110%,#2a1648 0%,transparent 55%),
+    radial-gradient(1200px 700px at 82% -12%, color-mix(in srgb,var(--accent2) 38%, transparent), transparent 56%),
+    radial-gradient(900px 600px at 10% 110%, color-mix(in srgb,var(--accent) 30%, transparent), transparent 55%),
     var(--bg);
 }
-/* 細網格紋理疊層 */
-body::before{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background-image:
-    linear-gradient(rgba(245,201,112,.05) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(245,201,112,.05) 1px,transparent 1px);
-  background-size:46px 46px;
-  mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
-  -webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
-}
+/* 移除全站共用細網格紋理：避免每頁都套同一個「編程方格視窗」感；
+   各頁背景質感改由 theme-parallax canvas / theme-short 短片依主題各自呈現，互不共用。 */
 a{color:var(--gold);text-decoration:none}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--sp-3)}
 img{max-width:100%}
@@ -375,3 +400,62 @@ footer{border-top:1px solid var(--line);padding:var(--sp-4) 0 var(--sp-5);color:
 /* 小工具：漂浮微動 */
 @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
 .floaty{animation:floaty 5s ease-in-out infinite}
+
+/* ============================================================
+   主題映照系統 · 頂部主題色帶 + 首頁多彩化（Odoo 企業感靈感內化）
+   設計語言來源：Odoo 官方企業站「信任藍＋創新紫＋多彩色塊」已內化為本工作室自有色板（非複製其 CSS 模板）。
+   色彩心理學依據（可證偽）：藍=信任/專業、紫=高端/創新、金=權威/價值、綠=安全/通過、橙=能量、青=邏輯/科技。
+   ============================================================ */
+
+/* ① 頂部主題色帶：每篇文章/頁面由 theme-inject.js 注入，顯式映照該頁主題＋色彩心理學寓意 */
+#theme-band{
+  position:sticky;top:0;z-index:70;
+  display:flex;align-items:center;gap:var(--sp-2);
+  padding:var(--sp-1) var(--sp-3);
+  font-size:var(--fs-xs);letter-spacing:.3px;
+  color:var(--ink);
+  background:linear-gradient(90deg, color-mix(in srgb,var(--accent) 85%, #000), color-mix(in srgb,var(--accent2) 80%, #000));
+  border-bottom:1px solid color-mix(in srgb,var(--accent) 50%, transparent);
+  box-shadow:0 4px 20px color-mix(in srgb,var(--accent) 35%, transparent);
+  backdrop-filter:blur(8px);
+}
+#theme-band .tb-dot{width:9px;height:9px;border-radius:50%;background:#fff;box-shadow:0 0 10px #fff;flex:none;animation:pulse 2s infinite}
+#theme-band .tb-label{font-weight:800;letter-spacing:1px;white-space:nowrap}
+#theme-band .tb-psych{color:color-mix(in srgb,var(--ink) 85%, transparent);opacity:.92;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:640px){#theme-band .tb-psych{display:none}}
+/* 色帶存在時，讓 sticky nav 貼在色帶下方（避免重疊） */
+body.has-theme-band nav{top:calc(var(--tb-h,34px))}
+#theme-band ~ nav{top:var(--tb-h,34px)}
+
+/* ② 首頁多彩化：各分區以「情緒色塊」做滿寬漸層背景（Odoo 企業感多彩色塊靈感），解決整頁金紫單調 */
+/*   每區 refs 其 --mood-* 情緒色（已在 :root 定義），並以 color-mix 與品牌金紫基底融合，不破壞整體調性。 */
+.sec-mood{overflow:hidden}
+.sec-mood::after{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(120% 90% at 12% 0%, color-mix(in srgb,var(--mood-accent) 16%, transparent), transparent 55%),
+    radial-gradient(120% 90% at 92% 100%, color-mix(in srgb,var(--mood-accent) 12%, transparent), transparent 55%);
+}
+/* 卡片 hover 時以情緒色提亮（而非僅金色），強化多彩層次 */
+.sec-mood .card:hover{border-color:var(--mood-accent);box-shadow:0 18px 50px color-mix(in srgb,var(--mood-accent) 30%, transparent)}
+.sec-mood .why .item:hover{border-color:var(--mood-accent)}
+.sec-mood .sec-head h2{color:color-mix(in srgb,var(--mood-accent) 70%, var(--txt))}
+/* 首頁 Hero 加入輕量多彩光暈（青/紫/金三向），呼應 Odoo 多彩但不喧賓奪主 */
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(700px 420px at 78% 8%, color-mix(in srgb,var(--violet) 22%, transparent), transparent 60%),
+    radial-gradient(560px 360px at 8% 92%, color-mix(in srgb,var(--gold) 16%, transparent), transparent 60%),
+    radial-gradient(600px 400px at 50% 120%, color-mix(in srgb,var(--mood-logic,var(--accent)) 14%, transparent), transparent 60%);
+  opacity:.9;
+}
+/* 統計卡 hover 以各情緒色輪替高光（多彩識別） */
+.stats .stat:nth-child(1):hover::before{background:linear-gradient(180deg,color-mix(in srgb,var(--mood-trust) 22%,transparent),transparent)}
+.stats .stat:nth-child(2):hover::before{background:linear-gradient(180deg,color-mix(in srgb,var(--mood-innovate) 22%,transparent),transparent)}
+.stats .stat:nth-child(3):hover::before{background:linear-gradient(180deg,color-mix(in srgb,var(--mood-value) 22%,transparent),transparent)}
+.stats .stat:nth-child(4):hover::before{background:linear-gradient(180deg,color-mix(in srgb,var(--mood-safe) 22%,transparent),transparent)}
+
+/* ③ 通用：所有頁面（含文章子頁）主題視差 canvas 與短片層已就位；
+   子頁若自帶 header 背景，標記 .theme-transparent 讓主題透出（預設由 JS 透明化 body） */
+.theme-transparent{background:transparent!important}
+

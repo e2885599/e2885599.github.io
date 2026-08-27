@@ -6,7 +6,7 @@
 <title>傳送門小遊戲</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  html,body { height:100%; background:#05070d; overflow:hidden; font-family:"Segoe UI","Microsoft JhengHei",sans-serif; color:#cfe8ff; }
+  html,body { height:100%; background:#160a2e; overflow:hidden; font-family:"Segoe UI","Microsoft JhengHei",sans-serif; color:#cfe8ff; }
   #wrap { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; }
   canvas { background:#0a0f1a; image-rendering:auto; box-shadow:0 0 60px rgba(56,189,248,.25); }
   .overlay {
@@ -33,6 +33,8 @@
     color:#bfe0ff; font-size:14px; opacity:0; transition:opacity .25s; pointer-events:none; }
   #toast.show { opacity:1; }
 </style>
+<script src="../assets/theme-map.js?v=20260827c"></script>
+<script src="../assets/theme-inject.js?v=20260827c"></script>
 </head>
 <body>
 <div id="wrap"><canvas id="game" width="1280" height="720"></canvas></div>
