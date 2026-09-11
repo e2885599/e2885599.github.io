@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA 6 憑什麼被稱為 RDR2 進化體｜給 25-40 歲主管的 9 局系統設計課</title>
+<style>
+/* === Miami Sunset 主題色 ===
+   Y2K 日落四色漸層：橘紅 → 琥珀 → 紫粉 → 深藍
+   適用：25-40 歲 PM / 工程主管 / 新創 Founder 閱讀
+   STE100 規制：每段 ≤ 3 行、每屏 ≤ 1 論點、可證偽反向提問標註
+*/
+:root {
+  --sun-orange: #FF6B35;
+  --sun-amber: #F7931E;
+  --sun-pink: #E91E63;
+  --sun-purple: #9C27B0;
+  --sun-indigo: #673AB7;
+  --sun-blue: #2196F3;
+  --dark-0: #0a0a12;
+  --dark-1: #12121f;
+  --dark-2: #1a1a2e;
+  --text: #f0f0f5;
+  --text-dim: #a0a0b8;
+  --white: #ffffff;
+  --font: 'Inter', -apple-system, 'Microsoft JhengHei', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--dark-0);
+  color: var(--text);
+  overflow-x: hidden;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === 全螢幕 Canvas 粒子背景 === */
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* === 導航條 === */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  background: rgba(10,10,18,0.75);
+  border-bottom: 1px solid rgba(255,107,53,0.15);
+  transition: all 0.4s var(--ease-out-expo);
+}
+
+.nav-logo {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink), var(--sun-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.nav-progress {
+  display: flex;
+  gap: 4px;
+}
+
+.nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--dark-2);
+  transition: all 0.3s;
+}
+
+.nav-dot.active {
+  background: var(--sun-amber);
+  box-shadow: 0 0 12px var(--sun-amber);
+  transform: scale(1.3);
+}
+
+/* === 主要內容區 === */
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+/* === Hero 全螢幕 === */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 120px 32px 80px;
+  text-align: center;
+  position: relative;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(ellipse at center,
+    rgba(255,107,53,0.08) 0%,
+    rgba(233,30,99,0.05) 30%,
+    transparent 70%);
+  animation: heroPulse 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes heroPulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.hero-tag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--sun-amber);
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-expo) 0.2s forwards;
+}
+
+.hero-title {
+  font-size: clamp(32px, 6vw, 64px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -2px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-expo) 0.4s forwards;
+}
+
+.hero-title-line {
+  display: block;
+}
+
+.hero-title .gradient-text {
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink), var(--sun-purple), var(--sun-blue));
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradientShift 6s ease-in-out infinite;
+}
+
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.hero-subtitle {
+  font-size: clamp(14px, 2vw, 18px);
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.6;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-expo) 0.6s forwards;
+}
+
+.hero-meta {
+  display: flex;
+  gap: 24px;
+  margin-top: 40px;
+  font-size: 12px;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-expo) 0.8s forwards;
+}
+
+.hero-meta span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-dim);
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0;
+  animation: fadeUp 1s var(--ease-out-expo) 1.2s forwards;
+}
+
+.scroll-arrow {
+  width: 20px;
+  height: 20px;
+  border-right: 2px solid var(--sun-amber);
+  border-bottom: 2px solid var(--sun-amber);
+  transform: rotate(45deg);
+  animation: scrollBounce 2s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+  0%, 100% { transform: rotate(45deg) translateY(0); }
+  50% { transform: rotate(45deg) translateY(6px); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* === 通用 section === */
+.section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 32px;
+  position: relative;
+}
+
+.section-inner {
+  max-width: 800px;
+  width: 100%;
+}
+
+/* === Section 標題 === */
+.section-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sun-amber);
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo);
+}
+
+.section-num.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-title {
+  font-size: clamp(28px, 4vw, 48px);
+  font-weight: 900;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s var(--ease-out-expo) 0.1s;
+}
+
+.section-title.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-title .highlight {
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-body {
+  font-size: 16px;
+  color: var(--text-dim);
+  line-height: 1.8;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo) 0.2s;
+}
+
+.section-body.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.section-body strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* === 比較圖（RDR2 ↔ GTA6） === */
+.comparison-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 40px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo) 0.3s;
+}
+
+.comparison-grid.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.comparison-side {
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--dark-1);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s;
+}
+
+.comparison-side:hover {
+  border-color: rgba(255,107,53,0.3);
+  transform: translateY(-4px);
+}
+
+.comparison-side.rdr2 {
+  border-top: 3px solid var(--sun-orange);
+}
+
+.comparison-side.gta6 {
+  border-top: 3px solid var(--sun-blue);
+}
+
+.comparison-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.rdr2 .comparison-label { color: var(--sun-orange); }
+.gta6 .comparison-label { color: var(--sun-blue); }
+
+.comparison-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.comparison-desc {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.6;
+}
+
+.comparison-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: var(--sun-amber);
+  filter: drop-shadow(0 0 12px rgba(247,147,30,0.4));
+}
+
+/* === 指標卡片 === */
+.metric-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin-top: 32px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo) 0.4s;
+}
+
+.metric-row.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.metric-card {
+  padding: 20px 16px;
+  border-radius: 12px;
+  background: var(--dark-1);
+  border: 1px solid rgba(255,255,255,0.05);
+  text-align: center;
+  transition: all 0.3s;
+}
+
+.metric-card:hover {
+  border-color: var(--sun-pink);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(233,30,99,0.15);
+}
+
+.metric-value {
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.metric-unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dim);
+}
+
+.metric-label {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 8px;
+  line-height: 1.4;
+}
+
+/* === 權衡條 === */
+.tradeoff-bar {
+  margin-top: 32px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo) 0.5s;
+}
+
+.tradeoff-bar.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tradeoff-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.tradeoff-item:last-child { border-bottom: none; }
+
+.tradeoff-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.tradeoff-icon.gain {
+  background: rgba(33,150,243,0.15);
+  color: var(--sun-blue);
+}
+
+.tradeoff-icon.cost {
+  background: rgba(255,107,53,0.15);
+  color: var(--sun-orange);
+}
+
+.tradeoff-text {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.tradeoff-text .gain-text { color: var(--sun-blue); font-weight: 600; }
+.tradeoff-text .cost-text { color: var(--sun-orange); font-weight: 600; }
+
+/* === 可證偽框 === */
+.falsification-box {
+  margin-top: 32px;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(255,107,53,0.08), rgba(156,39,176,0.08));
+  border-left: 3px solid var(--sun-purple);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.8s var(--ease-out-expo) 0.6s;
+}
+
+.falsification-box.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.falsification-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--sun-purple);
+  margin-bottom: 8px;
+}
+
+.falsification-text {
+  font-size: 13px;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+
+/* === 引言方塊 === */
+.pullquote {
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  padding: 48px 32px;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 1s var(--ease-out-expo);
+}
+
+.pullquote.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.pullquote-text {
+  background: linear-gradient(135deg, var(--text), var(--text-dim));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pullquote-mark {
+  font-size: 64px;
+  line-height: 0.5;
+  color: var(--sun-amber);
+  opacity: 0.4;
+  display: block;
+  margin-bottom: -16px;
+}
+
+/* === 最終 CTA === */
+.cta-section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px 32px;
+}
+
+.cta-title {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 24px;
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink), var(--sun-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.cta-desc {
+  font-size: 16px;
+  color: var(--text-dim);
+  max-width: 500px;
+  line-height: 1.7;
+}
+
+.cta-btn {
+  display: inline-block;
+  margin-top: 32px;
+  padding: 14px 32px;
+  border-radius: 100px;
+  background: linear-gradient(135deg, var(--sun-orange), var(--sun-pink));
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: all 0.3s var(--ease-out-expo);
+  box-shadow: 0 4px 24px rgba(233,30,99,0.3);
+}
+
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(233,30,99,0.5);
+}
+
+/* === 響應式 === */
+@media (max-width: 768px) {
+  .nav { padding: 12px 16px; }
+  .section { padding: 80px 20px; }
+  .hero { padding: 100px 20px 60px; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .comparison-arrow { transform: rotate(90deg); }
+  .metric-row { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .metric-row { grid-template-columns: 1fr; }
+  .pullquote { padding: 32px 16px; font-size: 18px; }
+}
+
+/* === 滾動觸發 === */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s var(--ease-out-expo);
+}
+
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+.reveal-delay-5 { transition-delay: 0.5s; }
+.reveal-delay-6 { transition-delay: 0.6s; }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+
+<!-- 導航 -->
+<nav class="nav">
+  <div class="nav-logo">GTA6 × RDR2 系統設計 9 講</div>
+  <div class="nav-progress">
+    <div class="nav-dot active" data-section="0"></div>
+    <div class="nav-dot" data-section="1"></div>
+    <div class="nav-dot" data-section="2"></div>
+    <div class="nav-dot" data-section="3"></div>
+    <div class="nav-dot" data-section="4"></div>
+    <div class="nav-dot" data-section="5"></div>
+    <div class="nav-dot" data-section="6"></div>
+    <div class="nav-dot" data-section="7"></div>
+    <div class="nav-dot" data-section="8"></div>
+    <div class="nav-dot" data-section="9"></div>
+    <div class="nav-dot" data-section="10"></div>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ========== HERO ========== -->
+<section class="hero" id="section-0">
+  <div class="hero-tag">遊戲設計分析 · 9 局系統設計課</div>
+  <h1 class="hero-title">
+    <span class="hero-title-line">GTA 6 憑什麼被稱</span>
+    <span class="hero-title-line gradient-text">RDR2 的終極進化體？</span>
+  </h1>
+  <p class="hero-subtitle">
+    不是換皮，是 9 大核心系統的效率軸現代化。<br>
+    給 25-40 歲主管的產品設計教科書。
+  </p>
+  <div class="hero-meta">
+    <span>📖 9 分鐘閱讀</span>
+    <span>🎯 9 個系統 × 2 時代</span>
+    <span>🔍 全程可證偽</span>
+  </div>
+  <div class="scroll-hint">
+    <span>SCROLL TO EXPLORE</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ========== 引言 1 ========== -->
+<section class="section">
+  <div class="section-inner" style="text-align:center">
+    <div class="pullquote reveal">
+      <span class="pullquote-mark">"</span>
+      <span class="pullquote-text">RDR2 让我们相信遊戲可以改變一個人。<br>GTA 6 要我们相信——改變的是一個社會。</span>
+      <span class="pullquote-mark">"</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 1: 刑事剖繪 ========== -->
+<section class="section" id="section-1">
+  <div class="section-inner">
+    <div class="section-num reveal">01 · Criminal Profiling</div>
+    <h2 class="section-title reveal reveal-delay-1">榮譽系統 → <span class="highlight">刑事剖繪</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 的 Honor Bar 是<strong>道德軸</strong>（善 ↔ 惡），GTA 6 把它改成<strong>效率軸</strong>（專業罪犯 ↔ 瘋子）。<br><br>
+      不再是「你有多善良」，而是「你有多專業」。
+    </p>
+    <div class="comparison-grid reveal reveal-delay-3">
+      <div class="comparison-side rdr2">
+        <div class="comparison-label">RDR2</div>
+        <div class="comparison-title">Honor Bar</div>
+        <div class="comparison-desc">幫助陌生人加分、殺人扣分。高榮譽=憐憫 vision，低榮譽=黑暗夢境。結局過場依此變化。</div>
+      </div>
+      <div class="comparison-arrow">→</div>
+      <div class="comparison-side gta6">
+        <div class="comparison-label">GTA 6</div>
+        <div class="comparison-title">Criminal Profiling</div>
+        <div class="comparison-desc">乾淨完成搶案（不被拍到、不傷平民）=加分。忘記戴面具=扣分。撫摸狗=加分（致敬 RDR2）。</div>
+      </div>
+    </div>
+    <div class="tradeoff-bar reveal reveal-delay-4">
+      <div class="tradeoff-item">
+        <div class="tradeoff-icon gain">✓</div>
+        <div class="tradeoff-text"><span class="gain-text">解決敘事矛盾</span>：GTA 世界不需要「罪犯做好事」的偽善設定</div>
+      </div>
+      <div class="tradeoff-item">
+        <div class="tradeoff-icon cost">✗</div>
+        <div class="tradeoff-text"><span class="cost-text">失去情感深度</span>：Arthur 內心的道德挣扎，Jason 變成純粹的「效率指標」</div>
+      </div>
+    </div>
+    <div class="falsification-box reveal reveal-delay-5">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若發售後證實 Criminal Profiling 僅影響對話而無任務分支差異，「專業/瘋子」僅為換皮，則本節主張被推翻。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 2: Dead Eye ========== -->
+<section class="section" id="section-2">
+  <div class="section-inner">
+    <div class="section-num reveal">02 · Dead Eye</div>
+    <h2 class="section-title reveal reveal-delay-1">時間緩速 → <span class="highlight">選擇殺或不殺</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 的 Dead Eye 標記<span style="color:var(--sun-orange)">紅區</span>（致命）——純殺敵工具。<br>
+      GTA 6 新增<span style="color:var(--sun-amber)">黃區</span>（非致命要害）——你可以選擇<span class="highlight">擊暈而非擊殺</span>。
+    </p>
+    <div class="metric-row reveal reveal-delay-3">
+      <div class="metric-card">
+        <div class="metric-value">2</div>
+        <div class="metric-unit">色區</div>
+        <div class="metric-label">RDR2 僅紅區<br>GTA6 增黃區</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">∞</div>
+        <div class="metric-unit">選擇</div>
+        <div class="metric-label">每次 Dead Eye<br>都可選殺或不殺</div>
+      </div>
+    </div>
+    <div class="falsification-box reveal reveal-delay-4">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若多數玩家從不使用黃區（即從不選擇擊暈），則紅/黃分區為冗餘設計，進化無效。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 3: Witness ========== -->
+<section class="section" id="section-3">
+  <div class="section-inner">
+    <div class="section-num reveal">03 · Witness System</div>
+    <h2 class="section-title reveal reveal-delay-1">荒野目擊者 → <span class="highlight">5 通道辨識</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 只需擔心荒野目擊者跑到遠處報信。<br>
+      GTA 6 的 HUD 顯示 <strong>5 種辨識通道</strong>，必須同時管理。
+    </p>
+    <div class="metric-row reveal reveal-delay-3">
+      <div class="metric-card">
+        <div class="metric-value">5</div>
+        <div class="metric-unit">通道</div>
+        <div class="metric-label">目擊者 · CCTV · 服裝<br>武器 · 車輛</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">2<sup>n</sup></div>
+        <div class="metric-unit">策略</div>
+        <div class="metric-label">每通道可處理或不處理<br>策略複雜度指數上升</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">0</div>
+        <div class="metric-unit">容錯</div>
+        <div class="metric-label">任何一通道沒處理<br>就會被識別</div>
+      </div>
+    </div>
+    <div class="falsification-box reveal reveal-delay-4">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若隱形面罩+換車牌+換裝+丟車 = 零通緝成本，則複雜度為假象。發售後即可測試。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 4: 馬匹→車輛 ========== -->
+<section class="section" id="section-4">
+  <div class="section-inner">
+    <div class="section-num reveal">04 · Vehicle Storage</div>
+    <h2 class="section-title reveal reveal-delay-1">馬匹 Bonding → <span class="highlight">車輛軍火庫</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 前作馬匹太可拋棄（吹哨即有新品），所以 RDR2 加入 Bonding 4 級 + 忠心度。<br>
+      GTA 6 更激進：車輛 = 你的武器庫 + 贓物倉庫，沒有車 = 沒有 loadout。
+    </p>
+    <div class="metric-row reveal reveal-delay-3">
+      <div class="metric-card">
+        <div class="metric-value">∞</div>
+        <div class="metric-unit">攜帶</div>
+        <div class="metric-label">RDR2 馬匹=無限武器欄<br>（馬在武器就在）</div>
+      </div>
+      <div class="metric-card">
+        <div class="meteric-value" style="font-size:24px">duffel bag</div>
+        <div class="metric-unit">限制</div>
+        <div class="metric-label">GTA6 需規劃<br>贓物容量 vs 車輛儲存</div>
+      </div>
+    </div>
+    <div class="falsification-box reveal reveal-delay-4">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若玩家從不因容量不足折返安全屋，則車輛作為載體的設計意圖失效。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 5: 核心系統 ========== -->
+<section class="section" id="section-5">
+  <div class="section-inner">
+    <div class="section-num reveal">05 · Core System</div>
+    <h2 class="section-title reveal reveal-delay-1">三大核心 → <span class="highlight">永久化養成</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 有 Health / Stamina / Dead Eye 三大核心，靠食物與休息恢復。<br>
+      GTA 6 取消饑餓壓力，加入<strong>永久提升</strong>（健身 Stamina、咖啡香菸 Focus）。
+    </p>
+    <div class="comparison-grid reveal reveal-delay-3">
+      <div class="comparison-side rdr2">
+        <div class="comparison-label">RDR2</div>
+        <div class="comparison-title">臨時恢復</div>
+        <div class="comparison-desc">食物/補劑/休息 = 暫時 buff。迫使玩家進入狩獵循環（荒野求生壓力）。</div>
+      </div>
+      <div class="comparison-arrow">→</div>
+      <div class="comparison-side gta6">
+        <div class="comparison-label">GTA 6</div>
+        <div class="comparison-title">永久累積</div>
+        <div class="comparison-desc">健身 = Stamina 永久提升。咖啡/香菸 = Focus（Dead Eye）暫時提升。便利店解決一切。</div>
+      </div>
+    </div>
+    <div class="tradeoff-bar reveal reveal-delay-4">
+      <div class="tradeoff-item">
+        <div class="tradeoff-icon gain">✓</div>
+        <div class="tradeoff-text"><span class="gain-text">降低入門門檻</span>：城市玩家不需要學習狩獵系統</div>
+      </div>
+      <div class="tradeoff-item">
+        <div class="tradeoff-icon cost">✗</div>
+        <div class="tradeoff-text"><span class="cost-text">失去求生張力</span>：RDR2 的資源管理迫使玩家進入 NPC 經濟循環（獵皮→賣錢→升級）</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 6: 物品儲存 ========== -->
+<section class="section" id="section-6">
+  <div class="section-inner">
+    <div class="section-num reveal">06 · Item Storage</div>
+    <h2 class="section-title reveal reveal-delay-1">無限背包 → <span class="highlight">贓物物流鏈</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 的 satchel 可裝任何稀有物品（連沼澤乾縮人頭都收）。<br>
+      GTA 6 把物品欄改成<span style="color:var(--sun-orange)">物流問題</span>：贓物必須放車→開回家→才能賣。
+    </p>
+    <div class="falsification-box reveal reveal-delay-2">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若 duffel bag 容量在退出遊戲後重置而未運回安全屋，則儲存系統被繞過。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 7: Compendium ========== -->
+<section class="section" id="section-7">
+  <div class="section-inner">
+    <div class="section-num reveal">07 · Compendium</div>
+    <h2 class="section-title reveal reveal-delay-1">荒野狩獵 → <span class="highlight">城市非法圖鑑</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 的 Compendium = 狩獵＋研究＋日誌。<br>
+      GTA 6 保留圖鑑，但狩獵變成<span style="color:var(--sun-pink)">非法活動</span>（grass rivers 鱷魚）——不再是生存，是<span class="highlight">生財</span>。
+    </p>
+    <div class="falsification-box reveal reveal-delay-3">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若發售後證實 Compendium 無任何遊戲獎勵解鎖，則系統為擺設。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 8: NPC ========== -->
+<section class="section" id="section-8">
+  <div class="section-inner">
+    <div class="section-num reveal">08 · NPC Interaction</div>
+    <h2 class="section-title reveal reveal-delay-1">野外偶遇 → <span class="highlight">社群推送</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 隨機事件只能靠野外偶遇（救人、發現連續殺人犯）。<br>
+      GTA 6 加入 <strong>InGame Social Media</strong>——遊戲內 Twitter 主動推送正在發生的隨機事件。
+    </p>
+    <div class="metric-row reveal reveal-delay-3">
+      <div class="metric-card">
+        <div class="metric-value">2</div>
+        <div class="metric-unit">路徑</div>
+        <div class="metric-label">實體探索<br>＋<br>社群推送</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value">↑</div>
+        <div class="metric-unit">觸及</div>
+        <div class="metric-label">不會再錯過<br>隨機事件<br>（但可能降低驚喜感）</div>
+      </div>
+    </div>
+    <div class="falsification-box reveal reveal-delay-4">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若 90% 隨機事件仍靠路過觸發而非靠 Social Media，則社群機制為裝飾。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 系統 9: 游牧結構 ========== -->
+<section class="section" id="section-9">
+  <div class="section-inner">
+    <div class="section-num reveal">09 · Nomadic Structure</div>
+    <h2 class="section-title reveal reveal-delay-1">幫派營隊 → <span class="highlight">安全屋網路</span></h2>
+    <p class="section-body reveal reveal-delay-2">
+      RDR2 幫派從未真正屬於任何營地，全圖移動。<br>
+      GTA 6 早期不可購買安全屋——Jason-Lucia 被迫在 Leonida 諸地<span style="color:var(--sun-amber)">游牧逃亡</span>。
+    </p>
+    <div class="falsification-box reveal reveal-delay-2">
+      <div class="falsification-label">🔍 可證偽檢驗</div>
+      <div class="falsification-text">若發售後證實安全屋購買解鎖時間 < 總遊戲時長 10%，則「游牧」設計無感。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 最終 CTA ========== -->
+<section class="cta-section" id="section-10">
+  <div class="cta-title reveal">你讀完了 9 局系統設計課</div>
+  <p class="cta-desc reveal reveal-delay-1">
+    9 個系統 × 2 個時代 = 18 個設計決策。<br>
+    Rockstar 花了 13 年，把 RDR2 的荒野法則，變成了 GTA 6 的城市工程學。
+  </p>
+  <p class="pullquote reveal reveal-delay-2" style="font-size: 18px; padding: 24px 0;">
+    <span class="pullquote-mark">"</span>
+    <span class="pullquote-text" style="font-size: 18px;">好遊戲給你一個世界。偉大的遊戲给你一套系統，讓你自己創造故事。</span>
+    <span class="pullquote-mark">"</span>
+  </p>
+  <a href="#section-0" class="cta-btn reveal reveal-delay-3">↑ 回到頂部重新閱讀</a>
+</section>
+
+</main>
+
+<script>
+/* === 粒子背景 === */
+(function() {
+  const canvas = document.getElementById('particles-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let w, h;
+  
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+    reset() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.vx = (Math.random() - 0.5) * 0.3;
+      this.vy = (Math.random() - 0.5) * 0.3;
+      this.r = Math.random() * 1.5 + 0.5;
+      const colors = ['255,107,53', '247,147,30', '233,30,99', '156,39,176', '103,58,183', '33,150,243'];
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.alpha = Math.random() * 0.4 + 0.1;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(${this.color},${this.alpha})`;
+      ctx.fill();
+    }
+  }
+  
+  const count = Math.min(80, Math.floor(w * h / 15000));
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle());
+  }
+  
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => { p.update(); p.draw(); });
+    
+    // 連線
+    ctx.lineWidth = 0.5;
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(255,107,53,${0.08 * (1 - dist/120)})`;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* === 滾動觸發 reveal === */
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  
+  document.querySelectorAll('.reveal, .section-num, .section-title, .section-body, .comparison-grid, .metric-row, .tradeoff-bar, .falsification-box').forEach(el => {
+    observer.observe(el);
+  });
+})();
+
+/* === 導航進度 + 滾動自動對齊 === */
+(function() {
+  const sections = document.querySelectorAll('[id^="section-"]');
+  const dots = document.querySelectorAll('.nav-dot');
+  
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const idx = parseInt(entry.target.id.replace('section-', ''));
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[idx]) dots[idx].classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+  
+  sections.forEach(s => observer.observe(s));
+})();
+</script>
+
+</body>
+</html>
+<!-- rebuild trigger -->
