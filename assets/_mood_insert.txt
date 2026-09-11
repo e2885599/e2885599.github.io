@@ -1,0 +1,31 @@
+
+/* ============================================================
+   首頁多彩化 · 分區段情緒色板（色彩心理學 + Odoo 企業信任藍/創新紫靈感內化）
+   解決「首頁顏色太單調」：各區段用不同情緒色，但仍守金紫品牌基底。
+   色板依據：藍=信任/專業、紫=高端/創新、金=權威/價值、綠=安全/通過、橙=能量。
+   ============================================================ */
+:root{
+  /* 區段情緒色（覆寫級，供首頁各 section 使用） */
+  --mood-trust:#5b8cff;      /* 信任藍（Odoo 企業信任靈感） */
+  --mood-innovate:#b388ff;   /* 創新紫（Odoo 創新紫靈感） */
+  --mood-value:#f5c970;      /* 權威金 */
+  --mood-safe:#7ee787;       /* 安全綠 */
+  --mood-energy:#ffb347;     /* 能量橙 */
+  --mood-logic:#36e0d4;      /* 邏輯青 */
+}
+/* 首頁各區段：以情緒色做左上邊線 + 淡色光暈，拉開層次（非整頁換色，守品牌） */
+.sec-mood{position:relative;}
+.sec-mood::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;border-radius:4px;background:var(--mood-accent,var(--gold));opacity:.9;}
+.sec-mood{background:linear-gradient(180deg, color-mix(in srgb, var(--mood-accent,var(--gold)) 7%, transparent), transparent 60%);}
+.mood-trust{--mood-accent:var(--mood-trust);}
+.mood-innovate{--mood-accent:var(--mood-innovate);}
+.mood-value{--mood-accent:var(--mood-value);}
+.mood-safe{--mood-accent:var(--mood-safe);}
+.mood-energy{--mood-accent:var(--mood-energy);}
+.mood-logic{--mood-accent:var(--mood-logic);}
+/* 區段標 k 字用情緒色，強化分類識別 */
+.sec-mood .k{color:var(--mood-accent,var(--gold));}
+.sec-mood .sec-head .k::before{content:"● ";font-size:.7em;vertical-align:middle;}
+/* 卡片頂部細線隨情緒色 */
+.sec-mood .card, .sec-mood .item{border-top:2px solid color-mix(in srgb, var(--mood-accent,var(--gold)) 60%, transparent);}
+

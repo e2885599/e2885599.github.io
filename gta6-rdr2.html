@@ -82,6 +82,16 @@ body {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.nav-logo:hover { opacity: 0.8; }
+
+.nav-links-scroll {
+  display: flex;
+  gap: 4px;
+  align-items: center;
 }
 
 .nav-progress {
@@ -95,12 +105,76 @@ body {
   border-radius: 50%;
   background: var(--dark-2);
   transition: all 0.3s;
+  display: block;
+  text-decoration: none;
 }
+
+.nav-dot:hover { background: rgba(255,107,53,0.4); }
 
 .nav-dot.active {
   background: var(--sun-amber);
   box-shadow: 0 0 12px var(--sun-amber);
   transform: scale(1.3);
+}
+
+.nav-labels {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  max-width: 60vw;
+  padding: 4px 0;
+  scrollbar-width: none;
+}
+
+.nav-labels::-webkit-scrollbar { display: none; }
+
+.nav-label-link {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  white-space: nowrap;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.nav-label-link:hover {
+  color: var(--sun-amber);
+  background: rgba(255,107,53,0.1);
+}
+
+.nav-label-link.active {
+  color: var(--sun-amber);
+  font-weight: 700;
+}
+
+.nav-site-links {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255,255,255,0.1);
+  margin-left: 8px;
+}
+
+.nav-site-link {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-decoration: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.nav-site-link:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.05);
+}
+
+@media (max-width: 768px) {
+  .nav-site-links { display: none; }
+  .nav-labels { max-width: 70vw; }
 }
 
 /* === 主要內容區 === */
@@ -650,19 +724,39 @@ body {
 
 <!-- 導航 -->
 <nav class="nav">
-  <div class="nav-logo">GTA6 × RDR2 系統設計 9 講</div>
-  <div class="nav-progress">
-    <div class="nav-dot active" data-section="0"></div>
-    <div class="nav-dot" data-section="1"></div>
-    <div class="nav-dot" data-section="2"></div>
-    <div class="nav-dot" data-section="3"></div>
-    <div class="nav-dot" data-section="4"></div>
-    <div class="nav-dot" data-section="5"></div>
-    <div class="nav-dot" data-section="6"></div>
-    <div class="nav-dot" data-section="7"></div>
-    <div class="nav-dot" data-section="8"></div>
-    <div class="nav-dot" data-section="9"></div>
-    <div class="nav-dot" data-section="10"></div>
+  <a href="https://e2885599.github.io/" class="nav-logo">GTA6 × RDR2 系統設計 9 講 ↩ 回首頁</a>
+  <div class="nav-links-scroll">
+    <div class="nav-progress">
+      <a class="nav-dot active" href="#section-0" data-section="0"></a>
+      <a class="nav-dot" href="#section-1" data-section="1"></a>
+      <a class="nav-dot" href="#section-2" data-section="2"></a>
+      <a class="nav-dot" href="#section-3" data-section="3"></a>
+      <a class="nav-dot" href="#section-4" data-section="4"></a>
+      <a class="nav-dot" href="#section-5" data-section="5"></a>
+      <a class="nav-dot" href="#section-6" data-section="6"></a>
+      <a class="nav-dot" href="#section-7" data-section="7"></a>
+      <a class="nav-dot" href="#section-8" data-section="8"></a>
+      <a class="nav-dot" href="#section-9" data-section="9"></a>
+      <a class="nav-dot" href="#section-10" data-section="10"></a>
+    </div>
+    <div class="nav-labels">
+      <a class="nav-label-link active" href="#section-1">刑事剖繪</a>
+      <a class="nav-label-link" href="#section-2">Dead Eye</a>
+      <a class="nav-label-link" href="#section-3">目擊者</a>
+      <a class="nav-label-link" href="#section-4">馬匹→車輛</a>
+      <a class="nav-label-link" href="#section-5">核心系統</a>
+      <a class="nav-label-link" href="#section-6">物品儲存</a>
+      <a class="nav-label-link" href="#section-7">Compendium</a>
+      <a class="nav-label-link" href="#section-8">NPC 對話</a>
+      <a class="nav-label-link" href="#section-9">游牧結構</a>
+      <a class="nav-label-link" href="#section-10">總結</a>
+    </div>
+    <div class="nav-site-links">
+      <a class="nav-site-link" href="https://e2885599.github.io/">首頁</a>
+      <a class="nav-site-link" href="https://e2885599.github.io/lab.html">實驗場</a>
+      <a class="nav-site-link" href="https://e2885599.github.io/sop-game-character-gameplay.html">人物博弈</a>
+      <a class="nav-site-link" href="https://e2885599.github.io/contact.html">聯絡</a>
+    </div>
   </div>
 </nav>
 
@@ -1065,4 +1159,3 @@ body {
 
 </body>
 </html>
-<!-- rebuild trigger -->

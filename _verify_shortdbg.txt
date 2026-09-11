@@ -1,0 +1,21 @@
+const task = await useOrCreateTaskSpace('studio-shortdbg');
+await openOrReuseTab('http://127.0.0.1:8758/notes/ai-concept-teaching.html', { wait: true, timeout: 25 });
+await wait(1500);
+const d = await js(`(function(){
+  const th = window.ThemeMap ? window.ThemeMap.getTheme('ai-basics') : null;
+  return {
+    themeObjShort: th ? th.short : 'NO_THEMEMAP',
+    injectShortField: window.__theme ? window.__theme.short : 'NO_THEME',
+    hasStartShortFn: (typeof startShort === 'function'),
+    videoExists: !!document.getElementById('theme-short')
+  };
+})()`);
+cliLog(d);
+// 也直接測手動觸發
+const manual = await js(`(function(){
+  try { startShort('ai-basics'); } catch(e){ return {err:e.message}; }
+  const v=document.getElementById('theme-short');
+  return { manualVideoSrc: v?v.src:null };
+})()`);
+cliLog(manual);
+await completeTaskSpace('studio-shortdbg');

@@ -1,0 +1,11 @@
+const task = await useOrCreateTaskSpace('studio-srcchk');
+await openOrReuseTab('http://127.0.0.1:8758/notes/ai-concept-teaching.html', { wait: true, timeout: 25 });
+await wait(1200);
+const chk = await js(`(function(){
+  // 抓取頁面引用的 theme-inject.js 原始內容，看是否含 startShort
+  return fetch('../assets/theme-inject.js', {cache:'no-store'}).then(r=>r.text()).then(t=>{
+    return { hasStartShort: t.includes('startShort'), len: t.length, firstMatch: t.indexOf('startShort') };
+  }).catch(e=>({fetchErr:e.message}));
+})()`);
+cliLog(chk);
+await completeTaskSpace('studio-srcchk');

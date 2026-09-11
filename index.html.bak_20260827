@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>OODAV LAB｜把混亂，變成您看得懂的秩序</title>
+<meta name="description" content="OODAV LAB 主動資運工作室：用透明、可查證、自動化的方式，幫企業把重要數字看牢、出問題主動報警。每一份交付都能讓您自己驗證。" />
+<link rel="stylesheet" href="assets/style.css" />
+<script src="assets/theme-map.js?v=20260827b"></script>
+<script src="assets/theme-inject.js?v=20260827b"></script>
+<!-- 部署戳記 2026-08-23B：強制 GitHub Pages 重建（首頁統計卡對齊 OODAV LAB 修復） -->
+</head>
+<body>
+<canvas id="aurora"></canvas>
+<nav>
+  <div class="wrap nav-inner">
+    <div class="brand"><span class="logo"></span> OODAV&nbsp;LAB</div>
+    <div class="nav-links">
+      <a href="index.html" class="active">首頁</a>
+      <a href="about.html">關於我們</a>
+      <a href="services.html">服務項目</a>
+      <a href="pricing.html">報價</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="higher-dimensions/">互動字幕</a>
+      <a href="demo.html">看得見的示範</a>
+      <a href="sop-game-character-gameplay.html">人物博弈SOP</a>
+      <a href="contact.html">聯絡</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="reveal in">
+      <span class="tag">主動資運工作室</span>
+      <h1>把混亂，變成<span class="grad">您看得懂的秩序</span></h1>
+      <p class="lede">我們幫企業把重要數字看牢：系統自動巡檢，一出問題就主動報警，不讓您等到月底才發現怪事。過程透明、價格清楚，沒有黑箱——因為我們相信，<b style="color:var(--txt)">您有權利親手驗證每一筆交付</b>。</p>
+      <div class="cta">
+        <a class="btn btn-pri" href="contact.html">預約一次資產體檢</a>
+        <a class="btn btn-ghost" href="lab.html">走進技術實驗場</a>
+      </div>
+    </div>
+    <div class="hero-img reveal in d1 floaty">
+      <img src="assets/hero.png" alt="自動化管理儀表板示意" />
+      <div class="hero-badge"><span class="dot"></span> 系統 24 小時自動巡檢中</div>
+    </div>
+  </div>
+  <div class="wrap stats">
+    <div class="stat reveal in d1"><b data-count="100" data-suffix="%">0</b><span>數字都可對帳查證</span></div>
+    <div class="stat reveal in d2"><b data-count="20" data-suffix=" 項">0</b><span>資產面向全面照顧</span></div>
+    <div class="stat reveal in d3"><b data-count="0">0</b><span>不藏隐性費用</span></div>
+    <div class="stat reveal in d4"><b data-count="24" data-suffix="h">0</b><span>異常主動報警</span></div>
+  </div>
+</header>
+
+<section class="sec-mood mood-value">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">我們幫您做什麼</div>
+      <h2>三句話說完</h2>
+      <p>不懂技術也沒關係——下面三張卡，就是我們替您解決的三件最頭痛的事。每一件，背後都有您能親手核對的證據。</p>
+    </div>
+    <div class="img-wrap reveal"><img class="theme-img" src="assets/img_index.svg" alt="自動化資產巡檢儀表板示意" />
+      <div class="img-cap">▲ 自動化資產巡檢儀表板：對帳通過率、即時異常趨勢、紅燈自動報警</div></div>
+
+      <div class="card reveal d1">
+        <div class="ic">⚙️</div>
+        <h3>把重複工作交給系統</h3>
+        <p>報表、對帳、串接各平台資料這種瑣事，我們寫成自動程式，每天準時跑好，不必人工點。每跑一次都留<b style="color:var(--gold)">不可竄改的指紋</b>。</p>
+        <ul><li>每日自動對帳，不一致就標紅</li><li>電商 / 金流 / 物流資料自動串接</li><li>背景定時巡檢，出事主動通知</li></ul>
+      </div>
+      <div class="card reveal d2">
+        <div class="ic">📊</div>
+        <h3>給您一塊管理看板</h3>
+        <p>重要指標集中在一個畫面：哪裡變紅、哪裡異常，一眼就看到，開會時直接打開就能講。每一步都有<b style="color:var(--gold)">操作軌跡可查</b>。</p>
+        <ul><li>異常項目紅燈警示</li><li>流程走到哪一步，一眼看清</li><li>誰改了什麼，都能追溯</li></ul>
+      </div>
+      <div class="card reveal d3">
+        <div class="ic">📐</div>
+        <h3>幫您寫清楚說明書</h3>
+        <p>從需求、做法到驗收標準，我們用白話寫成文件，讓您和團隊都看得懂、驗得過。拒絕「您只能相信我們」的黑箱。</p>
+        <ul><li>數位轉型規劃書</li><li>資料來源與查證標準</li><li>出問題時的應變與追溯辦法</li></ul>
+      </div>
+  </div>
+</section>
+
+<section class="sec-mood mood-trust">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">為什麼主管該選我們</div>
+      <h2>不黑箱、會報警、價格透明</h2>
+      <p>這三件事，是我們和「只交一份報告就叫完工」的廠商最大的不同。</p>
+    </div>
+    <div class="why">
+      <div class="item reveal d1"><h4>① 不藏黑箱</h4><p>每一份交付都有清楚的驗收標準，您隨時能核對對不對，而不是「相信我們說的」。我們把對帳方式寫進合約附件。</p></div>
+      <div class="item reveal d2"><h4>② 出事主動講</h4><p>數字異常、資料斷線，系統會主動標紅並通知，不用等您自己發現。小問題在變大事之前，就被攔下。</p></div>
+      <div class="item reveal d3"><h4>③ 價格先講好</h4><p>依專案大小一次報價，含什麼、不含什麼都寫明白，不中途加價。我們不靠事後追加費用賺錢。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="sec-mood mood-innovate">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">我們的設計語言 · Design System</div>
+      <h2>不是 prompt，是一套能被複製的系統</h2>
+      <p>影片裡點名「AI 爛貨」的根因：每個人都下同一類 prompt，模型吐出同一套結果（通用字、靛紫漸層、永遠三卡、毛玻璃）。我們的應對是——先有 codified 設計系統，再用「屬於自己的生成資產」填充。這一頁本身就是證明。</p>
+    </div>
+    <div class="why">
+      <div class="item reveal d1"><h4>① 特色字體</h4><p>拉丁與數字走 <b style="color:var(--gold)">Space Grotesk</b>（工程幾何感），中文走 <b style="color:var(--gold)">IBM Plex Sans TC</b>——擺脫「系統字主導」的 AI 味，建立可識別的字形簽名。</p></div>
+      <div class="item reveal d2"><h4>② 比例系統</h4><p>字階、間距、容器寬、圓角全以黃金比收斂成令牌，消除散彈魔法數字——告別「每次重下 prompt」的隨機感。</p></div>
+      <div class="item reveal d3"><h4>③ 獨特生成資產</h4><p>極光 canvas、滾動刷幀短片、可穿牆傳送門——都是「能玩能驗、屬於我們自己」的資產，而非模板套圖。</p></div>
+      <div class="item reveal d4"><h4>④ 透明對帳</h4><p>每筆交付留不可竄改指紋、每個聲稱可被打臉——「不黑箱」在視覺與工程面統一。</p></div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">技術實驗場</div>
+      <h2>連「圖形學」，我們都攤開給您玩</h2>
+      <p>我們把平常藏在程式裡的電腦圖學與物理模擬，做成您滑鼠能玩的示範——從一張圖怎麼畫出來、到向《傳送門 2》致敬的可穿牆物理謎題。這些不是裝飾，而是「看得見、驗得過」這句承諾的實體證明。</p>
+      <div class="toc">
+        <a href="lab.html" class="btn btn-pri">進入技術實驗場 →</a>
+        <a href="demo.html" class="btn btn-ghost">基礎圖學示範</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 專題與作品 · Works Portal：超連結按鈕＋小簡介 -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">專題與作品 · Works</div>
+      <h2>四件「看得見、驗得過」的實體作品</h2>
+      <p>下面每一件都是我們「不黑箱、能親手驗」承諾的具體證明：從高維度空間的互動字幕配音，到可玩的圖學示範與遊戲 SOP。點進去就能玩、能對帳。</p>
+    </div>
+    <div class="lab-grid">
+      <div class="lab-card reveal d1">
+        <span class="badge">訪談式科普</span>
+        <h3>高維度空間 · 互動字幕與配音</h3>
+        <p>13 章中英雙語字幕，搭配 TTS 英語配音，時間軸同步高亮。每一段都可對帳、可重現——這頁本身就是「資訊可被驗證」的示範。</p>
+        <div class="mini"><span>雙語字幕</span><span>TTS 配音</span><span>時間軸同步</span><span>Merkle 對帳</span></div>
+        <a class="btn btn-pri" href="higher-dimensions/">進入互動字幕頁 →</a>
+      </div>
+      <div class="lab-card reveal d2">
+        <span class="badge">圖形學 · 可玩示範</span>
+        <h3>技術實驗場</h3>
+        <p>把程式裡的電腦圖學與物理模擬，做成滑鼠能玩的示範——幾何變換、著色器、向《傳送門 2》致敬的可穿牆物理謎題。</p>
+        <div class="mini"><span>幾何變換</span><span>著色器</span><span>傳送門物理</span></div>
+        <a class="btn btn-pri" href="lab.html">走進技術實驗場 →</a>
+      </div>
+      <div class="lab-card reveal d3">
+        <span class="badge">基礎圖學</span>
+        <h3>看得見的示範</h3>
+        <p>基礎圖學示範：從一張圖怎麼畫出來，到互動元件怎麼動——看得見、驗得過，不是套圖。</p>
+        <div class="mini"><span>圖學基礎</span><span>互動元件</span></div>
+        <a class="btn btn-ghost" href="demo.html">看基礎圖學示範 →</a>
+      </div>
+      <div class="lab-card reveal d4">
+        <span class="badge">遊戲 SOP · 可證偽</span>
+        <h3>人物博弈 SOP</h3>
+        <p>人物博弈遊戲的標準作業流程：從角色構建到玩法對帳，每一步都可簽核、可被數據打臉。</p>
+        <div class="mini"><span>角色 SOP</span><span>玩法對帳</span><span>可證偽</span></div>
+        <a class="btn btn-ghost" href="sop-game-character-gameplay.html">人物博弈 SOP →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 技術筆記：把硬核理論翻成可簽核的白話 -->
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">技術筆記 · Notes</div>
+      <h2>看得懂、驗得過的硬核理論</h2>
+      <p>這一區把平常藏在論文裡的物理與數學，翻成主管與團隊都看得懂、且每條聲稱都能被數據打臉的白話筆記。每一篇都自帶圖解與可證偽查核——這正是我們「不黑箱、能親手驗」承諾在知識面的體現。</p>
+    </div>
+    <div class="lab-grid">
+      <div class="lab-card reveal d1">
+        <span class="badge">主管導向 · AI 成本</span>
+        <h3>學習的物理學：給主管的 AI 成本與可行性白話解讀</h3>
+        <p>用統計力學視角拆解深度學習為什麼貴、雙重下降即堵塞相變、深網如何自發萃取抽象，並專章談「混合成本」與「可合算維度」——教你在簽核前判斷這筆 AI 預算該不該花。含 5 幅內聯 SVG 與 A–F 可證偽聲稱。</p>
+        <div class="mini"><span>維度詛咒</span><span>雙重下降</span><span>混合成本</span><span>可合算維度</span></div>
+        <a class="btn btn-pri" href="notes/physics-of-learning.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+      <div class="lab-card reveal d2">
+        <span class="badge">數學直覺 · 微積分</span>
+        <h3>積分的三層次詮釋</h3>
+        <p>從幾何面積、反微分運算，到「累積機器」——如何一眼讀懂滿是積分號的式子。同樣自帶 KaTeX 公式與內聯 SVG 圖解，單檔可離線開啟。</p>
+        <div class="mini"><span>幾何</span><span>反微分</span><span>累積</span></div>
+        <a class="btn btn-ghost" href="notes/integrals-three-levels.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+
+      <div class="lab-card reveal d4">
+        <span class="badge">影評解剖 · 論點分析</span>
+        <h3>《全面啟動》影評 · 論點解剖</h3>
+        <p>把一篇 38 分鐘的英文影評獨白，解剖成 6 張核心論點卡與 7 章中文敘事：感覺勝於證明、拍電影的寓言、Mal＝創作者幽靈、我們就是 Cobb、劇本要的是人生。含原始字幕與清洗全文下載。</p>
+        <div class="mini"><span>論點卡</span><span>金句牆</span><span>scrollspy</span><span>可對帳</span></div>
+        <a class="btn btn-ghost" href="notes/inception-essay.html" target="_blank" rel="noopener">開來看 →</a>
+      </div>
+    </div>
+
+
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">工作室一瞬 · 自動巡檢脈衝</div>
+      <h2>一段會呼吸的極光</h2>
+      <p>這支短片是「主動資運」的視覺隱喻：金與紫的極光緩緩流動，中心週期性擴散的脈衝，就像我們的系統在 24 小時裡不斷替您巡檢、一有異常就亮起紅燈。純程式化生成，無任何外部素材，每一幀都可重現、可對帳。</p>
+    </div>
+    <div class="reel reveal d1">
+      <video class="reel-video" muted loop playsinline preload="none"
+             poster="assets/hero.png"
+             data-src="assets/reel_scroll.mp4?v=3" data-webm="assets/reel_scroll.webm?v=3"
+             data-src-rev="assets/reel_scroll_rev.mp4?v=3" data-webm-rev="assets/reel_scroll_rev.webm?v=3"
+             dir="auto"
+      <div class="reel-cap">
+        <span class="dot"></span> 極光卷軸 × 巡檢脈衝 · 滾動至此自動播放 · 可正向/反向
+      </div>
+      <div class="reel-ctrl" role="group" aria-label="播放方向控制">
+        <button type="button" class="rc-btn is-active" data-dir="auto" aria-pressed="true">自動雙向</button>
+        <button type="button" class="rc-btn" data-dir="fwd" aria-pressed="false">正向 ▶</button>
+        <button type="button" class="rc-btn" data-dir="rev" aria-pressed="false">反向 ◀</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">核心信息 · 滾動播放</div>
+      <h2>邊滑邊看：16 秒講完我們在做什麼</h2>
+      <p>這支短片有人物、有場景，跟著您的捲動軸前進或倒退——往上滑回頭看、往下滑續看。也可以鎖定方向，讓它單向循環。</p>
+    </div>
+    <div class="story reveal d1">
+      <video class="story-video" muted playsinline preload="auto"
+             poster="assets/hero.png"
+             data-src="assets/story.mp4?v=1" data-webm="assets/story.webm?v=1"
+             data-src-rev="assets/story_rev.mp4?v=1" data-webm-rev="assets/story_rev.webm?v=1"
+             dir="auto">
+      </video>
+      <div class="story-hint">
+        <span class="dot"></span> 滾動以刷幀 · 可正向 / 反向
+      </div>
+      <div class="reel-ctrl" role="group" aria-label="故事方向控制">
+        <button type="button" class="rc-btn is-active" data-dir="scroll" aria-pressed="true">跟隨滾動</button>
+        <button type="button" class="rc-btn" data-dir="fwd" aria-pressed="false">正向 ▶</button>
+        <button type="button" class="rc-btn" data-dir="rev" aria-pressed="false">反向 ◀</button>
+      </div>
+      <div class="story-progress" aria-hidden="true"><span></span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="k">報價速覽</div>
+      <h2>看規模，一次報價</h2>
+      <p>詳細內容請看<a href="pricing.html">報價頁</a>。以下為台灣市場常見區間，最終依需求細節而定。</p>
+    </div>
+    <div class="price">
+      <div class="tier reveal d1">
+        <div class="tname">小型</div>
+        <div class="trange">5–20 萬</div>
+        <div class="tsub">約 2–6 週</div>
+        <ul><li>形象官網 / 單頁活動站</li><li>單一功能小工具</li><li>自動化腳本</li></ul>
+      </div>
+      <div class="tier featured reveal d2">
+        <div class="ribbon">最多人選</div>
+        <div class="tname">中型</div>
+        <div class="trange">20–100 萬</div>
+        <div class="tsub">約 2–6 個月</div>
+        <ul><li>完整電商 / 會員系統</li><li>內部進銷存 / 客戶管理</li><li>權限管理與基本防護</li></ul>
+      </div>
+      <div class="tier reveal d3">
+        <div class="tname">大型 / 企業級</div>
+        <div class="trange">100 萬以上</div>
+        <div class="tsub">6 個月起</div>
+        <ul><li>跨部門整合系統</li><li>高穩定、高安全需求</li><li>長期維運合約</li></ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="contact reveal">
+      <h2>想先看看我們怎麼把技術「攤開給您看」？</h2>
+      <p>我們把平常藏在程式裡的圖形與動畫，做成您滑鼠能玩的示範，證明「看得見、驗得過」。</p>
+      <div class="cta" style="justify-content:center"><a class="btn btn-pri" href="lab.html">走進技術實驗場</a></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="sitemap">
+      <a href="index.html">首頁</a>
+      <a href="about.html">關於我們</a>
+      <a href="services.html">服務項目</a>
+      <a href="pricing.html">報價</a>
+      <a href="lab.html">技術實驗場</a>
+      <a href="higher-dimensions/">互動字幕</a>
+      <a href="demo.html">看得見的示範</a>
+      <a href="sop-game-character-gameplay.html">人物博弈SOP</a>
+      <a href="contact.html">聯絡</a>
+    </div>
+    <div>© 2026 OODAV LAB · 主動資運工作室 · 透明 · 自動化 · 出事會報警</div>
+    <div class="backtop"><a href="#">↑ 回到頂端</a></div>
+  </div>
+</footer>
+
+<script src="assets/aurora.js"></script>
+<script src="assets/anim.js"></script>
+</body>
+</html>

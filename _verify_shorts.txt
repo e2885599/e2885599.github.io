@@ -1,0 +1,28 @@
+const out = {};
+const task = await useOrCreateTaskSpace('studio-shorts');
+// 文章1: ai-concept-teaching (ai-basics 青邏輯)
+await openOrReuseTab('http://127.0.0.1:8758/notes/ai-concept-teaching.html', { wait: true, timeout: 25 });
+await wait(1500);
+out.article1 = await js(`(function(){
+  const v=document.getElementById('theme-short');
+  const th=window.__theme||null;
+  return { theme: th&&th.name, videoId: v?v.id:null, videoSrc: v?v.src:null, videoReady: v?(v.readyState>0):false, videoW: v?v.videoWidth:0 };
+})()`);
+// 文章2: ai-scheming-debate (safety-audit 綠)
+await openOrReuseTab('http://127.0.0.1:8758/notes/ai-scheming-debate.html', { wait: true, timeout: 25 });
+await wait(1500);
+out.article2 = await js(`(function(){
+  const v=document.getElementById('theme-short');
+  const th=window.__theme||null;
+  return { theme: th&&th.name, videoSrc: v?v.src:null, videoReady: v?(v.readyState>0):false };
+})()`);
+// 首頁 (generic 金紫)
+await openOrReuseTab('http://127.0.0.1:8758/index.html', { wait: true, timeout: 25 });
+await wait(1500);
+out.home = await js(`(function(){
+  const v=document.getElementById('theme-short');
+  const th=window.__theme||null;
+  return { theme: th&&th.name, videoSrc: v?v.src:null, hasVideo: !!v };
+})()`);
+cliLog(out);
+await completeTaskSpace('studio-shorts');
